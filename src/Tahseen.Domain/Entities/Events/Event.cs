@@ -1,5 +1,5 @@
 ﻿using Tahseen.Domain.Commons;
-using Tahseen.Domain.Enums;
+using Tahseen.Domain.Enums.Events;
 
 namespace Tahseen.Domain.Entities.Events;
 

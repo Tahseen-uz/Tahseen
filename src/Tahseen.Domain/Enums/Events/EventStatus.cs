@@ -1,4 +1,4 @@
-﻿namespace Tahseen.Domain.Enums;
+﻿namespace Tahseen.Domain.Enums.Events;
 
 public enum EventStatus
 {
