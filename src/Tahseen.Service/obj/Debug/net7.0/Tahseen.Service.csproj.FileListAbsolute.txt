@@ -1,0 +1,11 @@
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\bin\Debug\net7.0\Tahseen.Service.deps.json
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\bin\Debug\net7.0\Tahseen.Service.dll
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\bin\Debug\net7.0\Tahseen.Service.pdb
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\Tahseen.Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\Tahseen.Service.AssemblyInfoInputs.cache
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\Tahseen.Service.AssemblyInfo.cs
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\Tahseen.Service.csproj.CoreCompileInputs.cache
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\Tahseen.Service.dll
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\refint\Tahseen.Service.dll
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\Tahseen.Service.pdb
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Service\obj\Debug\net7.0\ref\Tahseen.Service.dll

@@ -1,0 +1,11 @@
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\bin\Debug\net7.0\Tahseen.Domain.deps.json
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\bin\Debug\net7.0\Tahseen.Domain.dll
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\bin\Debug\net7.0\Tahseen.Domain.pdb
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\Tahseen.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\Tahseen.Domain.AssemblyInfoInputs.cache
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\Tahseen.Domain.AssemblyInfo.cs
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\Tahseen.Domain.csproj.CoreCompileInputs.cache
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\Tahseen.Domain.dll
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\refint\Tahseen.Domain.dll
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\Tahseen.Domain.pdb
+C:\Users\sardorbek\Source\Repos\Tahseen\src\Tahseen.Domain\obj\Debug\net7.0\ref\Tahseen.Domain.dll
