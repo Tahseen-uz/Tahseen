@@ -1,23 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "N:\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {}
+    "C:\\Users\\sardorbek\\Desktop\\New folder\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {}
   },
   "projects": {
-    "N:\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {
+    "C:\\Users\\sardorbek\\Desktop\\New folder\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "N:\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+        "projectUniqueName": "C:\\Users\\sardorbek\\Desktop\\New folder\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
         "projectName": "Tahseen.Api",
-        "projectPath": "N:\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
-        "packagesPath": "C:\\Users\\Bekmurod\\.nuget\\packages\\",
-        "outputPath": "N:\\Tahseen\\src\\Tahseen.Api\\obj\\",
+        "projectPath": "C:\\Users\\sardorbek\\Desktop\\New folder\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+        "packagesPath": "C:\\Users\\sardorbek\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\sardorbek\\Desktop\\New folder\\Tahseen\\src\\Tahseen.Api\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Bekmurod\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\sardorbek\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -71,7 +68,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }
