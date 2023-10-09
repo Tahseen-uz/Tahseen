@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Tahseen.Domain.Commons;
+using Tahseen.Domain.Enums.Events;
 
-namespace Tahseen.Domain.Entities.Events
+namespace Tahseen.Domain.Entities.Events;
+
+public class EventRegistration : Auditable
 {
-    internal class EventRegistration
-    {
-    }
+    public long UserId { get; set; }
+    public User User { get; set; }
+
+    public long EventId { get; set; }
+    public Event Event { get; set; }
+
+    public DateTime RedistrationDate { get; set; }
+
+    public EventRegistrationStatus Status { get; set; }
 }

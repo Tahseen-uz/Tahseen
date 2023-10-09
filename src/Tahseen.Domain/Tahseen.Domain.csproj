@@ -10,7 +10,6 @@
     <Folder Include="Entities\Authentication\" />
     <Folder Include="Entities\Library\" />
     <Folder Include="Entities\Feedback\" />
-    <Folder Include="Entities\Events\" />
     <Folder Include="Entities\Rewards\" />
     <Folder Include="Entities\SchoolAndEducation\" />
     <Folder Include="Entities\User\" />
