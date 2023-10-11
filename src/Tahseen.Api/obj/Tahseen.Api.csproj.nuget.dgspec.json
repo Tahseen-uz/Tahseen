@@ -1,28 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {}
+    "C:\\Users\\Developer\\RiderProjects\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {}
   },
   "projects": {
-    "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {
+    "C:\\Users\\Developer\\RiderProjects\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+        "projectUniqueName": "C:\\Users\\Developer\\RiderProjects\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
         "projectName": "Tahseen.Api",
-        "projectPath": "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
-        "packagesPath": "C:\\Users\\Azizbek\\.nuget\\packages\\",
-        "outputPath": "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\obj\\",
+        "projectPath": "C:\\Users\\Developer\\RiderProjects\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+        "packagesPath": "C:\\Users\\Developer\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Developer\\RiderProjects\\Tahseen\\src\\Tahseen.Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Azizbek\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Developer\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -69,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }
