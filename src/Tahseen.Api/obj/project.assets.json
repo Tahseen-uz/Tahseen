@@ -469,19 +469,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Azizbek\\.nuget\\packages\\": {}
+    "C:\\Users\\sardorbek\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+      "projectUniqueName": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
       "projectName": "Tahseen.Api",
-      "projectPath": "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
-      "packagesPath": "C:\\Users\\Azizbek\\.nuget\\packages\\",
-      "outputPath": "D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\obj\\",
+      "projectPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+      "packagesPath": "C:\\Users\\sardorbek\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Azizbek\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\sardorbek\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -489,7 +489,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -536,16 +535,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file D:\\Tahseen\\Tahseen\\src\\Tahseen.Api\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  }
 }

@@ -31,3 +31,36 @@ D:\Tahseen\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\refint\Tahseen.Api.dll
 D:\Tahseen\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.pdb
 D:\Tahseen\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.genruntimeconfig.cache
 D:\Tahseen\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\ref\Tahseen.Api.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\appsettings.Development.json
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\appsettings.json
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Tahseen.Api.exe
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Tahseen.Api.deps.json
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Tahseen.Api.runtimeconfig.json
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Tahseen.Api.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Tahseen.Api.pdb
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Microsoft.AspNetCore.OpenApi.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Microsoft.OpenApi.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.csproj.AssemblyReference.cache
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.AssemblyInfoInputs.cache
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.AssemblyInfo.cs
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.csproj.CoreCompileInputs.cache
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\staticwebassets\msbuild.Tahseen.Api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\staticwebassets\msbuild.build.Tahseen.Api.props
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\staticwebassets\msbuild.buildMultiTargeting.Tahseen.Api.props
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\staticwebassets\msbuild.buildTransitive.Tahseen.Api.props
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\staticwebassets.pack.json
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\staticwebassets.build.json
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\staticwebassets.development.json
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\scopedcss\bundle\Tahseen.Api.styles.css
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.csproj.CopyComplete
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\refint\Tahseen.Api.dll
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.pdb
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\Tahseen.Api.genruntimeconfig.cache
+C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Api\obj\Debug\net7.0\ref\Tahseen.Api.dll

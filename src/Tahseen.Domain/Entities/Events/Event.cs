@@ -1,8 +1,9 @@
-﻿using Tahseen.Domain.Enums;
+﻿using Tahseen.Domain.Commons;
+using Tahseen.Domain.Enums;
 
 namespace Tahseen.Domain.Entities.Events
 {
-    public class Event
+    public class Event : Auditable
     {
         public string Title { get; set; }
         public string Description { get; set; } 
