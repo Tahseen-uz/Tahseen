@@ -5,7 +5,7 @@ using Tahseen.Domain.Commons;
 
 namespace Tahseen.Data.Repositories
 {
-    public class Repository<TEntity> : IRepostory<TEntity> where TEntity : Auditable
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : Auditable
     {
         AppDbContext dbContext;
         DbSet<TEntity> dbSet;
@@ -17,19 +17,20 @@ namespace Tahseen.Data.Repositories
         public async Task<TEntity> CreateAsync(TEntity entity)
         {
             await dbSet.AddAsync(entity);
-            dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
             return entity;
         }
 
         public async Task<bool> DeleteAsync(long Id)
         {
-            var result = await dbSet.FirstOrDefaultAsync(e => e.Id == Id);
-            var entity = dbSet.Remove(result);
+            var result = await dbSet.FirstOrDefaultAsync(e => e.Id == Id && !e.IsDeleted);
+            result.IsDeleted = true;
+            await dbContext.SaveChangesAsync();
             return true;
         }
 
         public IQueryable<TEntity> SelectAll()
-            => this.dbSet;
+         => this.dbSet;
         public async Task<TEntity> SelectByIdAsync(long Id)
         {
             var result = await this.dbSet.FirstOrDefaultAsync(e => e.Id == Id);

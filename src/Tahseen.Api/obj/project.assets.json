@@ -469,19 +469,39 @@
     ]
   },
   "packageFolders": {
+<<<<<<< HEAD
     "C:\\Users\\sardorbek\\.nuget\\packages\\": {}
+=======
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
   },
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
       "projectName": "Tahseen.Api",
       "projectPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
       "packagesPath": "C:\\Users\\sardorbek\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Api\\obj\\",
+=======
+      "projectUniqueName": "N:\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+      "projectName": "Tahseen.Api",
+      "projectPath": "N:\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+      "packagesPath": "C:\\Users\\Bekmurod\\.nuget\\packages\\",
+      "outputPath": "N:\\Tahseen\\src\\Tahseen.Api\\obj\\",
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
+<<<<<<< HEAD
         "C:\\Users\\sardorbek\\AppData\\Roaming\\NuGet\\NuGet.Config",
+=======
+        "C:\\Users\\Bekmurod\\AppData\\Roaming\\NuGet\\NuGet.Config",
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -535,7 +555,11 @@
             "privateAssets": "all"
           }
         },
+<<<<<<< HEAD
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
       }
     }
   }

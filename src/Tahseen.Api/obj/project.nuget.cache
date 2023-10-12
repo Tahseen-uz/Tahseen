@@ -1,5 +1,6 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "f8LCMAFyX6tz+tSqozYsrF9PxGF7ohe6eKf8NCdTccJLrKcAWlITAHKTFcbwNfJgTi66FfcBpheY8T7aUn7syQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
@@ -11,6 +12,19 @@
     "C:\\Users\\sardorbek\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "C:\\Users\\sardorbek\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
     "C:\\Users\\sardorbek\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
+=======
+  "dgSpecHash": "IRnq26euya/l8mgKQkfiIp91WGIfcQPiBsWkxLmzG0HV3lmN3jtqaFxbR3QOtlVnkjwoJiH/cozRsfW/K4uQSA==",
+  "success": true,
+  "projectFilePath": "N:\\Tahseen\\src\\Tahseen.Api\\Tahseen.Api.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.9\\microsoft.aspnetcore.openapi.7.0.9.nupkg.sha512",
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
   ],
   "logs": []
 }

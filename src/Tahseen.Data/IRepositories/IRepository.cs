@@ -1,6 +1,6 @@
 ﻿namespace Tahseen.Data.IRepositories;
 
-public interface IRepostory<TEntity>
+public interface IRepository<TEntity>
 {
     public Task<TEntity> CreateAsync(TEntity entity);
     public Task<TEntity> UpdateAsync(TEntity entity);

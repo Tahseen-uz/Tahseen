@@ -298,7 +298,10 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
+<<<<<<< HEAD
           "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\src\\Tahseen.Domain\\Tahseen.Domain.csproj": "1.0.0",
+=======
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
           "Npgsql.EntityFrameworkCore.PostgreSQL": "7.0.11",
           "Tahseen.Domain": "1.0.0"
         },
@@ -818,19 +821,39 @@
     ]
   },
   "packageFolders": {
+<<<<<<< HEAD
     "C:\\Users\\sardorbek\\.nuget\\packages\\": {}
+=======
+    "C:\\Users\\Bekmurod\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
   },
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Service\\Tahseen.Service.csproj",
       "projectName": "Tahseen.Service",
       "projectPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Service\\Tahseen.Service.csproj",
       "packagesPath": "C:\\Users\\sardorbek\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Service\\obj\\",
+=======
+      "projectUniqueName": "N:\\Tahseen\\src\\Tahseen.Service\\Tahseen.Service.csproj",
+      "projectName": "Tahseen.Service",
+      "projectPath": "N:\\Tahseen\\src\\Tahseen.Service\\Tahseen.Service.csproj",
+      "packagesPath": "C:\\Users\\Bekmurod\\.nuget\\packages\\",
+      "outputPath": "N:\\Tahseen\\src\\Tahseen.Service\\obj\\",
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
+<<<<<<< HEAD
         "C:\\Users\\sardorbek\\AppData\\Roaming\\NuGet\\NuGet.Config",
+=======
+        "C:\\Users\\Bekmurod\\AppData\\Roaming\\NuGet\\NuGet.Config",
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -844,11 +867,19 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
+<<<<<<< HEAD
             "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Data\\Tahseen.Data.csproj": {
               "projectPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Data\\Tahseen.Data.csproj"
             },
             "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj": {
               "projectPath": "C:\\Users\\sardorbek\\Desktop\\Tahseen Project\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj"
+=======
+            "N:\\Tahseen\\src\\Tahseen.Data\\Tahseen.Data.csproj": {
+              "projectPath": "N:\\Tahseen\\src\\Tahseen.Data\\Tahseen.Data.csproj"
+            },
+            "N:\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj": {
+              "projectPath": "N:\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj"
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
             }
           }
         }
@@ -884,7 +915,11 @@
             "privateAssets": "all"
           }
         },
+<<<<<<< HEAD
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
       }
     }
   },

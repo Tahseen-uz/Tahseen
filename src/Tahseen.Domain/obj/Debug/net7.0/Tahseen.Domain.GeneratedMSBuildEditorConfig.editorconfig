@@ -8,4 +8,8 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Tahseen.Domain
+<<<<<<< HEAD
 build_property.ProjectDir = C:\Users\sardorbek\Desktop\Tahseen Project\Tahseen\src\Tahseen.Domain\
+=======
+build_property.ProjectDir = N:\Tahseen\src\Tahseen.Domain\
+>>>>>>> edceee8cb89e40d19bf87790c7d9124a3ddc9298
