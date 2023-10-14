@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Tahseen.Domain.Entities.Events;
 using Tahseen.Service.DTOs.Events.Event;
 using Tahseen.Service.Interfaces.IEventService;
+using Tahseen.Service.DTOs.Events.EventRegistration;
 
 namespace Tahseen.Service.Services.Events
 {
@@ -50,12 +51,14 @@ namespace Tahseen.Service.Services.Events
 
         public async Task<EventForResultDto> ModifyAsync(long Id, EventForUpdateDto dto)
         {
-            var dataItem = await eventService.SelectAll().FirstOrDefaultAsync(u => u.Id == Id);
-            if(dataItem != null)
+            var updateData = await this.eventService.SelectAll().FirstOrDefaultAsync(u => u.Id == Id);
+            if (updateData is null || updateData.IsDeleted)
             {
-                
+                throw new TahseenException(404, " Event is not found");
             }
-            throw new NotImplementedException();
+            var resData = this.mapper.Map(dto, updateData);
+            var result = await this.eventService.UpdateAsync(resData);
+            return this.mapper.Map<EventForResultDto>(result);
         }
     }
 }

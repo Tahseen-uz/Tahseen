@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Tahseen.Domain.Entities;
 using Tahseen.Domain.Entities.Books;
+using Tahseen.Domain.Entities.Events;
 using Tahseen.Domain.Entities.Feedback;
 using Tahseen.Domain.Entities.SchoolAndEducations;
 using Tahseen.Service.DTOs.Books.Author;
@@ -9,6 +10,8 @@ using Tahseen.Service.DTOs.Books.BookReviews;
 using Tahseen.Service.DTOs.Books.CompletedBooks;
 using Tahseen.Service.DTOs.Books.Genre;
 using Tahseen.Service.DTOs.Books.Publishers;
+using Tahseen.Service.DTOs.Events.Event;
+using Tahseen.Service.DTOs.Events.EventRegistration;
 using Tahseen.Service.DTOs.Feedbacks.Feedback;
 using Tahseen.Service.DTOs.Feedbacks.News;
 using Tahseen.Service.DTOs.Feedbacks.SurveyResponses;
@@ -112,6 +115,16 @@ public class MappingProfile:Profile
         CreateMap<UserSettings, UserSettingsForCreationDto>().ReverseMap();
         CreateMap<UserSettings, UserSettingsForUpdateDto>().ReverseMap();
         CreateMap<UserSettings, UserSettingsForResultDto>().ReverseMap();
+
+        //Folder Name: Events
+
+        CreateMap<Event, EventForCreationDto>().ReverseMap();
+        CreateMap<Event, EventForResultDto>().ReverseMap();
+        CreateMap<Event, EventForUpdateDto>().ReverseMap();
+
+        CreateMap<EventRegistration, EventRegistrationForCreationDto>().ReverseMap();
+        CreateMap<EventRegistration, EventRegistrationForResultDto>().ReverseMap();
+        CreateMap<EventRegistration, EventRegistrationForUpdateDto>().ReverseMap();
 
 
 
