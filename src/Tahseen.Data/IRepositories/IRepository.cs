@@ -7,6 +7,5 @@ public interface IRepository<TEntity>
     public Task<bool> DeleteAsync(long Id);
     public Task<TEntity> SelectByIdAsync(long Id);
     public IQueryable<TEntity> SelectAll();
-
 }
 

@@ -8,19 +8,19 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Azizbek\\.nuget\\packages\\": {}
+    "C:\\Users\\azimo\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Tahseen Backend\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj",
+      "projectUniqueName": "C:\\Users\\azimo\\OneDrive\\Рабочий стол\\Tahseen\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj",
       "projectName": "Tahseen.Domain",
-      "projectPath": "D:\\Tahseen Backend\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj",
-      "packagesPath": "C:\\Users\\Azizbek\\.nuget\\packages\\",
-      "outputPath": "D:\\Tahseen Backend\\Tahseen\\src\\Tahseen.Domain\\obj\\",
+      "projectPath": "C:\\Users\\azimo\\OneDrive\\Рабочий стол\\Tahseen\\Tahseen\\src\\Tahseen.Domain\\Tahseen.Domain.csproj",
+      "packagesPath": "C:\\Users\\azimo\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\azimo\\OneDrive\\Рабочий стол\\Tahseen\\Tahseen\\src\\Tahseen.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Azizbek\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\azimo\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -61,7 +61,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
       }
     }
   }
