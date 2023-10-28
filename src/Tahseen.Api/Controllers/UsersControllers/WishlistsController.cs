@@ -19,7 +19,7 @@ namespace Tahseen.Api.Controllers.UsersControllers
             => (IQueryable<IActionResult>)Ok(new Response
             {
                 StatusCode = 200,
-                Message = "Successful",
+                Message = "Success",
                 Data = this._wishlistService.RetrieveAllAsync()
             });
 
@@ -29,17 +29,16 @@ namespace Tahseen.Api.Controllers.UsersControllers
             => Ok(new Response
             {
                 StatusCode = 200,
-                Message = "Successful",
+                Message = "Success",
                 Data = await this._wishlistService.RemoveAsync(id)
             });
-
-
+        
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]WishlistForCreationDto dto)
             => Ok(new Response
             {
                 StatusCode = 200,
-                Message = "Successful",
+                Message = "Success",
                 Data = await this._wishlistService.AddAsync(dto)
             });
 
@@ -49,7 +48,7 @@ namespace Tahseen.Api.Controllers.UsersControllers
             => Ok(new Response
             {
                 StatusCode = 200,
-                Message = "Successful",
+                Message = "Success",
                 Data = await this._wishlistService.RemoveAsync(id)
             });
 
@@ -58,7 +57,7 @@ namespace Tahseen.Api.Controllers.UsersControllers
             => Ok(new Response
             {
                 StatusCode = 200,
-                Message = "Successful",
+                Message = "Success",
                 Data = await this._wishlistService.ModifyAsync(id,dto)
             });
     }

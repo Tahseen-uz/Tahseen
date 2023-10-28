@@ -2,7 +2,6 @@
 using Tahseen.Api.Models;
 using Tahseen.Service.DTOs.SchoolAndEducations;
 using Tahseen.Service.Interfaces.ISchoolAndEducation;
-using Tahseen.Service.Services.SchoolAndEducations;
 
 namespace Tahseen.Api.Controllers.SchoolAndEducationsControllers;
 
@@ -67,7 +66,8 @@ public class SchoolBookController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute]long id, [FromBody]SchoolBookForUpdateDto dto)
+    public async Task<IActionResult> PutAsync([FromRoute]long id,
+        [FromBody]SchoolBookForUpdateDto dto)
     {
         var response = new Response()
         {

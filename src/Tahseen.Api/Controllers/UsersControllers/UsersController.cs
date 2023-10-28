@@ -14,9 +14,6 @@ namespace Tahseen.Api.Controllers.UsersControllers
             _userService = UserService;
         }
 
-        ///
-        ///
-
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -69,7 +66,8 @@ namespace Tahseen.Api.Controllers.UsersControllers
 
         [HttpPut("{id}")]
 
-        public async Task<IActionResult> PutAsync([FromRoute]long Id, [FromBody]UserForUpdateDto dto)
+        public async Task<IActionResult> PutAsync([FromRoute]long Id,
+            [FromBody]UserForUpdateDto dto)
         {
             var response = new Response()
             {
@@ -79,7 +77,5 @@ namespace Tahseen.Api.Controllers.UsersControllers
             };
             return Ok(response);
         }
-        //Added
-
     }
 }

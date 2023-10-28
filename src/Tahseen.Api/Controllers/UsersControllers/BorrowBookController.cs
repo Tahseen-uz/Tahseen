@@ -66,7 +66,8 @@ namespace Tahseen.Api.Controllers.UsersControllers
 
         [HttpPut("{id}")]
 
-        public async Task<IActionResult> PutAsync([FromRoute]long Id, [FromBody]BorrowedBookForUpdateDto dto)
+        public async Task<IActionResult> PutAsync([FromRoute]long Id, 
+            [FromBody]BorrowedBookForUpdateDto dto)
         {
             var response = new Response()
             {

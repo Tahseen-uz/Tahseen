@@ -67,7 +67,8 @@ public class PupilBookConnectionController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute]long id, [FromBody]PupilBookConnectionForUpdateDto dto)
+    public async Task<IActionResult> PutAsync([FromRoute]long id, 
+        [FromBody]PupilBookConnectionForUpdateDto dto)
     {
         var response = new Response()
         {

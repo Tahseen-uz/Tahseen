@@ -40,7 +40,5 @@ namespace Tahseen.Api.Controllers.UsersControllers
                 Message = "Success",
                 Data = await this._userSettingService.RetrieveByIdAsync(id)
             });
-
-
     }
 }

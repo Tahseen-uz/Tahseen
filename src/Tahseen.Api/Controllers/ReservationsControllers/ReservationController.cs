@@ -50,7 +50,8 @@ public class ReservationController:BaseController
           }
   
           [HttpPut("{id}")]
-          public async Task<IActionResult> PutAsync([FromRoute]long Id, [FromBody]ReservationForUpdateDto data)
+          public async Task<IActionResult> PutAsync([FromRoute]long Id, 
+              [FromBody]ReservationForUpdateDto data)
           {
               var response = new Response()
               {

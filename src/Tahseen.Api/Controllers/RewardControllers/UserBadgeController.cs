@@ -63,7 +63,8 @@ public class UserBadgeController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute]long Id, [FromBody]UserBadgesForUpdateDto dto)
+    public async Task<IActionResult> PutAsync([FromRoute]long Id,
+        [FromBody]UserBadgesForUpdateDto dto)
     {
         var response = new Response()
         {
