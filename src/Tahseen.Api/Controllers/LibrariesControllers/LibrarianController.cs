@@ -51,7 +51,8 @@ public class LibrarianController:BaseController
     }
   
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute]long Id, [FromBody]LibrarianForUpdateDto data)
+    public async Task<IActionResult> PutAsync([FromRoute]long Id, 
+        [FromBody]LibrarianForUpdateDto data)
     {
         var response = new Response()
         {

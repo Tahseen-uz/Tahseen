@@ -63,7 +63,8 @@ public class SurveyController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute]long Id,[FromBody] SurveyForUpdateDto dto)
+    public async Task<IActionResult> PutAsync([FromRoute]long Id,
+        [FromBody] SurveyForUpdateDto dto)
     {
         var response = new Response()
         {

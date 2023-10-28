@@ -62,7 +62,8 @@ public class FeedbackController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute]long Id, [FromBody]FeedbackForUpdateDto dto)
+    public async Task<IActionResult> PutAsync([FromRoute]long Id,
+        [FromBody]FeedbackForUpdateDto dto)
     {
         var response = new Response()
         {

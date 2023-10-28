@@ -23,7 +23,8 @@ public class BookReviewsController : BaseController
         });
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute] long id, [FromBody] BookReviewForUpdateDto dto) =>
+    public async Task<IActionResult> PutAsync([FromRoute] long id, 
+        [FromBody] BookReviewForUpdateDto dto) =>
         Ok(new Response
         {
             StatusCode = 200,

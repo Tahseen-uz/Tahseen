@@ -24,7 +24,8 @@ namespace Tahseen.Api.Controllers.EventsControllers
             });
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync([FromRoute]long id,[FromBody]EventRegistrationForUpdateDto dto) =>
+        public async Task<IActionResult> PutAsync([FromRoute]long id,
+            [FromBody]EventRegistrationForUpdateDto dto) =>
             Ok(new Response
             {
                 StatusCode = 200,

@@ -52,7 +52,8 @@ public class LibraryBranchController : BaseController
     }
   
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync([FromRoute]long Id, [FromBody]LibraryBranchForUpdateDto data)
+    public async Task<IActionResult> PutAsync([FromRoute]long Id, 
+        [FromBody]LibraryBranchForUpdateDto data)
     {
         var response = new Response()
         {
