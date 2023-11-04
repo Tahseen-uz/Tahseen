@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Entities\Authentication\**" />
+		<Compile Remove="Entities\Librarian\**" />
+		<Compile Remove="Entities\Library\**" />
+		<Compile Remove="Entities\SchoolAndEducation\**" />
+		<EmbeddedResource Remove="Entities\Authentication\**" />
+		<EmbeddedResource Remove="Entities\Librarian\**" />
+		<EmbeddedResource Remove="Entities\Library\**" />
+		<EmbeddedResource Remove="Entities\SchoolAndEducation\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EditorConfigFiles Remove="N:\Tahseen\src\Tahseen.Domain\Enums\.editorconfig" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="12.0.1" />
+	</ItemGroup>
+
+</Project>
