@@ -60,7 +60,7 @@ namespace Tahseen.Service.Services.AuthService
                 {
                  new Claim("Id", user.Id.ToString()),
                  new Claim(ClaimTypes.Email, user.EmailAddress.ToString()),
-                 new Claim("LibraryId", user.LibraryId.ToString()), 
+                 new Claim("LibraryBranchId", user.LibraryBranchId.ToString()), 
                  new Claim(ClaimTypes.Role, user.Role.ToString()), 
 
                 }),

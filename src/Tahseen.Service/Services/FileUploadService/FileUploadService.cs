@@ -1,4 +1,5 @@
 ﻿using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Service.Exceptions;
 using Tahseen.Service.Helpers;
 using Tahseen.Service.Interfaces.IFileUploadService;
 
@@ -22,6 +23,10 @@ namespace Tahseen.Service.Services.FileUploadService
 
         public async Task<FileUploadForResultDto> FileUploadAsync(FileUploadForCreationDto dto)
         {
+            if (dto.FormFile == null)
+            {
+                throw new TahseenException(400, "Image is null");
+            }
             var WwwRootPath = Path.Combine(WebEnvironmentHost.WebRootPath, "Assets", $"{dto.FolderPath}");
             var assetsFolderPath = Path.Combine(WwwRootPath, "Assets");
             var ImagesFolderPath = Path.Combine(assetsFolderPath, $"{dto.FolderPath}");
@@ -35,7 +40,6 @@ namespace Tahseen.Service.Services.FileUploadService
             {
                 Directory.CreateDirectory(ImagesFolderPath);
             }
-
             var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(dto.FormFile.FileName);
             var fullPath = Path.Combine(WwwRootPath, fileName);
 

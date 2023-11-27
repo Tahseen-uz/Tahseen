@@ -59,7 +59,6 @@ namespace Tahseen.Service.Services.Users
                     FirstName = dto.FirstName,
                     LastName = dto.LastName,
                     EmailAddress = dto.EmailAddress,
-                    UserName = null,
                     Password = HashedPassword.Hash,
                     Salt = HashedPassword.Salt,
                     PhoneNumber = dto.PhoneNumber,
@@ -68,7 +67,7 @@ namespace Tahseen.Service.Services.Users
                     Role = Domain.Enums.Roles.User,
                     FineAmount = null,
                     UserImage = null,
-                    LibraryId = null,
+                    LibraryBranchId = null,
                 };
 
                 var CreatedData = await this._userRepository.CreateAsync(data);

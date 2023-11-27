@@ -46,7 +46,6 @@ public class AppDbContext : DbContext
 
     //Folder Name: Libraries
     public DbSet<LibraryBranch> LibraryBranches { get; set; }
-    public DbSet<LibraryStatistics> LibraryStatistics { get; set; }
 
     //Notification
     public DbSet<Notification> Notification { get; set; }

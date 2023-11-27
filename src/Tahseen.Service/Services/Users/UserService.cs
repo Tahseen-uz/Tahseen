@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
+using Tahseen.Domain.Entities.Library;
 using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Feedbacks.UserRatings;
 using Tahseen.Service.DTOs.FileUpload;
@@ -22,6 +23,7 @@ namespace Tahseen.Service.Services.Users
     public class UserService : IUserService
     {
         private readonly IRepository<User> _userRepository;
+        private readonly IRepository<LibraryBranch> _libraryBranchRepository;
         private readonly IMapper _mapper;
         private readonly IFineService _fineService;
         private readonly IUserProgressTrackingService _userProgressTrackingService;
@@ -34,12 +36,13 @@ namespace Tahseen.Service.Services.Users
         public UserService(IRepository<User> userRepository,
             IMapper mapper,
             IFineService fineService,
-            IUserProgressTrackingService userProgressTrackingService, 
+            IUserProgressTrackingService userProgressTrackingService,
             IUserSettingService userSettingService,
-            IUserRatingService userRatingService, 
+            IUserRatingService userRatingService,
             IUserCartService userCartService,
             IBorrowBookCartService borrowBookCartService,
-            IFileUploadService fileUploadService)
+            IFileUploadService fileUploadService,
+            IRepository<LibraryBranch> libraryBranchRepository)
         {
             this._userRepository = userRepository;
             this._mapper = mapper;
@@ -50,10 +53,16 @@ namespace Tahseen.Service.Services.Users
             this._userCartService = userCartService;
             this._borrowBookCartService = borrowBookCartService;
             this._fileUploadService = fileUploadService;
+            _libraryBranchRepository = libraryBranchRepository;
         }
         public async Task<UserForResultDto> AddAsync(UserForCreationDto dto)
         {
-            var result = await _userRepository.SelectAll().Where(e => e.PhoneNumber == dto.PhoneNumber && e.IsDeleted == false).FirstOrDefaultAsync();
+            var result = await _userRepository.SelectAll().Where(e => e.FirstName == dto.FirstName && e.LastName == dto.LastName && e.LibraryBranchId == dto.LibraryBranchId && e.IsDeleted == false).FirstOrDefaultAsync();
+            var LibraryChecking = await _libraryBranchRepository.SelectAll().Where(l => l.Id == dto.LibraryBranchId).FirstOrDefaultAsync();
+            if(LibraryChecking == null)
+            {
+                throw new TahseenException(404, "This library is not found");
+            }
             if (result != null)
             {
                 throw new TahseenException(400, "User is exist");
@@ -135,29 +144,32 @@ namespace Tahseen.Service.Services.Users
             var data = await _userRepository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
             if (data is not null)
             {
-
-                // deleting image
-                await this._fileUploadService.FileDeleteAsync(data.UserImage);
-
-                // uploading image
-                var FileUloadForCreation = new FileUploadForCreationDto
+                if (dto != null && dto.UserImage != null)
                 {
-                    FolderPath = "UsersAssets",
-                    FormFile = dto.UserImage
-                };
-                var FileResult = await this._fileUploadService.FileUploadAsync(FileUloadForCreation);
+                    await this._fileUploadService.FileDeleteAsync(data.UserImage);
+                    var FileUploadForCreation = new FileUploadForCreationDto
+                    {
+                        FolderPath = "UsersAssets",
+                        FormFile = dto.UserImage
+                    };
+                    var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+                
+               
 
-                if (dto != null)
-                {
-                    // Check and update properties if the corresponding DTO properties are not null or empty
-
+                    data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
                     data.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : data.FirstName;
                     data.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : data.LastName;
                     data.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : data.Address;
                     data.DateOfBirth = dto.DateOfBirth != null ? dto.DateOfBirth : data.DateOfBirth;
-                    data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
                 }
-
+                if(dto != null && dto.UserImage == null)
+                {
+                    data.UserImage = data.UserImage;
+                    data.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : data.FirstName;
+                    data.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : data.LastName;
+                    data.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : data.Address;
+                    data.DateOfBirth = dto.DateOfBirth != null ? dto.DateOfBirth : data.DateOfBirth;
+                }
 
                 data.UpdatedAt = DateTime.UtcNow;
                 var result = await _userRepository.UpdateAsync(data);
@@ -183,6 +195,7 @@ namespace Tahseen.Service.Services.Users
         {
             var users = await _userRepository.SelectAll()
                 .Where(t => t.IsDeleted == false)
+                .Include(b => b.BorrowedBooks)
                 .ToPagedList(@params)
                 .AsNoTracking()
                 .ToListAsync();
@@ -195,7 +208,11 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<UserForResultDto> RetrieveByIdAsync(long Id)
         {
-            var data = await _userRepository.SelectByIdAsync(Id);
+            var data = await _userRepository.SelectAll()
+                .Where(t => t.IsDeleted == false)
+                .Include(b => b.BorrowedBooks)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
             if (data != null && data.IsDeleted == false)
             {
                 return this._mapper.Map<UserForResultDto>(data);

@@ -18,7 +18,7 @@ namespace Tahseen.Data.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserName = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
                     Password = table.Column<string>(type: "text", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -83,6 +83,29 @@ namespace Tahseen.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Location = table.Column<string>(type: "text", nullable: true),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    Participants = table.Column<long>(type: "bigint", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Events", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Genres",
                 columns: table => new
                 {
@@ -117,21 +140,6 @@ namespace Tahseen.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LibraryBranches", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LibraryStatistics",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LibraryStatistics", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -345,35 +353,6 @@ namespace Tahseen.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Events",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Location = table.Column<string>(type: "text", nullable: true),
-                    Image = table.Column<string>(type: "text", nullable: true),
-                    Participants = table.Column<long>(type: "bigint", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    LibraryStatisticsId = table.Column<long>(type: "bigint", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Events", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Events_LibraryStatistics_LibraryStatisticsId",
-                        column: x => x.LibraryStatisticsId,
-                        principalTable: "LibraryStatistics",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -382,19 +361,16 @@ namespace Tahseen.Data.Migrations
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
                     EmailAddress = table.Column<string>(type: "text", nullable: true),
-                    UserName = table.Column<string>(type: "text", nullable: true),
                     Password = table.Column<string>(type: "text", nullable: true),
                     Salt = table.Column<string>(type: "text", nullable: true),
                     PhoneNumber = table.Column<string>(type: "text", nullable: true),
                     Address = table.Column<string>(type: "text", nullable: true),
                     MembershipStatus = table.Column<int>(type: "integer", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DateOfBirth = table.Column<string>(type: "text", nullable: true),
                     Role = table.Column<int>(type: "integer", nullable: false),
                     FineAmount = table.Column<decimal>(type: "numeric", nullable: true),
                     UserImage = table.Column<string>(type: "text", nullable: true),
-                    LibraryId = table.Column<long>(type: "bigint", nullable: true),
                     LibraryBranchId = table.Column<long>(type: "bigint", nullable: true),
-                    LibraryStatisticsId = table.Column<long>(type: "bigint", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -406,11 +382,6 @@ namespace Tahseen.Data.Migrations
                         name: "FK_Users_LibraryBranches_LibraryBranchId",
                         column: x => x.LibraryBranchId,
                         principalTable: "LibraryBranches",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Users_LibraryStatistics_LibraryStatisticsId",
-                        column: x => x.LibraryStatisticsId,
-                        principalTable: "LibraryStatistics",
                         principalColumn: "Id");
                 });
 
@@ -466,6 +437,7 @@ namespace Tahseen.Data.Migrations
                     AvailableCopies = table.Column<long>(type: "bigint", nullable: false),
                     Rating = table.Column<decimal>(type: "numeric", nullable: false),
                     Reviews = table.Column<long>(type: "bigint", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
                     BookFormat = table.Column<byte>(type: "smallint", nullable: false),
                     ShelfLocation = table.Column<string>(type: "text", nullable: true),
                     Condition = table.Column<byte>(type: "smallint", nullable: false),
@@ -474,7 +446,6 @@ namespace Tahseen.Data.Migrations
                     GenreId = table.Column<long>(type: "bigint", nullable: false),
                     LibraryId = table.Column<long>(type: "bigint", nullable: false),
                     PublisherId = table.Column<long>(type: "bigint", nullable: false),
-                    LibraryStatisticsId = table.Column<long>(type: "bigint", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -500,11 +471,6 @@ namespace Tahseen.Data.Migrations
                         principalTable: "LibraryBranches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Books_LibraryStatistics_LibraryStatisticsId",
-                        column: x => x.LibraryStatisticsId,
-                        principalTable: "LibraryStatistics",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Books_Publishers_PublisherId",
                         column: x => x.PublisherId,
@@ -846,12 +812,12 @@ namespace Tahseen.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     BookId = table.Column<long>(type: "bigint", nullable: false),
+                    BookTitle = table.Column<string>(type: "text", nullable: true),
                     BorrowedBookCartId = table.Column<long>(type: "bigint", nullable: false),
-                    LibraryBranchId = table.Column<long>(type: "bigint", nullable: false),
+                    LibraryBranchId = table.Column<long>(type: "bigint", nullable: true),
                     ReturnDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     FineAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    LibraryStatisticsId = table.Column<long>(type: "bigint", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -875,12 +841,6 @@ namespace Tahseen.Data.Migrations
                         name: "FK_BorrowedBooks_LibraryBranches_LibraryBranchId",
                         column: x => x.LibraryBranchId,
                         principalTable: "LibraryBranches",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BorrowedBooks_LibraryStatistics_LibraryStatisticsId",
-                        column: x => x.LibraryStatisticsId,
-                        principalTable: "LibraryStatistics",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_BorrowedBooks_Users_UserId",
@@ -1122,11 +1082,6 @@ namespace Tahseen.Data.Migrations
                 column: "LibraryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Books_LibraryStatisticsId",
-                table: "Books",
-                column: "LibraryStatisticsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Books_PublisherId",
                 table: "Books",
                 column: "PublisherId");
@@ -1145,11 +1100,6 @@ namespace Tahseen.Data.Migrations
                 name: "IX_BorrowedBooks_LibraryBranchId",
                 table: "BorrowedBooks",
                 column: "LibraryBranchId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BorrowedBooks_LibraryStatisticsId",
-                table: "BorrowedBooks",
-                column: "LibraryStatisticsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BorrowedBooks_UserId",
@@ -1180,11 +1130,6 @@ namespace Tahseen.Data.Migrations
                 name: "IX_EBooksFiles_EBookId",
                 table: "EBooksFiles",
                 column: "EBookId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Events_LibraryStatisticsId",
-                table: "Events",
-                column: "LibraryStatisticsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventsRegistration_EventId",
@@ -1310,11 +1255,6 @@ namespace Tahseen.Data.Migrations
                 name: "IX_Users_LibraryBranchId",
                 table: "Users",
                 column: "LibraryBranchId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_LibraryStatisticsId",
-                table: "Users",
-                column: "LibraryStatisticsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSettings_UserId",
@@ -1448,9 +1388,6 @@ namespace Tahseen.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "LibraryBranches");
-
-            migrationBuilder.DropTable(
-                name: "LibraryStatistics");
         }
     }
 }

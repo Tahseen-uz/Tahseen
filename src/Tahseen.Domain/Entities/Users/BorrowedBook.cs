@@ -12,9 +12,10 @@ namespace Tahseen.Domain.Entities
         public User User { get; set; }
         public long BookId { get; set; }
         public Book Book { get; set; }
+        public string BookTitle { get; set; }
         public long BorrowedBookCartId { get; set; }
         public BorrowedBookCart BorrowedBookCart { get; set; }
-        public long LibraryBranchId { get; set; }
+        public long? LibraryBranchId { get; set; }
         public LibraryBranch LibraryBranch { get; set; }
         public DateTime ReturnDate { get; set; }
         public BorrowedBookStatus Status { get; set; }
