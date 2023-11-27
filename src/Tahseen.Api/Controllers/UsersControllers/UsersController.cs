@@ -18,7 +18,7 @@ namespace Tahseen.Api.Controllers.UsersControllers
 
         ///
         ///
-        //[Authorize]
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery]PaginationParams @params)
         {

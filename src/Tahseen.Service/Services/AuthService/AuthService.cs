@@ -41,14 +41,14 @@ namespace Tahseen.Service.Services.AuthService
             {
                 // Authenticate user
                 var hashedPassword = PasswordHelper.Verify(dto.Password, user.Salt, user.Password);
-                if (!hashedPassword)
+                if (hashedPassword == null)
                 {
                     throw new TahseenException(400, "UserName or Password is Incorrect");
                 }
 
                 return new LoginForResultDto
                 {
-                    Token = GenerateToken(user, Roles.User)
+                    Token = GenerateToken(user)
                 };
             }
 
@@ -61,14 +61,14 @@ namespace Tahseen.Service.Services.AuthService
             {
                 // Authenticate librarian
                 var hashedPassword = PasswordHelper.Verify(dto.Password, librarian.Salt, librarian.Password);
-                if (!hashedPassword)
+                if (hashedPassword == null)
                 {
                     throw new TahseenException(400, "UserName or Password is Incorrect");
                 }
 
                 return new LoginForResultDto
                 {
-                    Token = GenerateLibrarianToken(librarian, Roles.Librarian)
+                    Token = GenerateLibrarianToken(librarian)
                 };
             }
 
@@ -76,7 +76,7 @@ namespace Tahseen.Service.Services.AuthService
         }
 
 
-        private string GenerateToken(User user, Roles role)
+        private string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
@@ -87,7 +87,7 @@ namespace Tahseen.Service.Services.AuthService
             new Claim("Id", user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.EmailAddress.ToString()),
             new Claim("LibraryBranchId", user.LibraryBranchId.ToString()),
-            new Claim(ClaimTypes.Role, role.ToString()),  // Use the role passed as an argument
+            new Claim(ClaimTypes.Role, user.Role.ToString()),  // Use the role passed as an argument
                 }),
                 Audience = _configuration["JWT:Audience"],
                 Issuer = _configuration["JWT:Issuer"],
@@ -102,7 +102,7 @@ namespace Tahseen.Service.Services.AuthService
         }
 
         // Additional method for generating token for Librarian
-        private string GenerateLibrarianToken(Librarian librarian, Roles role)
+        private string GenerateLibrarianToken(Librarian librarian)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
@@ -113,7 +113,7 @@ namespace Tahseen.Service.Services.AuthService
             new Claim("Id", librarian.Id.ToString()),
             new Claim(ClaimTypes.Email, librarian.Email.ToString()),
             new Claim("LibraryBranchId", librarian.LibraryBranchId.ToString()),
-            new Claim(ClaimTypes.Role, role.ToString()),  // Use the role passed as an argument
+            new Claim(ClaimTypes.Role, librarian.Roles.ToString()),  // Use the role passed as an argument
                 }),
                 Audience = _configuration["JWT:Audience"],
                 Issuer = _configuration["JWT:Issuer"],
