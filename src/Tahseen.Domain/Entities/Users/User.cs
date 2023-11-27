@@ -21,7 +21,6 @@ public class User:Auditable
     public string Salt { get; set; }
     public string PhoneNumber { get; set; }
     public string Address { get; set; }
-    public MembershipStatus MembershipStatus { get; set; }
     public string DateOfBirth { get; set; }
     public Roles Role { get; set; }
     public decimal? FineAmount { get; set; }

@@ -80,7 +80,6 @@ namespace Tahseen.Service.Services.Users
             var HashedPassword = PasswordHelper.Hash(dto.Password);
             data.Password = HashedPassword.Hash;
             data.Salt = HashedPassword.Salt;
-            data.MembershipStatus = Domain.Enums.MembershipStatus.Regular;
             data.FineAmount = 0;
             var CreatedData = await this._userRepository.CreateAsync(data);
                

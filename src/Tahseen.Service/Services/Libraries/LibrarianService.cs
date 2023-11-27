@@ -8,10 +8,13 @@ using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Books.Author;
 using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.DTOs.Librarians;
+using Tahseen.Service.DTOs.Users.ChangePassword;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.Extensions;
+using Tahseen.Service.Helpers;
 using Tahseen.Service.Interfaces.IFileUploadService;
 using Tahseen.Service.Interfaces.ILibrariansService;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Tahseen.Service.Services.Libraries;
 
@@ -47,6 +50,9 @@ public class LibrarianService : ILibrarianService
         var mappedLibrarian = mapper.Map<Librarian>(dto);
         mappedLibrarian.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
         mappedLibrarian.Roles = Domain.Enums.Roles.Librarian;
+        var HashedPassword = PasswordHelper.Hash(dto.Password);
+        mappedLibrarian.Password = HashedPassword.Hash;
+        mappedLibrarian.Salt = HashedPassword.Salt;
         var result = await this.repository.CreateAsync(mappedLibrarian);
         return this.mapper.Map<LibrarianForResultDto>(result);
     }
@@ -74,6 +80,24 @@ public class LibrarianService : ILibrarianService
         var result = await repository.UpdateAsync(MappedData);
         return mapper.Map<LibrarianForResultDto>(result);
         
+    }
+
+    public async Task<bool> ChangePasswordAsync(long Id, LibrarianForChangePasswordDto dto)
+    {
+        var data = await repository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
+        if (data == null || PasswordHelper.Verify(dto.OldPassword, data.Salt, data.Password) == false)
+        {
+            throw new TahseenException(400, "User or Password is Incorrect");
+        }
+        else if (dto.NewPassword != dto.ConfirmPassword)
+        {
+            throw new TahseenException(400, "New Password and Confirm Password does not Match");
+        }
+        var HashedPassword = PasswordHelper.Hash(dto.ConfirmPassword);
+        data.Salt = HashedPassword.Salt;
+        data.Password = HashedPassword.Hash;
+        await repository.UpdateAsync(data);
+        return true;
     }
 
     public async Task<bool> RemoveAsync(long id)

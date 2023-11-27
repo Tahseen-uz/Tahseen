@@ -63,7 +63,6 @@ namespace Tahseen.Service.Services.Users
                     Salt = HashedPassword.Salt,
                     PhoneNumber = dto.PhoneNumber,
                     Address = null,
-                    MembershipStatus = Domain.Enums.MembershipStatus.Regular,
                     Role = Domain.Enums.Roles.User,
                     FineAmount = null,
                     UserImage = null,
