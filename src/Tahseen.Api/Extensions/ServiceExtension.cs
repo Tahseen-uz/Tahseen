@@ -55,8 +55,9 @@ public static class ServiceExtension
         services.AddScoped<IFineService, FineService>();
         services.AddScoped<IUserCartService, UserCartService>();
         services.AddScoped<IWishlistService, WishlistService>();
-        services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IUserRatingService, UserRatingService>();
         services.AddScoped<IUserSettingService, UserSettingsService>();
+        services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IBorrowedBookService, BorrowedBookService>();
         services.AddScoped<IBorrowBookCartService, BorrowBookCartService>();
         services.AddScoped<IUserProgressTrackingService, UserProgressTrackingService>();
@@ -80,7 +81,6 @@ public static class ServiceExtension
         services.AddScoped<INewsService, NewsService>();
         services.AddScoped<ISurveyService, SurveyService>();
         services.AddScoped<IFeedbackService, FeedbackService>();
-        services.AddScoped<IUserRatingService, UserRatingService>();
         services.AddScoped<IUserMessageService, UserMessageService>();
         services.AddScoped<ISurveyResponseService, SurveyResponseService>();
 

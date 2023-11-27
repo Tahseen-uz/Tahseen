@@ -39,7 +39,10 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<IEnumerable<UserCartForResultDto>> RetrieveAllAsync()
         {
-            var AllData = this._repository.SelectAll().Where(t => t.IsDeleted == false);
+            var AllData = await this._repository.SelectAll()
+                .Where(t => t.IsDeleted == false)
+                .AsNoTracking()
+                .ToListAsync();
             return this._mapper.Map<IEnumerable<UserCartForResultDto>>(AllData);
             
         }
