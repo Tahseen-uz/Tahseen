@@ -16,13 +16,13 @@ namespace Tahseen.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] RegistrationForCreationDto dto)
+        public async Task<IActionResult> PostAsync([FromBody] RegistrationForCreationDto dto, string verificationCode)
         {
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await this._registrationService.AddAsync(dto)
+                Data = await this._registrationService.AddAsync(dto, verificationCode)
             };
             return Ok(response);
         }
