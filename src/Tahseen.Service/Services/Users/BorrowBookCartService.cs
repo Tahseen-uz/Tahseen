@@ -24,7 +24,9 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<BorrowedBookCartForResultDto> AddAsync(BorrowedBookCartForCreationDto dto)
         {
-            var result = await _repository.SelectAll().Where(e => e.UserId == dto.UserId && e.IsDeleted == false).FirstOrDefaultAsync();
+            var result = await _repository.SelectAll()
+                .Where(e => e.UserId == dto.UserId && e.IsDeleted == false)
+                .FirstOrDefaultAsync();
             if (result != null)
             {
                 throw new TahseenException(400, "BorrowedBookCart is exist");
@@ -41,7 +43,10 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<IEnumerable<BorrowedBookCartForResultDto>> RetrieveAllAsync()
         {
-            var AllData = this._repository.SelectAll().Where(t => t.IsDeleted == false); ;
+            var AllData = await this._repository.SelectAll()
+                .Where(t => t.IsDeleted == false)
+                .AsNoTracking()
+                .ToListAsync();
             return this._mapper.Map<IEnumerable<BorrowedBookCartForResultDto>>(AllData);
         }
 
