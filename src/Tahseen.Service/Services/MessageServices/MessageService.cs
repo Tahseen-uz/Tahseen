@@ -13,7 +13,7 @@ namespace Tahseen.Service.Services.MessageServices
 
         public MessageService(IConfiguration configuration)
         {
-            _configuration = configuration;
+            _configuration = configuration.GetSection("Email");
         }
 
         public async Task SendEmail(MessageForCreationDto message)

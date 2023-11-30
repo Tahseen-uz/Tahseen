@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
 using Tahseen.Api.Models;
+using Tahseen.Service.DTOs.Registrations;
 using Tahseen.Service.DTOs.Users.Registration;
 using Tahseen.Service.Interfaces.IUsersService;
 
@@ -15,14 +16,38 @@ namespace Tahseen.Api.Controllers.UsersControllers
             _registrationService = registrationService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] RegistrationForCreationDto dto, string verificationCode)
+        [HttpPost("Register")]
+        public async Task<IActionResult> PostAsync([FromBody] RegistrationForCreationDto dto)
         {
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await this._registrationService.AddAsync(dto, verificationCode)
+                Data = await this._registrationService.AddAsync(dto)
+            };
+            return Ok(response);
+        }
+
+        [HttpPost("SendVerificationCode")]
+        public async Task<IActionResult> SendVerificationCode([FromBody] SendVerificationCodeDto dto)
+        {
+            var response = new Response()
+            {
+                StatusCode = 200,
+                Message = "Success",
+                Data = await this._registrationService.SendVerificationCodeAsync(dto)
+            };
+            return Ok(response);
+        }
+
+        [HttpPost("VerifyCode")]
+        public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeDto dto)
+        {
+            var response = new Response()
+            {
+                StatusCode = 200,
+                Message = "Success",
+                Data = await this._registrationService.VerifyCodeAsync(dto)
             };
             return Ok(response);
         }

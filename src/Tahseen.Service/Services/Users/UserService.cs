@@ -188,8 +188,10 @@ namespace Tahseen.Service.Services.Users
 
             if (user is null)
                 throw new TahseenException(404, "User is not found");
-
-            await this._fileUploadService.FileDeleteAsync(user.UserImage);
+            if(user.UserImage != null) 
+            {
+                await this._fileUploadService.FileDeleteAsync(user.UserImage);
+            }
             return await _userRepository.DeleteAsync(Id);
         }
 
