@@ -8,6 +8,6 @@ public interface IUserRatingService
     public Task<UserRatingForResultDto> ModifyAsync(long id, UserRatingForUpdateDto dto);
     public Task<bool> RemoveAsync(long Id);
     public Task<UserRatingForResultDto> RetrieveByIdAsync(long id);
-    public Task<UserRatingForResultDto> RetrieveByUserId(long userId);
+    public Task<UserRatingForResultDto> RetrieveByUserIdAsync(long userId);
     public Task<IEnumerable<UserRatingForResultDto>> RetrieveAllAsync();
 }

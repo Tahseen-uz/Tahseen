@@ -55,7 +55,10 @@ public class UserRatingService : IUserRatingService
 
     public async Task<IEnumerable<UserRatingForResultDto>> RetrieveAllAsync()
     {
-        var results = repository.SelectAll().Where(t => !t.IsDeleted);
+        var results = await repository.SelectAll()
+            .Where(t => !t.IsDeleted)
+            .AsNoTracking().
+            ToListAsync();
         return mapper.Map<IEnumerable<UserRatingForResultDto>>(results);
     }
 
@@ -68,9 +71,10 @@ public class UserRatingService : IUserRatingService
         return mapper.Map<UserRatingForResultDto>(result);
     }
 
-    public async Task<UserRatingForResultDto> RetrieveByUserId(long userId)
+    public async Task<UserRatingForResultDto> RetrieveByUserIdAsync(long userId)
     {
-        var result = repository.SelectAll().Where(t => t.UserId == userId && !t.IsDeleted);
+        var result = repository.SelectAll()
+            .Where(t => t.UserId == userId && !t.IsDeleted);
         if (result == null)
             throw new TahseenException(404, "UserRating not found");
         return mapper.Map<UserRatingForResultDto>(result);

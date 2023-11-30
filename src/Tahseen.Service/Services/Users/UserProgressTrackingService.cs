@@ -19,9 +19,11 @@ namespace Tahseen.Service.Services.Users
             return this._mapper.Map<UserProgressTrackingForResultDto>(CreatedData);
         }
 
-        public async Task<UserProgressTrackingForResultDto> Modify(long Id, UserProgressTrackingForUpdateDto dto)
+        public async Task<UserProgressTrackingForResultDto> ModifyAsync(long Id, UserProgressTrackingForUpdateDto dto)
         {
-            var Data = await _repository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
+            var Data = await _repository.SelectAll()
+                .Where(e => e.Id == Id && e.IsDeleted == false)
+                .FirstOrDefaultAsync();
             if (Data != null )
             {
                 var MappedData = this._mapper.Map(dto, Data);
@@ -39,8 +41,11 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<IEnumerable<UserProgressTrackingForResultDto>> RetrieveAllAsync()
         {
-            var AllData = this._repository.SelectAll();
-            return this._mapper.Map<IEnumerable<UserProgressTrackingForResultDto>>(AllData);
+            var allData = await this._repository
+                .SelectAll()
+                .AsNoTracking()
+                .ToListAsync();
+            return this._mapper.Map<IEnumerable<UserProgressTrackingForResultDto>>(allData);
         }
 
         public async Task<UserProgressTrackingForResultDto> RetrieveByIdAsync(long Id)
