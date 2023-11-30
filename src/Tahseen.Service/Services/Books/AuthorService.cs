@@ -37,16 +37,19 @@ public class AuthorService : IAuthorService
         if (check != null)
             throw new TahseenException(409, "This Author already exists.");
 
-        //Uploading Image
-        var FileUploadForCreation = new FileUploadForCreationDto()
-        {
-            FolderPath = "AuthorAssets",
-            FormFile = dto.AuthorImage,
-        };
-        var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
-
         var MappedData = this._mapper.Map<Author>(dto);
-        MappedData.AuthorImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        if (dto.AuthorImage != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto()
+            {
+                FolderPath = "AuthorAssets",
+                FormFile = dto.AuthorImage,
+            };
+            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+            MappedData.AuthorImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+
+        }
+
         var result = await _repository.CreateAsync(MappedData);
 
         return _mapper.Map<AuthorForResultDto>(result);
@@ -59,23 +62,38 @@ public class AuthorService : IAuthorService
         var author = await _repository.SelectAll().Where(a => a.Id == id && a.IsDeleted == false).FirstOrDefaultAsync();
         if (author is not null)
         {
-
-            //Deleting Image
-            await _fileUploadService.FileDeleteAsync(author.AuthorImage);
-            
-            //Uploading Image
-            var FileUploadForCreation = new FileUploadForCreationDto()
+            if (dto != null && dto.AuthorImage != null)
             {
-                FolderPath = "AuthorImages",        
-                FormFile = dto.AuthorImage,
-            };
-            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+                if (author.AuthorImage != null)
+                {
+                    await _fileUploadService.FileDeleteAsync(author.AuthorImage);
+                }
+                var FileUploadForCreation = new FileUploadForCreationDto()
+                {
+                    FolderPath = "AuthorImages",
+                    FormFile = dto.AuthorImage,
+                };
+                var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-            var MappedData = this._mapper.Map(dto, author);
-            MappedData.AuthorImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-            MappedData.UpdatedAt = DateTime.UtcNow;
+                author.AuthorImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                author.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : author.FirstName;
+                author.LastName = !string.IsNullOrEmpty(dto.LastName)  ? dto.LastName : author.LastName;
+                author.Biography = !string.IsNullOrEmpty(dto.Biography) ? dto.Biography : author.Biography;
+                author.Nationality = dto.Nationality != null ? dto.Nationality : author.Nationality;
+            }
+            
+            if (dto != null && dto.AuthorImage == null) 
+            {
+                author.AuthorImage = author.AuthorImage;
+                author.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : author.FirstName;
+                author.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : author.LastName;
+                author.Biography = !string.IsNullOrEmpty(dto.Biography) ? dto.Biography : author.Biography;
+                author.Nationality = dto.Nationality != null ? dto.Nationality : author.Nationality;
+            }
+            
+            author.UpdatedAt = DateTime.UtcNow;
 
-            var result = await _repository.UpdateAsync(MappedData);
+            var result = await _repository.UpdateAsync(author);
             return _mapper.Map<AuthorForResultDto>(result);
         }
         throw new Exception("Author not found");
@@ -86,7 +104,10 @@ public class AuthorService : IAuthorService
         var results = await this._repository.SelectAll().Where(a => a.Id == id && !a.IsDeleted).FirstOrDefaultAsync();
         if (results is null)
             throw new TahseenException(404, "Author is not Found");
-        await _fileUploadService.FileDeleteAsync(results.AuthorImage);
+        if (results.AuthorImage != null)
+        {
+            await _fileUploadService.FileDeleteAsync(results.AuthorImage);
+        }
         return await _repository.DeleteAsync(id);
     }
 

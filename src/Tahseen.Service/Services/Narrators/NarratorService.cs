@@ -40,15 +40,19 @@ public class NarratorService : INarratorService
         if (narrator is not null)
             throw new TahseenException(409, "Narrator is already exist");
 
-        var FileUploadForCreation = new FileUploadForCreationDto
-        {
-            FolderPath = "NarratorsAssets",
-            FormFile = dto.Image,
-        };
-        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
-
         var mapped = _mapper.Map<Narrator>(dto);
-        mapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        if(dto.Image != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "NarratorsAssets",
+                FormFile = dto.Image,
+            };
+            var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+
+            mapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        }    
+
 
         var result = await _repository.CreateAsync(mapped);
 
@@ -64,20 +68,36 @@ public class NarratorService : INarratorService
         if (narrator is null)
             throw new TahseenException(404, "Narrator is not found");
 
-        await _fileUploadService.FileDeleteAsync(narrator.Image);
 
-        var FileUploadForCreation = new FileUploadForCreationDto
+        if(dto != null && dto.Image != null)
         {
-            FolderPath = "NarratorsAssets",
-            FormFile = dto.Image,
-        };
-        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            if(dto.Image != null)
+            {
+                await _fileUploadService.FileDeleteAsync(narrator.Image);
+            }
 
-        var mapped = _mapper.Map(dto, narrator);
-        mapped.UpdatedAt = DateTime.UtcNow;
-        mapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "NarratorsAssets",
+                FormFile = dto.Image,
+            };
+            var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-        var result = await _repository.UpdateAsync(mapped);
+            narrator.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            narrator.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : narrator.FirstName;
+            narrator.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : narrator.LastName;
+        }
+
+        if(dto != null && dto.Image == null)
+        {
+            narrator.Image = narrator.Image;
+            narrator.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : narrator.FirstName;
+            narrator.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : narrator.LastName;
+        }
+
+        narrator.UpdatedAt = DateTime.UtcNow;
+
+        var result = await _repository.UpdateAsync(narrator);
 
         return _mapper.Map<NarratorForResultDto>(result);
     }
@@ -91,7 +111,10 @@ public class NarratorService : INarratorService
         if (narrator is null)
             throw new TahseenException(404, "Narrator is not found");
 
-        await _fileUploadService.FileDeleteAsync (narrator.Image);
+        if(narrator.Image != null)
+        {
+            await _fileUploadService.FileDeleteAsync(narrator.Image);
+        }
 
         return await _repository.DeleteAsync(id);
     }
