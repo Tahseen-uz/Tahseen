@@ -145,7 +145,10 @@ namespace Tahseen.Service.Services.Users
             {
                 if (dto != null && dto.UserImage != null)
                 {
-                    await this._fileUploadService.FileDeleteAsync(data.UserImage);
+                    if(data.UserImage != null)
+                    {
+                        await this._fileUploadService.FileDeleteAsync(data.UserImage);
+                    };
                     var FileUploadForCreation = new FileUploadForCreationDto
                     {
                         FolderPath = "UsersAssets",
@@ -185,8 +188,10 @@ namespace Tahseen.Service.Services.Users
 
             if (user is null)
                 throw new TahseenException(404, "User is not found");
-
-            await this._fileUploadService.FileDeleteAsync(user.UserImage);
+            if(user.UserImage != null) 
+            {
+                await this._fileUploadService.FileDeleteAsync(user.UserImage);
+            }
             return await _userRepository.DeleteAsync(Id);
         }
 
@@ -208,7 +213,7 @@ namespace Tahseen.Service.Services.Users
         public async Task<UserForResultDto> RetrieveByIdAsync(long Id)
         {
             var data = await _userRepository.SelectAll()
-                .Where(t => t.IsDeleted == false)
+                .Where(t => t.Id == Id && t.IsDeleted == false)
                 .Include(b => b.BorrowedBooks)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();

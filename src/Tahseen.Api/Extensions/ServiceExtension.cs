@@ -39,6 +39,9 @@ using Tahseen.Service.Interfaces.IAudioBookServices;
 using Tahseen.Service.Services.AudiBooks;
 using Tahseen.Service.Interfaces.INurratorServices;
 using Tahseen.Service.Services.Narrators;
+using Tahseen.Service.Interfaces.IMessageServices;
+using Tahseen.Service.Services.MessageServices;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Tahseen.Api.Extensions;
 
@@ -121,6 +124,12 @@ public static class ServiceExtension
 
         //Folder Name: FileUploadService
         services.AddScoped<IFileUploadService, FileUploadService>();
+        
+        //Folder Name: MessageService
+        services.AddScoped<IMessageSevice, MessageService>();
+
+        //MemoryCache
+        services.AddMemoryCache();
     }
 
 
