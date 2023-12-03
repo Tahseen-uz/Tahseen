@@ -1,18 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using System.Text;
+using System.Security.Claims;
+using Tahseen.Service.Helpers;
+using Tahseen.Domain.Entities;
+using Tahseen.Data.IRepositories;
+using Tahseen.Service.DTOs.Login;
+using Tahseen.Service.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Tahseen.Data.IRepositories;
-using Tahseen.Domain.Entities;
+using Microsoft.Extensions.Configuration;
 using Tahseen.Domain.Entities.Librarians;  // Include Librarian entity
-using Tahseen.Domain.Enums;
-using Tahseen.Service.DTOs.Login;
-using Tahseen.Service.DTOs.Users.User;
-using Tahseen.Service.Exceptions;
-using Tahseen.Service.Helpers;
 using Tahseen.Service.Interfaces.IAuthService;
 
 namespace Tahseen.Service.Services.AuthService
@@ -23,7 +20,10 @@ namespace Tahseen.Service.Services.AuthService
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Librarian> _librarianRepository;  // Add Librarian repository
 
-        public AuthService(IRepository<User> userRepository, IRepository<Librarian> librarianRepository, IConfiguration configuration)
+        public AuthService(
+            IRepository<User> userRepository, 
+            IRepository<Librarian> librarianRepository,
+            IConfiguration configuration)
         {
             this._userRepository = userRepository;
             this._librarianRepository = librarianRepository;
