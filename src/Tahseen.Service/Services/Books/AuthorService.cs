@@ -1,17 +1,14 @@
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
-using Tahseen.Domain.Entities.Books;
-using Tahseen.Domain.Enums;
-using Tahseen.Service.Configurations;
-using Tahseen.Service.DTOs.Books.Author;
-using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.Extensions;
-using Tahseen.Service.Helpers;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Domain.Entities.Books;
+using Tahseen.Service.Configurations;
+using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Service.DTOs.Books.Author;
 using Tahseen.Service.Interfaces.IBookServices;
 using Tahseen.Service.Interfaces.IFileUploadService;
-using File = System.IO.File;
 
 namespace Tahseen.Service.Services.Books;
 
@@ -21,17 +18,21 @@ public class AuthorService : IAuthorService
     private readonly IRepository<Author> _repository;
     private readonly IFileUploadService _fileUploadService;
 
-    public AuthorService(IMapper mapper, IRepository<Author> repository, IFileUploadService fileUploadService)
+    public AuthorService(
+        IMapper mapper,
+        IRepository<Author> repository,
+        IFileUploadService fileUploadService)
     {
         this._mapper = mapper;
         this._repository = repository;
-        _fileUploadService = fileUploadService;
+        this._fileUploadService = fileUploadService;
     }
 
     public async Task<AuthorForResultDto> AddAsync(AuthorForCreationDto dto)
     {
         var check = await this._repository.SelectAll()
             .Where(a => a.FirstName == dto.FirstName && a.LastName == dto.LastName && !a.IsDeleted)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (check != null)
@@ -52,14 +53,13 @@ public class AuthorService : IAuthorService
         return _mapper.Map<AuthorForResultDto>(result);
     }
 
-
-
     public async Task<AuthorForResultDto> ModifyAsync(long id, AuthorForUpdateDto dto)
     {
-        var author = await _repository.SelectAll().Where(a => a.Id == id && a.IsDeleted == false).FirstOrDefaultAsync();
+        var author = await _repository.SelectAll()
+            .Where(a => a.Id == id && a.IsDeleted == false)
+            .FirstOrDefaultAsync();
         if (author is not null)
         {
-
             //Deleting Image
             await _fileUploadService.FileDeleteAsync(author.AuthorImage);
             
@@ -83,10 +83,15 @@ public class AuthorService : IAuthorService
 
     public async Task<bool> RemoveAsync(long id)
     {
-        var results = await this._repository.SelectAll().Where(a => a.Id == id && !a.IsDeleted).FirstOrDefaultAsync();
+        var results = await this._repository.SelectAll()
+            .Where(a => a.Id == id && !a.IsDeleted)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
         if (results is null)
             throw new TahseenException(404, "Author is not Found");
-        await _fileUploadService.FileDeleteAsync(results.AuthorImage);
+
+        await this._fileUploadService.FileDeleteAsync(results.AuthorImage);
         return await _repository.DeleteAsync(id);
     }
 
@@ -98,7 +103,6 @@ public class AuthorService : IAuthorService
             .AsNoTracking()
             .ToListAsync();
 
-       
         var mappedData = _mapper.Map<IEnumerable<AuthorForResultDto>>(results);
         foreach (var item in mappedData)
         {
@@ -109,14 +113,14 @@ public class AuthorService : IAuthorService
 
     public async Task<AuthorForResultDto> RetrieveByIdAsync(long id)
     {
-        var author = await _repository.SelectByIdAsync(id);
-        if (author is not null && !author.IsDeleted)
-        {
-            return _mapper.Map<AuthorForResultDto>(author);
-        }
+        var author = await this._repository.SelectAll()
+            .Where(a => a.Id == id && !a.IsDeleted)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
-        throw new TahseenException(404, "Author not found");
+        if(author is null)
+            throw new TahseenException(404, "Author is not found");
+        
+        return this._mapper.Map<AuthorForResultDto>(author);
     }
-
-
 }
