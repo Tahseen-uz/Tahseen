@@ -34,14 +34,15 @@ namespace Tahseen.Service.Services.AuthService
         {
             // Check if the credentials belong to a user
             var user = await _userRepository.SelectAll()
-                .Where(u => u.PhoneNumber == dto.PhoneNumber && u.IsDeleted == false)
+                .Where(u => u.PhoneNumber == dto.PhoneNumber && u.IsDeleted == false && u.Role == Roles.User)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (user != null)
             {
                 // Authenticate user
                 var hashedPassword = PasswordHelper.Verify(dto.Password, user.Salt, user.Password);
-                if (hashedPassword == null)
+                if (hashedPassword == false)
                 {
                     throw new TahseenException(400, "UserName or Password is Incorrect");
                 }
@@ -54,14 +55,15 @@ namespace Tahseen.Service.Services.AuthService
 
             // If not a user, check if the credentials belong to a librarian
             var librarian = await _librarianRepository.SelectAll()
-                .Where(l => l.PhoneNumber == dto.PhoneNumber)
+                .Where(l => l.PhoneNumber == dto.PhoneNumber && l.IsDeleted == false && l.Roles == Roles.Librarian)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (librarian != null)
             {
                 // Authenticate librarian
                 var hashedPassword = PasswordHelper.Verify(dto.Password, librarian.Salt, librarian.Password);
-                if (hashedPassword == null)
+                if (hashedPassword == false)
                 {
                     throw new TahseenException(400, "UserName or Password is Incorrect");
                 }

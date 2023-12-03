@@ -12,5 +12,7 @@ public class LibrarianForResultDto
     public string DateOfBirth { get; set; }
     public string Image { get; set; }
     public long LibraryBranchId { get; set; }
+    public string Roles { get; set; }
+
     //public LibraryBranchForResultDto LibraryBranch { get; set; }
 }

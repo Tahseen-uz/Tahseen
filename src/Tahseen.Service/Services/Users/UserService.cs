@@ -67,16 +67,20 @@ namespace Tahseen.Service.Services.Users
             {
                 throw new TahseenException(400, "User is exist");
             }
-
-            var FileUloadForCreation = new FileUploadForCreationDto
-            {
-                FolderPath = "UsersAssets",
-                FormFile = dto.UserImage
-            };
-            var FileResult = await this._fileUploadService.FileUploadAsync(FileUloadForCreation);
-
             var data = this._mapper.Map<User>(dto);
-            data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+
+            if(dto.UserImage != null)
+            {
+                var FileUloadForCreation = new FileUploadForCreationDto
+                {
+                    FolderPath = "UsersAssets",
+                    FormFile = dto.UserImage
+                };
+                var FileResult = await this._fileUploadService.FileUploadAsync(FileUloadForCreation);
+                data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            }
+
+
             var HashedPassword = PasswordHelper.Hash(dto.Password);
             data.Password = HashedPassword.Hash;
             data.Salt = HashedPassword.Salt;
@@ -188,6 +192,7 @@ namespace Tahseen.Service.Services.Users
 
             if (user is null)
                 throw new TahseenException(404, "User is not found");
+            
             if(user.UserImage != null) 
             {
                 await this._fileUploadService.FileDeleteAsync(user.UserImage);
@@ -204,10 +209,12 @@ namespace Tahseen.Service.Services.Users
                 .AsNoTracking()
                 .ToListAsync();
                 
-            foreach (var user in users)
+            var result = _mapper.Map<IEnumerable<UserForResultDto>>(users);
+            foreach (var res in result)
             {
+                res.Roles = res.Roles.ToString();
             };
-            return _mapper.Map<IEnumerable<UserForResultDto>>(users);
+            return result;
         }
 
         public async Task<UserForResultDto> RetrieveByIdAsync(long Id)
@@ -217,9 +224,12 @@ namespace Tahseen.Service.Services.Users
                 .Include(b => b.BorrowedBooks)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
+
             if (data != null && data.IsDeleted == false)
             {
-                return this._mapper.Map<UserForResultDto>(data);
+                var result = this._mapper.Map<UserForResultDto>(data);
+                result.Roles = result.Roles.ToString();
+                return result;
             }
             throw new TahseenException(404, "User is not found");
         }

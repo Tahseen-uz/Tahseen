@@ -42,6 +42,7 @@ using Tahseen.Service.Services.Narrators;
 using Tahseen.Service.Interfaces.IMessageServices;
 using Tahseen.Service.Services.MessageServices;
 using Microsoft.Extensions.Caching.Memory;
+using AspNetCoreRateLimit;
 
 namespace Tahseen.Api.Extensions;
 
@@ -130,6 +131,33 @@ public static class ServiceExtension
 
         //MemoryCache
         services.AddMemoryCache();
+
+        //Rate Limiter
+        services.Configure<IpRateLimitOptions>(options =>
+        {
+            options.EnableEndpointRateLimiting = true;
+            options.StackBlockedRequests = false;
+            options.HttpStatusCode = 429;
+            options.RealIpHeader = "X-Real-IP";
+            options.ClientIdHeader = "X-ClientId";
+            options.GeneralRules = new List<RateLimitRule>
+            {
+                new RateLimitRule
+                {
+                    Endpoint = "*",
+                    Period = "1s",
+                    Limit = 1,
+                }
+            };
+        });
+
+        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        services.AddInMemoryRateLimiting();
+
+
     }
 
 
