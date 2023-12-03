@@ -92,7 +92,6 @@ public class AuthorService : IAuthorService
             }
             
             author.UpdatedAt = DateTime.UtcNow;
-
             var result = await _repository.UpdateAsync(author);
             return _mapper.Map<AuthorForResultDto>(result);
         }

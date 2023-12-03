@@ -97,7 +97,6 @@ public class BookService : IBookService
         {
             var allLibraries = this._libraryRepository.SelectAll().Where(e => e.IsDeleted == false && e.LibraryType == Domain.Enums.LibraryType.Public);
             var publicLibraryIds = allLibraries.Select(l => l.Id).ToList();
-
             var publicLibraryBooks = await this._repository.SelectAll()
                 .Where(e => e.IsDeleted == false && publicLibraryIds.Contains(e.LibraryId))
                 .Include(l => l.Author)

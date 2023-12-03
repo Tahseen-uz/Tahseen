@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Tahseen.Data.IRepositories;
 using Tahseen.Service.Exceptions;
 using Tahseen.Domain.Entities.Books;
@@ -94,7 +94,6 @@ public class PublisherService : IPublisherService
 
         publisher.UpdatedAt = DateTime.UtcNow;
         var result = await this.repository.UpdateAsync(publisher);
-
         return mapper.Map<PublisherForResultDto>(result);
     }
 

@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
-using Tahseen.Domain.Entities.AudioBooks;
-using Tahseen.Service.DTOs.AudioBooks.AudioBook;
-using Tahseen.Service.DTOs.AudioBooks.AudioFile;
-using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.Exceptions;
-using Tahseen.Service.Extensions;
+using Tahseen.Data.IRepositories;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Domain.Entities.AudioBooks;
+using Tahseen.Service.DTOs.AudioBooks.AudioFile;
 using Tahseen.Service.Interfaces.IAudioBookServices;
 using Tahseen.Service.Interfaces.IFileUploadService;
 
