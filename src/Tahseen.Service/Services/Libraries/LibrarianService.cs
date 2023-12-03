@@ -37,18 +37,20 @@ public class LibrarianService : ILibrarianService
         {
             throw new TahseenException(409, "This Librarian is exist");
         }
-
-        //Upload Image
-
-        var FileUploadForCreation = new FileUploadForCreationDto
-        {
-            FolderPath = "LibrarianAssets",
-            FormFile = dto.Image,
-        };
-
-        var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
         var mappedLibrarian = mapper.Map<Librarian>(dto);
-        mappedLibrarian.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+
+        if(dto.Image != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "LibrarianAssets",
+                FormFile = dto.Image,
+            };
+            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+            mappedLibrarian.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        }
+
+
         mappedLibrarian.Roles = Domain.Enums.Roles.Librarian;
         var HashedPassword = PasswordHelper.Hash(dto.Password);
         mappedLibrarian.Password = HashedPassword.Hash;
@@ -62,22 +64,37 @@ public class LibrarianService : ILibrarianService
         var librarian = await this.repository.SelectAll().Where(a => a.Id == id && a.IsDeleted == false).FirstOrDefaultAsync();
         if (librarian == null)
             throw new TahseenException(404, "Librarian not found");
-        //Deleting Image
-        await _fileUploadService.FileDeleteAsync(librarian.Image);
-
-        //Uploading Image
-        var FileUploadForCreation = new FileUploadForCreationDto()
+        if(dto != null && dto.Image != null)
         {
-            FolderPath = "LibrarianAssets",
-            FormFile = dto.Image,
-        };
-        var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+            if(dto.Image != null)
+            {
+                await _fileUploadService.FileDeleteAsync(librarian.Image);
+            }
+            var FileUploadForCreation = new FileUploadForCreationDto()
+            {
+                FolderPath = "LibrarianAssets",
+                FormFile = dto.Image,
+            };
+            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-        var MappedData = this.mapper.Map(dto, librarian);
-        MappedData.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-        MappedData.UpdatedAt = DateTime.UtcNow;
+            librarian.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            librarian.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : librarian.FirstName;
+            librarian.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : librarian.LastName;
+            librarian.PhoneNumber = !string.IsNullOrEmpty(dto.PhoneNumber) ? dto.PhoneNumber : librarian.PhoneNumber;
+            librarian.DateOfBirth = !string.IsNullOrEmpty(dto.DateOfBirth) ? dto.DateOfBirth : librarian.DateOfBirth; 
+        }
+        if(dto != null && dto.Image == null)
+        {
+            librarian.Image = librarian.Image;
+            librarian.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : librarian.FirstName;
+            librarian.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : librarian.LastName;
+            librarian.PhoneNumber = !string.IsNullOrEmpty(dto.PhoneNumber) ? dto.PhoneNumber : librarian.PhoneNumber;
+            librarian.DateOfBirth = !string.IsNullOrEmpty(dto.DateOfBirth) ? dto.DateOfBirth : librarian.DateOfBirth;
+        }
 
-        var result = await repository.UpdateAsync(MappedData);
+        librarian.UpdatedAt = DateTime.UtcNow;
+
+        var result = await repository.UpdateAsync(librarian);
         return mapper.Map<LibrarianForResultDto>(result);
         
     }
@@ -106,7 +123,10 @@ public class LibrarianService : ILibrarianService
         if (librarian == null)
             throw new TahseenException(404, "Lirarian not found");
 
-        await _fileUploadService.FileDeleteAsync(librarian.Image);
+        if(librarian.Image != null)
+        {
+            await _fileUploadService.FileDeleteAsync(librarian.Image);
+        }
         return await this.repository.DeleteAsync(librarian.Id);
     }
 

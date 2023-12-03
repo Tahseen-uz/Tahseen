@@ -33,15 +33,20 @@ public class BadgeService : IBadgeService
         {
             throw new TahseenException(409, "This Badge is exist");
         }
-        var FileUploadForCreation = new FileUploadForCreationDto
-        {
-            FolderPath = "BadgeAssets",
-            FormFile = dto.ImageUrl
-        };
 
-        var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
         var badge = _mapper.Map<Badge>(dto);
-        badge.ImageUrl = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        if(dto.ImageUrl != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "BadgeAssets",
+                FormFile = dto.ImageUrl
+            };
+            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+
+            badge.ImageUrl = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        }
+
         var result= await _repository.CreateAsync(badge);
         return _mapper.Map<BadgeForResultDto>(result);
     }
@@ -51,21 +56,31 @@ public class BadgeService : IBadgeService
         var badge = await _repository.SelectAll().Where(e => e.Id == id && e.IsDeleted == false).FirstOrDefaultAsync();
         if (badge is not null)
         {
-
-            await _fileUploadService.FileDeleteAsync(badge.ImageUrl);
-
-            var FileUploadForCreation = new FileUploadForCreationDto
+            if(dto != null && dto.ImageUrl != null)
             {
-                FolderPath = "BadgeAssets",
-                FormFile = dto.ImageUrl
-            };
+                if(dto.ImageUrl != null)
+                {
+                    await _fileUploadService.FileDeleteAsync(badge.ImageUrl);
+                }
+                var FileUploadForCreation = new FileUploadForCreationDto
+                {
+                    FolderPath = "BadgeAssets",
+                    FormFile = dto.ImageUrl
+                };
 
-            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+                var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-            var mappedBadge = _mapper.Map(dto, badge);
-            mappedBadge.ImageUrl = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-            mappedBadge.UpdatedAt = DateTime.UtcNow;
-            var result = await _repository.UpdateAsync(mappedBadge);
+                badge.ImageUrl = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                badge.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : badge.Name;
+            }
+            if (dto != null && dto.ImageUrl == null)
+            {
+                badge.ImageUrl = badge.ImageUrl;
+                badge.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : badge.Name;
+            }
+
+            badge.UpdatedAt = DateTime.UtcNow;
+            var result = await _repository.UpdateAsync(badge);
             return _mapper.Map<BadgeForResultDto>(result);
         }
         throw new Exception("Badge not found");
@@ -78,8 +93,8 @@ public class BadgeService : IBadgeService
             .FirstOrDefaultAsync();
         if (badge is null)
             throw new TahseenException(404,"User is not found");
-
-        await _fileUploadService.FileDeleteAsync(badge.ImageUrl);
+        if(badge.ImageUrl != null) 
+            await _fileUploadService.FileDeleteAsync(badge.ImageUrl);
         return await _repository.DeleteAsync(id);
     }
 

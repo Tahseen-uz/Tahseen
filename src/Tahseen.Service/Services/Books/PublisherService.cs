@@ -1,114 +1,126 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Tahseen.Data.IRepositories;
 using Tahseen.Service.Exceptions;
-using Tahseen.Service.Extensions;
 using Tahseen.Domain.Entities.Books;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Service.Configurations;
-using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.DTOs.Books.Publishers;
 using Tahseen.Service.Interfaces.IBookServices;
+using Microsoft.EntityFrameworkCore;
 using Tahseen.Service.Interfaces.IFileUploadService;
+using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Service.Configurations;
+using Tahseen.Service.Extensions;
 
 namespace Tahseen.Service.Services.Books;
 
 public class PublisherService : IPublisherService
 {
-    private readonly IMapper _mapper;
-    private readonly IRepository<Publisher> _repository;
-    private readonly IFileUploadService _fileUploadService;
-    public PublisherService(IMapper mapper, 
-        IRepository<Publisher> repository, 
-        IFileUploadService fileUploadService)
+    private readonly IMapper mapper;
+    private readonly IRepository<Publisher> repository;
+    private readonly IFileUploadService fileUploadService;
+    public PublisherService(IMapper mapper, IRepository<Publisher> repository, IFileUploadService fileUploadService)
     {
-        this._mapper = mapper;
-        this._repository = repository;
-        this._fileUploadService = fileUploadService;
+        this.mapper = mapper;
+        this.repository = repository;
+        this.fileUploadService = fileUploadService;
     }
 
     public async Task<PublisherForResultDto> AddAsync(PublisherForCreationDto dto)
     {
-        var Check = await this._repository.SelectAll()
-            .Where(a => a.Name == dto.Name && a.IsDeleted == false)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
+        var Check = await this.repository.SelectAll().Where(a => a.Name == dto.Name && a.IsDeleted == false).FirstOrDefaultAsync();
         if (Check != null)
-            throw new TahseenException(409, "This Publisher is exist");
-
-        var FileUploadForCreation = new FileUploadForCreationDto()
         {
-            FolderPath = "PublisherImages",
-            FormFile = dto.Image,
-        };
-        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            throw new TahseenException(409, "This Publisher is exist");
+        }
+        var mapped = mapper.Map<Publisher>(dto);
 
-        var mapped = this._mapper.Map<Publisher>(dto);
-        mapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-        var result = await this._repository.CreateAsync(mapped);
+        if (dto.Image != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto()
+            {
+                FolderPath = "PublisherImages",
+                FormFile = dto.Image,
+            };
+            var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
+            mapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
 
-        return _mapper.Map<PublisherForResultDto>(result);
+        }
+
+        var result = await this.repository.CreateAsync(mapped);
+
+        return mapper.Map<PublisherForResultDto>(result);
     }
 
     public async Task<PublisherForResultDto> RetrieveByIdAsync(long id)
     {
-        var publisher = await this._repository.SelectAll()
-            .Where(p => p.Id == id && !p.IsDeleted)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
-        if (publisher is null)
-            throw new TahseenException(404, "Publisher is not found");
+        var publisher = await this.repository.SelectByIdAsync(id);
+        if (publisher == null || publisher.IsDeleted)
+            throw new TahseenException(404, "Publisher doesn't found");
 
-        return this._mapper.Map<PublisherForResultDto>(publisher);
+        return mapper.Map<PublisherForResultDto>(publisher);
     }
 
     public async Task<PublisherForResultDto> ModifyAsync(long id, PublisherForUpdateDto dto)
     {
-        var publisher = await this._repository.SelectAll()
-            .Where(a => a.Id == id && a.IsDeleted == false)
-            .FirstOrDefaultAsync();
+        var publisher = await this.repository.SelectAll().Where(a => a.Id == id && a.IsDeleted == false).FirstOrDefaultAsync();
         if (publisher == null)
             throw new TahseenException(404, "Publisher doesn't found");
 
-        await this._fileUploadService.FileDeleteAsync(publisher.Image);
-
-        var FileUploadForCreation = new FileUploadForCreationDto()
+        if(dto != null && dto.Image != null)
         {
-            FolderPath = "PublisherImages",
-            FormFile = dto.Image,
-        };
-        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            if(publisher.Image != null)
+            {
+                await this.fileUploadService.FileDeleteAsync(publisher.Image);
+            }
 
-        var publisherMapped = this._mapper.Map(dto, publisher);
-        publisherMapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-        publisherMapped.UpdatedAt = DateTime.UtcNow;
-        var result = await this._repository.UpdateAsync(publisherMapped);
+            var FileUploadForCreation = new FileUploadForCreationDto()
+            {
+                FolderPath = "PublisherImages",
+                FormFile = dto.Image,
+            };
+            var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-        return _mapper.Map<PublisherForResultDto>(result);
+            publisher.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            publisher.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : publisher.Name;
+            publisher.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : publisher.Address;
+            publisher.ContactInformation = !string.IsNullOrEmpty(dto.ContactInformation) ? dto.ContactInformation : publisher.ContactInformation;
+        }
+        if(dto != null && dto.Image == null)
+        {
+            publisher.Image = publisher.Image;
+            publisher.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : publisher.Name;
+            publisher.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : publisher.Address;
+            publisher.ContactInformation = !string.IsNullOrEmpty(dto.ContactInformation) ? dto.ContactInformation : publisher.ContactInformation;
+        }
+
+        publisher.UpdatedAt = DateTime.UtcNow;
+        var result = await this.repository.UpdateAsync(publisher);
+        return mapper.Map<PublisherForResultDto>(result);
     }
 
     public async Task<bool> RemoveAsync(long id)
     {
-        var publisher = await this._repository.SelectAll()
+        var publisher = await repository.SelectAll()
             .Where(p => p.Id == id && p.IsDeleted == false)
-            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (publisher is null)
             throw new TahseenException(404, "Publisher is not found");
 
-        await this._fileUploadService.FileDeleteAsync(publisher.Image);
+        if (publisher.Image != null)
+        {
+            await fileUploadService.FileDeleteAsync(publisher.Image);
+        }
 
-        return await this._repository.DeleteAsync(id);
+        return await repository.DeleteAsync(id);
     }
    
     public async Task<IEnumerable<PublisherForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
-        var results = await this._repository.SelectAll()
+        var results = await this.repository.SelectAll()
             .Where(t => !t.IsDeleted)
             .ToPagedList(@params)
-            .AsNoTracking()
             .ToListAsync();
 
-        return this._mapper.Map<IEnumerable<PublisherForResultDto>>(results);
+        return mapper.Map<IEnumerable<PublisherForResultDto>>(results);
     }
 }

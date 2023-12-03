@@ -34,6 +34,8 @@ public class Book : Auditable
     public long PublisherId { get; set; }
     [ForeignKey("PublisherId")]
     public Publisher Publisher { get; set; }
+    public string PrintedIn { get; set; }
+
     public BookReviews BookReviews { get; set; }
 /*    [JsonIgnore]
     public IEnumerable<Author> BookAuthor { get; set; }
