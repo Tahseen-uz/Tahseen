@@ -1,4 +1,5 @@
 ﻿using Tahseen.Domain.Enums;
+using Tahseen.Service.DTOs.Libraries.LibraryBranch;
 
 namespace Tahseen.Service.DTOs.Librarians;
 
@@ -12,6 +13,7 @@ public class LibrarianForResultDto
     public string DateOfBirth { get; set; }
     public string Image { get; set; }
     public long LibraryBranchId { get; set; }
+    public LibraryBranchForResultDto LibraryBranch { get; set; }
     public string Roles { get; set; }
 
     //public LibraryBranchForResultDto LibraryBranch { get; set; }

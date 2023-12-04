@@ -134,6 +134,7 @@ public class LibrarianService : ILibrarianService
     {
         var librarians = await this.repository.SelectAll().
             Where(l => !l.IsDeleted)
+            .Include(l => l.LibraryBranch)
             .ToPagedList(@params)
             .AsNoTracking()
             .ToListAsync();
@@ -148,7 +149,11 @@ public class LibrarianService : ILibrarianService
 
     public async Task<LibrarianForResultDto> RetrieveByIdAsync(long id)
     {
-        var librarian = await this.repository.SelectByIdAsync(id);
+        var librarian = await this.repository.SelectAll()
+            .Where(l => l.Id == id && l.IsDeleted == false)
+            .Include(l => l.LibraryBranch)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
         if (librarian is null || librarian.IsDeleted)
             throw new TahseenException(404, "Librarian not found");
 
