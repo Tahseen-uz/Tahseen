@@ -13,7 +13,7 @@ namespace Tahseen.Service.DTOs.Users.BorrowedBook
         public long BookId { get; set; }
         public string BookTitle { get; set; }
         public DateTime ReturnDate { get; set; }
-        public BorrowedBookStatus Status { get; set; }
+        public string Status { get; set; }
         public decimal FineAmount { get; set; }
         public BookForResultDto Book { get; set; }
     }

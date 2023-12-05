@@ -50,12 +50,22 @@ public class SurveyService:ISurveyService
             throw new TahseenException(404, "Survey doesn't found");
         }
 
-        return _mapper.Map<SurveyForResultDto>(survey);
+        var result = this._mapper.Map<SurveyForResultDto>(survey);
+        result.Status = result.Status.ToString();
+        return result;
     }
 
     public async Task<IEnumerable<SurveyForResultDto>> RetrieveAllAsync()
     {
-        var surveys = _repository.SelectAll().Where(x => !x.IsDeleted);
-        return _mapper.Map<IEnumerable<SurveyForResultDto>>(surveys);
+        var surveys = await this._repository.SelectAll()
+            .Where(x => !x.IsDeleted)
+            .AsNoTracking().
+            FirstOrDefaultAsync();
+        var result = this._mapper.Map<IEnumerable<SurveyForResultDto>>(surveys);
+        foreach (var survey in result)
+        {
+            survey.Status = survey.Status.ToString();
+        }
+        return result;
     }
 }
