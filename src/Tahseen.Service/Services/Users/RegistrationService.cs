@@ -144,29 +144,50 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<string> SendVerificationCodeAsync(SendVerificationCodeDto dto)
         {
-            var result = await this._userRepository.SelectAll().Where(e => e.EmailAddress == dto.Email && e.IsDeleted == false).FirstOrDefaultAsync();
-            if(result == null)
+            var existingUser = await this._userRepository
+                .SelectAll()
+                .Where(e => e.EmailAddress == dto.Email && e.IsDeleted == false)
+                .FirstOrDefaultAsync();
+
+            if (existingUser == null)
             {
-            var code = GenerateCodeForEmailVerificationAsync();
-            _cache.Set($"{dto.Email}_VerificationCode", code, TimeSpan.FromMinutes(15));
+                var verificationCode = GenerateCodeForEmailVerificationAsync();
+                var cacheKey = $"{dto.Email}_VerificationCode";
+                var cacheExpiration = TimeSpan.FromSeconds(60); // Set expiration time to 2 minutes
 
-            var message = new MessageForCreationDto()
-            {
-                Subject = "Tahseen.uz tasdiqlash kod",
-                To = dto.Email,
-                Body = $"Your verification code is: {code}",
-            };
+                try
+                {
+                    // Store the verification code in the cache with a 2-minute expiration
+                    _cache.Set(cacheKey, verificationCode, new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = cacheExpiration
+                    });
 
-            await _messageService.SendEmail(message);
+                    // Send the verification code to the user via email
+                    var message = new MessageForCreationDto()
+                    {
+                        Subject = "Tahseen.uz tasdiqlash kod",
+                        To = dto.Email,
+                        Body = $"Tahseen.uz tasdiqlash kodingiz: {verificationCode}",
+                    };
 
-            return code;
+                    await _messageService.SendEmail(message);
 
+                    return verificationCode;
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions related to cache or email sending
+                    // Log the exception or provide a more meaningful error message
+                    throw new TahseenException(500, "Error occurred while sending verification code.");
+                }
             }
             else
             {
-                throw new TahseenException(400, "This user is exist");
+                throw new TahseenException(400, "This user already exists.");
             }
         }
+
 
         public async Task<bool> VerifyCodeAsync(VerifyCodeDto dto)
         {

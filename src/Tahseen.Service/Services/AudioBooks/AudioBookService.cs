@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
-using Tahseen.Domain.Entities.AudioBooks;
-using Tahseen.Domain.Entities.Books;
-using Tahseen.Domain.Entities.Narrators;
-using Tahseen.Service.Configurations;
-using Tahseen.Service.DTOs.AudioBooks.AudioBook;
-using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.Extensions;
+using Tahseen.Data.IRepositories;
+using Tahseen.Domain.Entities.Books;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Service.Configurations;
+using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Domain.Entities.Narrators;
+using Tahseen.Domain.Entities.AudioBooks;
+using Tahseen.Service.DTOs.AudioBooks.AudioBook;
 using Tahseen.Service.Interfaces.IAudioBookServices;
 using Tahseen.Service.Interfaces.IFileUploadService;
 
@@ -42,30 +42,34 @@ public class AudioBookService : IAudioBookService
     {
         var author = await _authorRepository.SelectAll()
             .Where(a => a.Id == dto.AuthorId && a.IsDeleted == false)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (author is null)
-            throw new TahseenException(404, "Author is not null");
+            throw new TahseenException(404, "Author is not found");
 
         var genre = await _genreRepository.SelectAll()
             .Where(g => g.Id == dto.GenreId && g.IsDeleted == false)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (genre is null)
-            throw new TahseenException(404, "Genre is not null");
+            throw new TahseenException(404, "Genre is not found");
 
         var narrator = await _narratorRepository.SelectAll()
            .Where(n => n.Id == dto.NarratorId && n.IsDeleted == false)
+           .AsNoTracking()
            .FirstOrDefaultAsync();
 
         if (narrator is null)
-            throw new TahseenException(404, "Narrator is not null");
+            throw new TahseenException(404, "Narrator is not found");
 
         var audioBook = await _repository.SelectAll()
             .Where(a => a.GenreId == dto.GenreId &&
             a.Title.ToLower() == dto.Title.ToLower() &&
             a.AuthorId == dto.AuthorId &&
             a.IsDeleted == false)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (audioBook is not null)
@@ -93,14 +97,14 @@ public class AudioBookService : IAudioBookService
             .FirstOrDefaultAsync();
 
         if (author is null)
-            throw new TahseenException(404, "Author is not null");
+            throw new TahseenException(404, "Author is not found");
 
         var genre = await _genreRepository.SelectAll()
             .Where(g => g.Id == dto.GenreId && g.IsDeleted == false)
             .FirstOrDefaultAsync();
 
         if (genre is null)
-            throw new TahseenException(404, "Genre is not null");
+            throw new TahseenException(404, "Genre is not found");
 
         var audioBook = await _repository.SelectAll()
             .Where(a => a.Id == id && a.IsDeleted == false)
@@ -131,6 +135,7 @@ public class AudioBookService : IAudioBookService
     {
         var audioBook = await _repository.SelectAll()
             .Where(a => a.Id == id && a.IsDeleted == false)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (audioBook is null)
@@ -163,7 +168,7 @@ public class AudioBookService : IAudioBookService
             .Include(a => a.Author)
             .Include(g => g.Genre)
             .Include(n => n.Narrator)
-
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (audioBook is null)

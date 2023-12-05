@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Tahseen.Api.Extensions;
@@ -68,6 +69,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseIpRateLimiting();
 }
 // Init accessor
 app.UseCors("AllowSpecificOrigin");

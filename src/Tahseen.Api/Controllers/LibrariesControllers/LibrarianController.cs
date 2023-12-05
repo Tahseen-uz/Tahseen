@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tahseen.Api.Models;
 using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Librarians;
@@ -74,5 +76,20 @@ public class LibrarianController:BaseController
         };
         return Ok(response);
     }
-    
+
+    [Authorize]
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetLoggedAsync()
+    {
+        var librarianId = Convert.ToInt32(HttpContext.User.FindFirstValue("Id"));
+        var response = new Response()
+        {
+            StatusCode = 200,
+            Message = "Success",
+            Data = await _librarianService.RetrieveByIdAsync(librarianId)
+        };
+        return Ok(response);
+    }
+
 }

@@ -138,8 +138,12 @@ public class LibrarianService : ILibrarianService
             .AsNoTracking()
             .ToListAsync();
 
-       
-        return this.mapper.Map<IEnumerable<LibrarianForResultDto>>(librarians);
+        var result = this.mapper.Map<IEnumerable<LibrarianForResultDto>>(librarians);
+        foreach (var item in result)
+        {
+            item.Roles = item.Roles.ToString();
+        }
+        return result;
     }
 
     public async Task<LibrarianForResultDto> RetrieveByIdAsync(long id)
@@ -148,6 +152,9 @@ public class LibrarianService : ILibrarianService
         if (librarian is null || librarian.IsDeleted)
             throw new TahseenException(404, "Librarian not found");
 
-        return this.mapper.Map<LibrarianForResultDto>(librarian);
+        var result = this.mapper.Map<LibrarianForResultDto>(librarian);
+        result.Roles = result.Roles.ToString();
+        return result;
+
     }
 }
