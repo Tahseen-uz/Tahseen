@@ -69,6 +69,8 @@ public class BookService : IBookService
                 .Include(l => l.LibraryBranch)
                 .Include(l => l.Publisher)
                 .Include(l => l.Genre)
+                .Include(b => b.Borrowers)
+                .ThenInclude(u => u.User)
                 .ToPagedList(@params)
                 .AsNoTracking()
                 .ToListAsync();
@@ -137,7 +139,10 @@ public class BookService : IBookService
                               .Include(l => l.Publisher)
                               .Include(l => l.LibraryBranch)
                               .Include(l => l.Genre)
-                       .FirstOrDefaultAsync();
+                              .Include(b => b.Borrowers)
+                              .ThenInclude(u => u.User)
+                              .AsNoTracking()
+                              .FirstOrDefaultAsync();
         if (book is not null)
         {
             return _mapper.Map<BookForResultDto>(book);
@@ -163,6 +168,8 @@ public class BookService : IBookService
             .Include(l => l.LibraryBranch)
             .Include(l => l.Publisher)
             .Include(l => l.Genre)
+            .Include(b => b.Borrowers)
+            .ThenInclude(u => u.User)
             .ToPagedList(@params)
             .AsNoTracking()
             .ToListAsync();

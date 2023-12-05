@@ -56,7 +56,7 @@ namespace Tahseen.Api.Controllers.BooksControllers
             return Ok(response);
         }
 
-        [HttpGet("GetAllPublicLibraryBooksAsync")]
+        [HttpGet("AllPublicLibraryBooks")]
         public async Task<IActionResult> GetAllPublicLibraryBooksAsync([FromQuery] PaginationParams @params) =>
             Ok(new Response
             {

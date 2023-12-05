@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Tahseen.Domain.Commons;
 using Tahseen.Domain.Entities.Books;
 using Tahseen.Domain.Entities.Library;
