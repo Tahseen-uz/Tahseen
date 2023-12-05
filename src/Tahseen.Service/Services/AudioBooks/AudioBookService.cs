@@ -133,16 +133,16 @@ public class AudioBookService : IAudioBookService
 
     public async Task<bool> RemoveAsync(long id)
     {
-        var audioBook = await _repository.SelectAll()
+        var audioBook = await this._repository.SelectAll()
             .Where(a => a.Id == id && a.IsDeleted == false)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (audioBook is null)
             throw new TahseenException(404, "AudioBook is not found");
-        await _fileUploadService.FileDeleteAsync(audioBook.Image);
+        await this._fileUploadService.FileDeleteAsync(audioBook.Image);
 
-        return await _repository.DeleteAsync(id);
+        return await this._repository.DeleteAsync(id);
     }
 
     public async Task<IEnumerable<AudioBookForResultDto>> RetrieveAllAsync(PaginationParams @params)
@@ -158,7 +158,7 @@ public class AudioBookService : IAudioBookService
             .ToListAsync();
 
     
-        return _mapper.Map<IEnumerable<AudioBookForResultDto>>(results);
+        return this._mapper.Map<IEnumerable<AudioBookForResultDto>>(results);
     }
 
     public async Task<AudioBookForResultDto> RetrieveByIdAsync(long id)

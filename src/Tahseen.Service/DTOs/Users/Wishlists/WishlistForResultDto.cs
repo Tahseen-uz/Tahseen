@@ -12,5 +12,5 @@ public class WishlistForResultDto
     public long UserCartId { get; set; }
     public long BookId { get; set; }
     public BookForResultDto Book { get; set; }
-    public WishListStatus Status { get; set; }
+    public string Status { get; set; }
 }

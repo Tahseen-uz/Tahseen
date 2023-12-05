@@ -9,5 +9,5 @@ public class SurveyForResultDto
     public string SurveyDescription { get; set; }
     public string Question { get; set; }
     public DateTime EndDate { get; set; }
-    public SurveyStatus Status { get; set; }
+    public string Status { get; set; }
 }

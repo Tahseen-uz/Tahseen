@@ -26,7 +26,10 @@ public class ReservationService : IReservationsService
 
     public async Task<ReservationForResultDto> AddAsync(ReservationForCreationDto dto)
     {
-        var Check = this._repository.SelectAll().Where(r => r.BookId == dto.BookId && r.UserId == r.UserId && r.IsDeleted == false).FirstOrDefaultAsync();
+        var Check = this._repository.SelectAll()
+            .Where(r => r.BookId == dto.BookId && r.UserId == r.UserId && r.IsDeleted == false)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
         if (Check != null)
         {
             throw new TahseenException(409, "This reservation is exist");
@@ -62,15 +65,24 @@ public class ReservationService : IReservationsService
             .AsNoTracking()
             .ToListAsync();
 
-        return _mapper.Map<IEnumerable<ReservationForResultDto>>(AllData);
+        var result = this._mapper.Map<IEnumerable<ReservationForResultDto>>(AllData);
+        foreach(var item in result)
+        {
+            item.ReservationStatus = item.ReservationStatus.ToString();
+        }
+        return result;
     }
 
     public async Task<ReservationForResultDto> RetrieveByIdAsync(long id)
     {
         var reservation = await _repository.SelectByIdAsync(id);
         if (reservation is not null && !reservation.IsDeleted)
-            return _mapper.Map<ReservationForResultDto>(reservation);
-        
+        {
+            var result = this._mapper.Map<ReservationForResultDto>(reservation);
+            result.ReservationStatus = result.ReservationStatus.ToString();
+            return result;
+        }
+
         throw new Exception("Reservation  not found");
     }
 
