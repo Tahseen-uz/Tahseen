@@ -8,5 +8,5 @@ public class EventRegistrationForResultDto
     public long UserId { get; set; }
     public long EventId { get; set; }
     public DateTime RegistrationDate { get; set; }
-    public EventRegistrationStatus Status { get; set; }
+    public string Status { get; set; }
 }

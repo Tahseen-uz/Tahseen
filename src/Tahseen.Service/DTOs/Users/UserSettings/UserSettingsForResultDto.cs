@@ -6,8 +6,8 @@ namespace Tahseen.Service.DTOs.Users.UserSettings
     {
         public long Id { get; set; }
         public long UserId { get; set; }
-        public NotificationStatus NotificationPreference { get; set; }
-        public ThemePreference ThemePreference { get; set; }
-        public LanguagePreference LanguagePreference { get; set; }
+        public string NotificationPreference { get; set; }
+        public string ThemePreference { get; set; }
+        public string LanguagePreference { get; set; }
     }
 }

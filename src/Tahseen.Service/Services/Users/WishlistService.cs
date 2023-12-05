@@ -17,7 +17,9 @@ public class WishlistService : IWishlistService
     private readonly IRepository<WishList> repository;
     private readonly IRepository<UserCart> userCartRepository;
     private readonly IRepository<Book> bookRepository;
-    public WishlistService(IMapper mapper, IRepository<WishList> repository,
+    public WishlistService(
+        IMapper mapper, 
+        IRepository<WishList> repository,
         IRepository<UserCart> userCartRepository,
         IRepository<Book> bookRepository)
     {
@@ -29,7 +31,11 @@ public class WishlistService : IWishlistService
 
     public async Task<WishlistForResultDto> AddAsync(WishlistForCreationDto dto)
     {
-        var book = await bookRepository.SelectAll().Where(b => b.Id == dto.BookId).FirstOrDefaultAsync();
+        var book = await bookRepository
+            .SelectAll()
+            .Where(b => b.Id == dto.BookId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
         if (book == null || book.IsDeleted)
             throw new TahseenException(404, "Book not found");
         //shu joyini korib chiqamiz
@@ -79,8 +85,16 @@ public class WishlistService : IWishlistService
 
     public async Task<IEnumerable<WishlistForResultDto>> RetrieveAllAsync()
     {
-        var wishlists = repository.SelectAll().Where(w => !w.IsDeleted);
-        return mapper.Map<IEnumerable<WishlistForResultDto>>(wishlists);
+        var wishlists = await this.repository.SelectAll()
+            .Where(w => !w.IsDeleted)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        var result = this.mapper.Map<IEnumerable<WishlistForResultDto>>(wishlists);
+        foreach(var wishList in result)
+        {
+            wishList.Status = wishList.Status.ToString();
+        }
+        return result;
     }
 
     public async Task<WishlistForResultDto> RetrieveByIdAsync(long id)
@@ -89,6 +103,8 @@ public class WishlistService : IWishlistService
         if (wishlist is null || wishlist.IsDeleted)
             throw new TahseenException(404, "Wishlist not found");
 
-        return mapper.Map<WishlistForResultDto>(wishlist);
+        var result =  this.mapper.Map<WishlistForResultDto>(wishlist);
+        result.Status = result.Status.ToString();
+        return result;  
     }
 }

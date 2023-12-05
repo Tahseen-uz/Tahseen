@@ -21,6 +21,7 @@ namespace Tahseen.Service.Services.Users
         {
             var existingUser = await this._repository.SelectAll()
                 .Where(u => u.UserId == dto.UserId && u.IsDeleted == false)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (existingUser == null)
@@ -37,7 +38,10 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<UserSettingsForResultDto> ModifyAsync(long Id, UserSettingsForUpdateDto dto)
         {
-            var Data = await this._repository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
+            var Data = await this._repository
+                .SelectAll()
+                .Where(e => e.Id == Id && e.IsDeleted == false)
+                .FirstOrDefaultAsync();
             if(Data != null)
             {
                 var MappedData = this._mapper.Map(dto, Data);
@@ -55,14 +59,34 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<IEnumerable<UserSettingsForResultDto>> RetrieveAllAsync()
         {
-            var AllData = this._repository.SelectAll();
-            return this._mapper.Map<IEnumerable<UserSettingsForResultDto>>(AllData);    
+            var AllData = await this._repository
+                .SelectAll()
+                .Where(u => u.IsDeleted == false)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            var result = this._mapper.Map<IEnumerable<UserSettingsForResultDto>>(AllData);    
+            foreach(var item in result)
+            {
+                item.LanguagePreference = item.LanguagePreference.ToString();
+                item.ThemePreference = item.ThemePreference.ToString();
+                item.NotificationPreference = item.NotificationPreference.ToString();   
+            }
+            return result;
         }
 
         public async Task<UserSettingsForResultDto> RetrieveByIdAsync(long Id)
         {
-            var Data = await this._repository.SelectByIdAsync(Id);
-            return this._mapper.Map<UserSettingsForResultDto>(Data);
+            var Data = await this._repository.SelectAll()
+                .Where(u => u.Id == Id && !u.IsDeleted)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (Data is null)
+                throw new TahseenException(404, "UserSetting is not found");
+            var result = this._mapper.Map<UserSettingsForResultDto>(Data);
+            result.NotificationPreference = result.NotificationPreference.ToString();
+            result.ThemePreference = result.ThemePreference.ToString();
+            result.LanguagePreference = result.LanguagePreference.ToString();
+            return result;
         }
     }
 }
