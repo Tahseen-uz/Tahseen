@@ -1,5 +1,6 @@
 using AspNetCoreRateLimit;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Serilog;
 using Tahseen.Api.Extensions;
 using Tahseen.Api.Middlewares;
@@ -11,7 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+     .AddNewtonsoftJson(options =>
+     {
+         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,17 +29,17 @@ builder.Services.AddSwaggerService();
 builder.Services.AddDbContext<AppDbContext>(option
     => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
-builder.Services.AddCustomService();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:3000") // Update with your React app's origin
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
 });
+builder.Services.AddCustomService();
+
 // MiddleWares
 /*builder.Services.Configure<FormOptions>(options =>
 {
@@ -69,10 +74,11 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseIpRateLimiting();
+/*    app.UseIpRateLimiting();
+*/
 }
 // Init accessor
-app.UseCors("AllowSpecificOrigin");
+app.UseCors("AllowAll");
 app.UseRouting();
 app.InitAccessor();
 app.UseMiddleware<ExceptionHandlerMiddleWare>();

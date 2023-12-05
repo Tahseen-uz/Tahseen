@@ -22,11 +22,12 @@ namespace Tahseen.Api.Controllers.UsersControllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery]PaginationParams @params)
         {
+            var libraryBranchId = Convert.ToInt32(HttpContext.User.FindFirstValue("LibraryBranchId"));
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data =  await _userService.RetrieveAllAsync( @params)
+                Data =  await _userService.RetrieveAllAsync(@params,libraryBranchId)
             };
             return Ok(response);
         }

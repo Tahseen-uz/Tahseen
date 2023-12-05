@@ -48,16 +48,27 @@ public class NotificationService : INotificationService
 
     public async Task<IEnumerable<NotificationForResultDto>> RetrieveAllAsync()
     {
-        var AllData = this._repository.SelectAll().Where(t => t.IsDeleted == false);
-        return _mapper.Map<IEnumerable<NotificationForResultDto>>(AllData);
+        var AllData = this._repository
+            .SelectAll()
+            .Where(t => t.IsDeleted == false)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        var result = this._mapper.Map<IEnumerable<NotificationForResultDto>>(AllData);
+        foreach(var item in result)
+        {
+            item.NotificationStatus = item.NotificationStatus.ToString();
+        }
+        return result;
     }
 
     public async Task<NotificationForResultDto> RetrieveByIdAsync(long id)
     {
-        var notification = await _repository.SelectByIdAsync(id);
-        if (notification is not null && !notification.IsDeleted)
-            return _mapper.Map<NotificationForResultDto>(notification);
-        
+        var notification = await this._repository.SelectByIdAsync(id);
+        if (notification is not null && !notification.IsDeleted) {
+            var result = this._mapper.Map<NotificationForResultDto>(notification);
+            result.NotificationStatus = result.NotificationStatus.ToString();
+            return result;
+        }
         throw new Exception("Notification not found");
     }
 }

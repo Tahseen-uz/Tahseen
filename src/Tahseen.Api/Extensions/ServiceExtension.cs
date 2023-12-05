@@ -132,7 +132,7 @@ public static class ServiceExtension
         //MemoryCache
         services.AddMemoryCache();
 
-        //Rate Limiter
+        /*//Rate Limiter
         services.Configure<IpRateLimitOptions>(options =>
         {
             options.EnableEndpointRateLimiting = true;
@@ -157,7 +157,7 @@ public static class ServiceExtension
         services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
         services.AddInMemoryRateLimiting();
 
-
+*/
     }
 
 

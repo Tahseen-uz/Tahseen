@@ -1,15 +1,12 @@
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 using Tahseen.Data.IRepositories;
-using Tahseen.Domain.Entities.Books;
-using Tahseen.Domain.Entities.Events;
-using Tahseen.Service.Configurations;
-using Tahseen.Service.DTOs.Books.Author;
-using Tahseen.Service.DTOs.Events.Events;
-using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Domain.Entities.Events;
+using Tahseen.Service.Configurations;
+using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Service.DTOs.Events.Events;
 using Tahseen.Service.Interfaces.IEventsServices;
 using Tahseen.Service.Interfaces.IFileUploadService;
 
@@ -22,7 +19,9 @@ public class EventService : IEventsService
     private readonly IFileUploadService _fileUploadService;
 
 
-    public EventService(IMapper mapper, IRepository<Event> repository, IFileUploadService fileUploadService)
+    public EventService(IMapper mapper, 
+        IRepository<Event> repository, 
+        IFileUploadService fileUploadService)
     {
         this._mapper = mapper;
         this._repository = repository;
@@ -31,7 +30,11 @@ public class EventService : IEventsService
 
     public async Task<EventForResultDto> AddAsync(EventForCreationDto dto)
     {
-        var Check = await this._repository.SelectAll().Where(a => a.Title == dto.Title && a.Location == dto.Location && a.IsDeleted == false).FirstOrDefaultAsync();
+        var Check = await this._repository
+            .SelectAll()
+            .Where(a => a.Title.ToLower() == dto.Title.ToLower() && a.Location == dto.Location && a.IsDeleted == false)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
         if (Check != null)
         {
             throw new TahseenException(409, "This Event is exist");
@@ -105,7 +108,10 @@ public class EventService : IEventsService
 
     public async Task<bool> RemoveAsync(long id)
     {
-        var results = await this._repository.SelectAll().Where(a => a.Id == id && a.IsDeleted == false)
+        var results = await this._repository
+            .SelectAll()
+            .Where(a => a.Id == id && a.IsDeleted == false)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
         if(results is null)
         {
@@ -125,8 +131,13 @@ public class EventService : IEventsService
             .ToPagedList(@params)
             .AsNoTracking()
             .ToListAsync();
-       
-        return _mapper.Map<IEnumerable<EventForResultDto>>(results);
+
+        var result = this._mapper.Map<IEnumerable<EventForResultDto>>(results);
+        foreach(var item in result)
+        {
+            item.Status = item.Status.ToString();
+        }
+        return result;
     }
 
     public async Task<EventForResultDto> RetrieveByIdAsync(long id)
@@ -134,7 +145,9 @@ public class EventService : IEventsService
         var result = await _repository.SelectByIdAsync(id);
         if (result is not null && !result.IsDeleted)
         {
-            return _mapper.Map<EventForResultDto>(result);
+            var res =  this._mapper.Map<EventForResultDto>(result);
+            res.Status = res.Status.ToString();
+            return res;
         }
 
         throw new TahseenException(404, "Event not found");

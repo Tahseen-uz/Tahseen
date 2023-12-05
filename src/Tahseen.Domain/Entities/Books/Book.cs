@@ -37,11 +37,14 @@ public class Book : Auditable
     public string PrintedIn { get; set; }
 
     public BookReviews BookReviews { get; set; }
-/*    [JsonIgnore]
-    public IEnumerable<Author> BookAuthor { get; set; }
     [JsonIgnore]
-    public ICollection<Genre> BookGenres { get; set; }
-    [JsonIgnore]
-    public IEnumerable<Publisher> BookPublisher { get; set; }*/
+    public IEnumerable<BorrowedBook> Borrowers { get; set; }
+
+    /*    [JsonIgnore]
+        public IEnumerable<Author> BookAuthor { get; set; }
+        [JsonIgnore]
+        public ICollection<Genre> BookGenres { get; set; }
+        [JsonIgnore]
+        public IEnumerable<Publisher> BookPublisher { get; set; }*/
 
 }

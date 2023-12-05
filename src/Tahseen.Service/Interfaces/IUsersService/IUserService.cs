@@ -10,7 +10,7 @@ namespace Tahseen.Service.Interfaces.IUsersService
         public Task<UserForResultDto> ModifyAsync(long Id, UserForUpdateDto dto);
         public Task<bool> RemoveAsync(long Id);
         public Task<UserForResultDto> RetrieveByIdAsync(long Id);
-        public Task<IEnumerable<UserForResultDto>> RetrieveAllAsync(PaginationParams @params);
+        public Task<IEnumerable<UserForResultDto>> RetrieveAllAsync(PaginationParams @params, long id);
         public Task<bool> ChangePasswordAsync(long Id, UserForChangePasswordDto dto);
     }
 }

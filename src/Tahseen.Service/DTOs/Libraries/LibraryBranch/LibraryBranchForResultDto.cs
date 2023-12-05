@@ -15,7 +15,9 @@ public class LibraryBranchForResultDto
     public string Image {  get; set; }
     public string PhoneNumber { get; set; }
     public string OpeningHours { get; set; }
-    public LibraryType LibraryType { get; set; }
+    public string LibraryType { get; set; }
+
+
     [JsonIgnore]
     public IEnumerable<LibrarianForResultDto> Librarians { get; set; }
     [JsonIgnore]

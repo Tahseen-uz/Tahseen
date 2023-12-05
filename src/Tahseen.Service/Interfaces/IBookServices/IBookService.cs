@@ -10,6 +10,7 @@ public interface IBookService
     public Task<BookForResultDto> ModifyAsync(long id, BookForUpdateDto dto);
     public Task<bool> RemoveAsync(long id);
     public Task<BookForResultDto> RetrieveByIdAsync(long id);
-    public Task<IEnumerable<BookForResultDto>> RetrieveAllAsync(long? libraryBranchId, PaginationParams @params); //HttpContext Take Id
+    public Task<IEnumerable<BookForResultDto>> RetrieveAllAsync(long libraryBranchId, PaginationParams @params); //HttpContext Take Id
+    public Task<IEnumerable<BookForResultDto>> RetrieveAllPublicLibraryBooksAsync(PaginationParams @params); //HttpContext Take Id
 
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Tahseen.Domain.Entities.Books;
 using Tahseen.Domain.Entities.Library;
 using Tahseen.Domain.Enums;
@@ -9,6 +10,7 @@ using Tahseen.Service.DTOs.Books.Genre;
 using Tahseen.Service.DTOs.Books.Publishers;
 using Tahseen.Service.DTOs.Librarians;
 using Tahseen.Service.DTOs.Libraries.LibraryBranch;
+using Tahseen.Service.DTOs.Users.BorrowedBook;
 
 namespace Tahseen.Service.DTOs.Books.Book;
 
@@ -31,6 +33,7 @@ public class BookForResultDto
     public LibraryBranchForResultDto LibraryBranch { get; set; }
     public PublisherForResultDto Publisher { get; set; }
     public BookReviewForResultDto BookReviews { get; set; }
+    public IEnumerable<BorrowedBookForResultDto> Borrowers { get; set; }
     public string PrintedIn { get; set; }
     public long TotalPages { get; set; }
 

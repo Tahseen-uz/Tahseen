@@ -12,5 +12,5 @@ public class EventForResultDto
     public long Participants { get; set; }
     public DateTime StartDate { get; set; }  // Change to DateTimeOffset
     public DateTime EndDate { get; set; }
-    public EventStatus Status { get; set; }
+    public string Status { get; set; }
 }

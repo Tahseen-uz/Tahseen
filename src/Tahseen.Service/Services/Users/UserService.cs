@@ -84,6 +84,7 @@ namespace Tahseen.Service.Services.Users
             var HashedPassword = PasswordHelper.Hash(dto.Password);
             data.Password = HashedPassword.Hash;
             data.Salt = HashedPassword.Salt;
+            data.Role = Domain.Enums.Roles.User;
             data.FineAmount = 0;
             var CreatedData = await this._userRepository.CreateAsync(data);
                
@@ -147,42 +148,44 @@ namespace Tahseen.Service.Services.Users
             var data = await _userRepository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
             if (data is not null)
             {
-                if (dto != null && dto.UserImage != null)
+                if (dto != null)
                 {
-                    if(data.UserImage != null)
+                    if (dto.UserImage != null)
                     {
-                        await this._fileUploadService.FileDeleteAsync(data.UserImage);
-                    };
-                    var FileUploadForCreation = new FileUploadForCreationDto
-                    {
-                        FolderPath = "UsersAssets",
-                        FormFile = dto.UserImage
-                    };
-                    var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
-                
-               
+                        if (data.UserImage != null)
+                        {
+                            await this._fileUploadService.FileDeleteAsync(data.UserImage);
+                        }
 
-                    data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                        var FileUploadForCreation = new FileUploadForCreationDto
+                        {
+                            FolderPath = "UsersAssets",
+                            FormFile = dto.UserImage
+                        };
+                        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+
+                        data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                    }
+
+                    // Update other properties only if dto's property is not null or empty
                     data.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : data.FirstName;
                     data.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : data.LastName;
                     data.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : data.Address;
                     data.DateOfBirth = dto.DateOfBirth != null ? dto.DateOfBirth : data.DateOfBirth;
-                }
-                if(dto != null && dto.UserImage == null)
-                {
-                    data.UserImage = data.UserImage;
-                    data.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : data.FirstName;
-                    data.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : data.LastName;
-                    data.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : data.Address;
-                    data.DateOfBirth = dto.DateOfBirth != null ? dto.DateOfBirth : data.DateOfBirth;
+
+                    data.UpdatedAt = DateTime.UtcNow;
+                    var result = await _userRepository.UpdateAsync(data);
+                    return _mapper.Map<UserForResultDto>(result);
                 }
 
-                data.UpdatedAt = DateTime.UtcNow;
-                var result = await _userRepository.UpdateAsync(data);
-                return _mapper.Map<UserForResultDto>(result);
+                // If dto is null, you may want to handle this case (throw an exception or return a specific result).
+                // For now, I'm returning the existing user data.
+                return _mapper.Map<UserForResultDto>(data);
             }
+
             throw new TahseenException(404, "User is not found");
         }
+
 
         public async Task<bool> RemoveAsync(long Id)
         {
@@ -200,10 +203,10 @@ namespace Tahseen.Service.Services.Users
             return await _userRepository.DeleteAsync(Id);
         }
 
-        public async Task<IEnumerable<UserForResultDto>> RetrieveAllAsync(PaginationParams @params)
+        public async Task<IEnumerable<UserForResultDto>> RetrieveAllAsync(PaginationParams @params, long id)
         {
             var users = await _userRepository.SelectAll()
-                .Where(t => t.IsDeleted == false)
+                .Where(t => t.IsDeleted == false && t.LibraryBranchId == id)
                 .Include(b => b.BorrowedBooks)
                 .ToPagedList(@params)
                 .AsNoTracking()
@@ -212,7 +215,10 @@ namespace Tahseen.Service.Services.Users
             var result = _mapper.Map<IEnumerable<UserForResultDto>>(users);
             foreach (var res in result)
             {
-                res.Roles = res.Roles.ToString();
+                if(res.Roles != null)
+                {
+                    res.Roles = res.Roles.ToString();
+                };
             };
             return result;
         }

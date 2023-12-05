@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using Tahseen.Domain.Entities.Librarians;  // Include Librarian entity
 using Tahseen.Service.Interfaces.IAuthService;
+using Tahseen.Domain.Enums;
 
 namespace Tahseen.Service.Services.AuthService
 {

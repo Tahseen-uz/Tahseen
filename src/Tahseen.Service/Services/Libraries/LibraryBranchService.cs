@@ -105,15 +105,20 @@ public class LibraryBranchService : ILibraryBranchService
     public async Task<IEnumerable<LibraryBranchForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
         var result = await this.repository.SelectAll()
-            .Where(l => !l.IsDeleted)
+            .Where(l => l.IsDeleted == false)
             .Include(l => l.Librarians)
             .Include(b => b.TotalBooks)
             .ToPagedList(@params)
             .AsNoTracking()
             .ToListAsync();
 
-       
-        return this.mapper.Map<IEnumerable<LibraryBranchForResultDto>>(result);
+        var MappedData = this.mapper.Map<IEnumerable<LibraryBranchForResultDto>>(result);
+        foreach (var res in MappedData)
+        {
+            res.LibraryType = res.LibraryType.ToString();
+        }
+        return MappedData;
+
     }
 
     public async Task<LibraryBranchForResultDto> RetrieveByIdAsync(long id)
