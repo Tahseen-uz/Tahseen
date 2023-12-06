@@ -14,13 +14,12 @@ public class Book : Auditable
     public Language Language { get; set; }
     public long TotalCopies { get; set; }
     public long AvailableCopies { get; set; }
-    public decimal Rating { get; set; }
-    public long Reviews { get; set; }
     public string Content { get; set; }
-    public BookFormat BookFormat { get; set; }
+    /*public BookFormat BookFormat { get; set; }*/
     public string ShelfLocation { get; set; }
-    public BookCondition Condition { get; set; }
+    /*public BookCondition Condition { get; set; }*/
     public string BookImage { get; set;}
+    public long TotalPages { get; set; }
     public long AuthorId { get; set; }
     [ForeignKey("AuthorId")]
     public Author Author { get; set; }
@@ -32,19 +31,13 @@ public class Book : Auditable
     [JsonIgnore]
     public LibraryBranch LibraryBranch { get; set; }
     public long PublisherId { get; set; }
+
     [ForeignKey("PublisherId")]
     public Publisher Publisher { get; set; }
-    public string PrintedIn { get; set; }
 
-    public BookReviews BookReviews { get; set; }
     [JsonIgnore]
     public IEnumerable<BorrowedBook> Borrowers { get; set; }
 
-    /*    [JsonIgnore]
-        public IEnumerable<Author> BookAuthor { get; set; }
-        [JsonIgnore]
-        public ICollection<Genre> BookGenres { get; set; }
-        [JsonIgnore]
-        public IEnumerable<Publisher> BookPublisher { get; set; }*/
+
 
 }

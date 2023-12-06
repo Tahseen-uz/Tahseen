@@ -56,9 +56,9 @@ public class GenreService : IGenreService
     public async Task<IEnumerable<GenreForResultDto>> RetrieveAllAsync()
     {
         var result = await this._repository.SelectAll()
-            .Where(e => e.IsDeleted != true)
+            .Where(e => e.IsDeleted == false)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .ToListAsync();
 
         return this._mapper.Map<IEnumerable<GenreForResultDto>>(result);
     }
@@ -66,9 +66,9 @@ public class GenreService : IGenreService
     public async Task<GenreForResultDto> RetrieveByIdAsync(long id)
     {
         var genre = await this._repository.SelectAll()
-            .Where(g => g.Id == id && !g.IsDeleted)
-            .AsNoTracking().
-            FirstOrDefaultAsync();
+            .Where(g => g.Id == id && g.IsDeleted == false)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
         if(genre is null)
             throw new Exception("Genre  not found");

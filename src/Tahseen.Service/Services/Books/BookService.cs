@@ -65,7 +65,7 @@ public class BookService : IBookService
     {
         var books = await this._repository.SelectAll()
             .Where(e => e.IsDeleted == false && e.LibraryId == id)
-            .Include(l => l.Author)
+            .Include(l => l.Author) 
             .Include(l => l.LibraryBranch)
             .Include(l => l.Publisher)
             .Include(l => l.Genre)
@@ -80,8 +80,6 @@ public class BookService : IBookService
             var result = this._mapper.Map<IEnumerable<BookForResultDto>>(books);
             foreach (var item in result)
             {
-                item.BookFormat = item.BookFormat.ToString();
-                item.Condition = item.Condition.ToString();
                 item.Language = item.Language.ToString();
             }
             return result;
