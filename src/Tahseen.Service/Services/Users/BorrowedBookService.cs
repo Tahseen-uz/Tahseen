@@ -88,17 +88,7 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<IEnumerable<BorrowedBookForResultDto>> RetrieveAllAsync()
         {
-<<<<<<< HEAD
-            var result = await this.BorrowedBook.SelectAll()
-                .Where(t => t.IsDeleted == false)
-                .Include(b => b.Book)
-                .Include(u => u.User)
-                .AsNoTracking()
-                .ToListAsync();
-
-            return this._mapper.Map<IEnumerable<BorrowedBookForResultDto>>(result);
-=======
-            var result =await this.BorrowedBook
+            var result = await this.BorrowedBook
                 .SelectAll()
                 .Where(t => t.IsDeleted == false)
                 .AsNoTracking()
@@ -110,7 +100,6 @@ namespace Tahseen.Service.Services.Users
                 item.BookTitle = item.BookTitle.ToString();
             }
             return res;
->>>>>>> 060a71ad415711b9f13c768d21db337f432c04ba
         }
 
         public async Task<BorrowedBookForResultDto> RetrieveByIdAsync(long Id)
