@@ -13,6 +13,7 @@ using Tahseen.Domain.Entities.Feedbacks;
 using Tahseen.Domain.Entities.AudioBooks;
 using Tahseen.Domain.Entities.EBooks;
 using Tahseen.Domain.Entities.Narrators;
+using Tahseen.Domain.Entities.Languages;
 
 namespace Tahseen.Data.DbContexts;
 
@@ -80,6 +81,9 @@ public class AppDbContext : DbContext
     public DbSet<AudioBook> AudioBooks { get; set; }
     public DbSet<AudioFile> AudioFiles { get; set; }
 
+    // Language
+
+    public DbSet<Language> Languages { get; set; }
     // Foleder name : EBook
     public DbSet<EBook> EBooks { get; set; }
     public DbSet<EBookFile> EBooksFiles { get; set; }

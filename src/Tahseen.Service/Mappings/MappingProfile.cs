@@ -48,6 +48,8 @@ using Tahseen.Service.DTOs.Users.UserCart;
 using Tahseen.Service.DTOs.Users.UserProgressTracking;
 using Tahseen.Service.DTOs.Users.UserSettings;
 using Tahseen.Service.DTOs.Users.Wishlists;
+using Tahseen.Domain.Entities.Languages;
+using Tahseen.Service.DTOs.Languages;
 
 namespace Tahseen.Service.Mappings;
 
@@ -220,6 +222,11 @@ public class MappingProfile:Profile
         CreateMap<Narrator, NarratorForResultDto>().ReverseMap();
         CreateMap<Narrator, NarratorForUpdateDto>().ReverseMap();
         CreateMap<Narrator, NarratorForCreationDto>().ReverseMap();
+
+        //Language 
+        CreateMap<Language, LanguageForCreationDto>().ReverseMap();
+        CreateMap<Language, LanguageForUpdateDto>().ReverseMap();
+        CreateMap<Language, LanguageForResultDto>().ReverseMap();
 
         //Registration
         CreateMap<User, RegistrationForResultDto>().ReverseMap();

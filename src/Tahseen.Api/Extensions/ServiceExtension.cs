@@ -43,6 +43,8 @@ using Tahseen.Service.Interfaces.IMessageServices;
 using Tahseen.Service.Services.MessageServices;
 using Microsoft.Extensions.Caching.Memory;
 using AspNetCoreRateLimit;
+using Tahseen.Service.Interfaces.ILanguageServices;
+using Tahseen.Service.Services.Languages;
 
 namespace Tahseen.Api.Extensions;
 
@@ -128,7 +130,9 @@ public static class ServiceExtension
         
         //Folder Name: MessageService
         services.AddScoped<IMessageSevice, MessageService>();
+        //Language
 
+        services.AddScoped<ILanguageService, LanguageService>();
         //MemoryCache
         services.AddMemoryCache();
 
