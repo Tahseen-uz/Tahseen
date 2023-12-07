@@ -106,8 +106,8 @@ public class LibraryBranchService : ILibraryBranchService
     {
         var result = await this.repository.SelectAll()
             .Where(l => l.IsDeleted == false)
-            .Include(l => l.Librarians)
-            .Include(b => b.TotalBooks)
+            .Include(l => l.Librarians.Where(lib => lib.IsDeleted == false)) // Filter Librarians where IsDeleted is false
+            .Include(b => b.TotalBooks.Where(t => t.IsDeleted == false))
             .ToPagedList(@params)
             .AsNoTracking()
             .ToListAsync();
@@ -125,8 +125,8 @@ public class LibraryBranchService : ILibraryBranchService
     {
         var libraryBranch = await this.repository.SelectAll()
             .Where(l => !l.IsDeleted)
-            .Include(l => l.Librarians)
-            .Include(b => b.TotalBooks)
+            .Include(l => l.Librarians.Where(lib => lib.IsDeleted == false)) // Filter Librarians where IsDeleted is false
+            .Include(b => b.TotalBooks.Where(t => t.IsDeleted == false))
             .AsNoTracking()
             .FirstOrDefaultAsync();
         if (libraryBranch == null || libraryBranch.IsDeleted)

@@ -39,6 +39,6 @@ namespace Tahseen.Api.Middlewares
                     Message = ex.Message,
                 });
             }
-            }
+        }
     }
 }

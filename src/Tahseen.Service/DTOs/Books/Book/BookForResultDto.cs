@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Tahseen.Domain.Entities.Books;
+using Tahseen.Domain.Entities.Languages;
 using Tahseen.Domain.Entities.Library;
 using Tahseen.Domain.Enums;
 using Tahseen.Service.DTOs.Books.Author;
@@ -18,7 +19,6 @@ public class BookForResultDto
 {
     public long Id { get; set; }
     public string Title { get; set; }
-    public string Language { get; set; }
     public long TotalCopies { get; set; }
     public long AvailableCopies { get; set; }
     public decimal Rating { get; set; }
@@ -33,11 +33,13 @@ public class BookForResultDto
     public LibraryBranchForResultDto LibraryBranch { get; set; }
     public PublisherForResultDto Publisher { get; set; }
     public BookReviewForResultDto BookReviews { get; set; }
+    public Language Language { get; set; }
     public IEnumerable<BorrowedBookForResultDto> Borrowers { get; set; }
     public string PrintedIn { get; set; }
     public long TotalPages { get; set; }
 
-   /* public IEnumerable<AuthorForResultDto> BookAuthor { get; set; }
-    public IEnumerable<GenreForResultDto> BookGenre { get; set; }
-    public IEnumerable<PublisherForResultDto> BookPublisher { get; set; }*/
+
+    /* public IEnumerable<AuthorForResultDto> BookAuthor { get; set; }
+     public IEnumerable<GenreForResultDto> BookGenre { get; set; }
+     public IEnumerable<PublisherForResultDto> BookPublisher { get; set; }*/
 }

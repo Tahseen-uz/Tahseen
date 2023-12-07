@@ -20,36 +20,49 @@ public class BookService : IBookService
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Book> _repository;
+    private readonly IRepository<Genre> _genreRepository;
     private readonly IRepository<LibraryBranch> _libraryRepository;
     private readonly IFileUploadService _fileUploadService;
 
 
-    public BookService(IMapper mapper, IRepository<Book> repository, IFileUploadService fileUploadService, IRepository<LibraryBranch> libraryRepository)
+    public BookService(IMapper mapper, IRepository<Book> repository, IFileUploadService fileUploadService, IRepository<LibraryBranch> libraryRepository, IRepository<Genre> genreRepository)
     {
         this._mapper = mapper;
         this._repository = repository;
         this._fileUploadService = fileUploadService;
         this._libraryRepository = libraryRepository;
-
+        _genreRepository = genreRepository;
     }
 
     public async Task<BookForResultDto> AddAsync(BookForCreationDto dto)
     {
         var book = await this._repository.SelectAll()
-            .Where(b => b.Title.ToLower() == dto.Title.ToLower() && b.IsDeleted == false)
+            .Where(b => b.Title.ToLower() == dto.Title.ToLower() && b.LibraryId == dto.LibraryId && b.IsDeleted == false)
             .FirstOrDefaultAsync();
         if (book is not null)
             throw new TahseenException(400, "Book is already exist");
 
-        var FileUploadForCreation = new FileUploadForCreationDto
+        var existingGenre = await this._genreRepository.SelectAll()
+        .Where(g => g.Id == dto.GenreId && g.IsDeleted == false).AsNoTracking()
+        .FirstOrDefaultAsync();
+
+        if (existingGenre is null)
         {
-            FolderPath = "BooksAssets",
-            FormFile = dto.BookImage,
-        };
-        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            throw new TahseenException(400, "Genre does not exist");
+        }
 
         var mapped = this._mapper.Map<Book>(dto);
-        mapped.BookImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        if(dto.BookImage != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "BooksAssets",
+                FormFile = dto.BookImage,
+            };
+            var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            mapped.BookImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        }
+
         var result = await _repository.CreateAsync(mapped);
         return _mapper.Map<BookForResultDto>(result);
     }
@@ -69,6 +82,7 @@ public class BookService : IBookService
             .Include(l => l.LibraryBranch)
             .Include(l => l.Publisher)
             .Include(l => l.Genre)
+            .Include(l => l.Language)
             .Include(b => b.Borrowers)
             .ThenInclude(u => u.User)
             .ToPagedList(@params)
@@ -78,10 +92,6 @@ public class BookService : IBookService
         if (books != null)
         {
             var result = this._mapper.Map<IEnumerable<BookForResultDto>>(books);
-            foreach (var item in result)
-            {
-                item.Language = item.Language.ToString();
-            }
             return result;
         }
         throw new TahseenException(404, "NotFound");
@@ -154,6 +164,7 @@ public class BookService : IBookService
                               .Include(l => l.Publisher)
                               .Include(l => l.LibraryBranch)
                               .Include(l => l.Genre)
+                              .Include(l => l.Language)
                               .Include(b => b.Borrowers)
                               .ThenInclude(u => u.User)
                               .AsNoTracking()
@@ -183,6 +194,7 @@ public class BookService : IBookService
             .Include(l => l.Author)
             .Include(l => l.LibraryBranch)
             .Include(l => l.Publisher)
+            .Include(l => l.Language)
             .Include(l => l.Genre)
             .Include(b => b.Borrowers)
             .ThenInclude(u => u.User)

@@ -122,6 +122,22 @@ namespace Tahseen.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Languages",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Languages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LibraryBranches",
                 columns: table => new
                 {
@@ -279,9 +295,10 @@ namespace Tahseen.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: true),
-                    UserName = table.Column<string>(type: "text", nullable: true),
                     Password = table.Column<string>(type: "text", nullable: true),
+                    Salt = table.Column<string>(type: "text", nullable: true),
                     DateOfBirth = table.Column<string>(type: "text", nullable: true),
                     Image = table.Column<string>(type: "text", nullable: true),
                     LibraryBranchId = table.Column<long>(type: "bigint", nullable: false),
@@ -365,7 +382,6 @@ namespace Tahseen.Data.Migrations
                     Salt = table.Column<string>(type: "text", nullable: true),
                     PhoneNumber = table.Column<string>(type: "text", nullable: true),
                     Address = table.Column<string>(type: "text", nullable: true),
-                    MembershipStatus = table.Column<int>(type: "integer", nullable: false),
                     DateOfBirth = table.Column<string>(type: "text", nullable: true),
                     Role = table.Column<int>(type: "integer", nullable: false),
                     FineAmount = table.Column<decimal>(type: "numeric", nullable: true),
@@ -432,20 +448,17 @@ namespace Tahseen.Data.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: true),
-                    Language = table.Column<byte>(type: "smallint", nullable: false),
                     TotalCopies = table.Column<long>(type: "bigint", nullable: false),
                     AvailableCopies = table.Column<long>(type: "bigint", nullable: false),
-                    Rating = table.Column<decimal>(type: "numeric", nullable: false),
-                    Reviews = table.Column<long>(type: "bigint", nullable: false),
                     Content = table.Column<string>(type: "text", nullable: true),
-                    BookFormat = table.Column<byte>(type: "smallint", nullable: false),
                     ShelfLocation = table.Column<string>(type: "text", nullable: true),
-                    Condition = table.Column<byte>(type: "smallint", nullable: false),
                     BookImage = table.Column<string>(type: "text", nullable: true),
+                    TotalPages = table.Column<long>(type: "bigint", nullable: false),
                     AuthorId = table.Column<long>(type: "bigint", nullable: false),
                     GenreId = table.Column<long>(type: "bigint", nullable: false),
                     LibraryId = table.Column<long>(type: "bigint", nullable: false),
                     PublisherId = table.Column<long>(type: "bigint", nullable: false),
+                    LanguageId = table.Column<long>(type: "bigint", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -463,6 +476,12 @@ namespace Tahseen.Data.Migrations
                         name: "FK_Books_Genres_GenreId",
                         column: x => x.GenreId,
                         principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Books_Languages_LanguageId",
+                        column: x => x.LanguageId,
+                        principalTable: "Languages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -1058,8 +1077,7 @@ namespace Tahseen.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_BookReviews_BookId",
                 table: "BookReviews",
-                column: "BookId",
-                unique: true);
+                column: "BookId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BookReviews_UserId",
@@ -1075,6 +1093,11 @@ namespace Tahseen.Data.Migrations
                 name: "IX_Books_GenreId",
                 table: "Books",
                 column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_LanguageId",
+                table: "Books",
+                column: "LanguageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_LibraryId",
@@ -1379,6 +1402,9 @@ namespace Tahseen.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Genres");
+
+            migrationBuilder.DropTable(
+                name: "Languages");
 
             migrationBuilder.DropTable(
                 name: "Publishers");

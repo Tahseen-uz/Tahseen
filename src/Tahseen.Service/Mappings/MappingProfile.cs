@@ -165,7 +165,8 @@ public class MappingProfile:Profile
 
         //Folder Name: Users
         CreateMap<User, UserForCreationDto>().ReverseMap();
-        CreateMap<User, UserForResultDto>().ReverseMap();
+        CreateMap<User, UserForResultDto>()
+            .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Role.ToString())).ReverseMap();
         CreateMap<User, UserForUpdateDto>().ReverseMap();
 
         CreateMap<UserCart, UserCartForCreationDto>().ReverseMap();

@@ -56,7 +56,7 @@ namespace Tahseen.Service.Services.AuthService
 
             // If not a user, check if the credentials belong to a librarian
             var librarian = await _librarianRepository.SelectAll()
-                .Where(l => l.PhoneNumber == dto.PhoneNumber && l.IsDeleted == false && l.Roles == Roles.Librarian)
+                .Where(l => l.PhoneNumber == dto.PhoneNumber  && l.IsDeleted == false && l.Roles == Roles.Librarian)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 

@@ -84,7 +84,7 @@ namespace Tahseen.Service.Services.Users
             var HashedPassword = PasswordHelper.Hash(dto.Password);
             data.Password = HashedPassword.Hash;
             data.Salt = HashedPassword.Salt;
-            data.Role = Domain.Enums.Roles.User;
+            data.Role = Tahseen.Domain.Enums.Roles.User;
             data.FineAmount = 0;
             var CreatedData = await this._userRepository.CreateAsync(data);
                
@@ -234,7 +234,6 @@ namespace Tahseen.Service.Services.Users
             if (data != null && data.IsDeleted == false)
             {
                 var result = this._mapper.Map<UserForResultDto>(data);
-                result.Roles = result.Roles.ToString();
                 return result;
             }
             throw new TahseenException(404, "User is not found");

@@ -45,13 +45,20 @@ public class GenreService : IGenreService
             var result = await this._repository.UpdateAsync(mappedGenre);
             return this._mapper.Map<GenreForResultDto>(result);
         }
-        throw new Exception("Genre not found");
+        throw new TahseenException(404, "Genre not found");
     }
 
     public async Task<bool> RemoveAsync(long id)
     {
+        var data = await this._repository.SelectAll().Where(g => g.Id == id && g.IsDeleted == false).FirstOrDefaultAsync();
+        if (data == null)
+        {
+            throw new TahseenException(404, "Not Found");
+        }
         return await this._repository.DeleteAsync(id);
+
     }
+
 
     public async Task<IEnumerable<GenreForResultDto>> RetrieveAllAsync()
     {
@@ -71,7 +78,7 @@ public class GenreService : IGenreService
             .FirstOrDefaultAsync();
 
         if(genre is null)
-            throw new Exception("Genre  not found");
+            throw new TahseenException(404, "Genre  not found");
 
         return this._mapper.Map<GenreForResultDto>(genre);
     }

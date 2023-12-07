@@ -201,8 +201,8 @@ namespace Tahseen.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<byte>("Language")
-                        .HasColumnType("smallint");
+                    b.Property<long>("LanguageId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("LibraryId")
                         .HasColumnType("bigint");
@@ -230,6 +230,8 @@ namespace Tahseen.Data.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("GenreId");
+
+                    b.HasIndex("LanguageId");
 
                     b.HasIndex("LibraryId");
 
@@ -1545,6 +1547,12 @@ namespace Tahseen.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Tahseen.Domain.Entities.Languages.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Tahseen.Domain.Entities.Library.LibraryBranch", "LibraryBranch")
                         .WithMany("TotalBooks")
                         .HasForeignKey("LibraryId")
@@ -1560,6 +1568,8 @@ namespace Tahseen.Data.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Genre");
+
+                    b.Navigation("Language");
 
                     b.Navigation("LibraryBranch");
 

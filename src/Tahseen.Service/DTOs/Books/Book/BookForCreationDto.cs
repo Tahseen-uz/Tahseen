@@ -13,7 +13,6 @@ namespace Tahseen.Service.DTOs.Books.Book;
 public class BookForCreationDto
 {
     public string Title { get; set; }
-    public Language Language { get; set; }
     public long TotalCopies { get; set; }
     public long AvailableCopies { get; set; }
     public string Content { get; set; }
@@ -24,5 +23,6 @@ public class BookForCreationDto
     public long GenreId { get; set; }
     public long LibraryId { get; set; }
     public long PublisherId { get; set; }
+    public long LanguageId { get; set; }
 
 }
