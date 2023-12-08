@@ -74,7 +74,7 @@ public class BookService : IBookService
     /// <returns></returns>
 
 
-    public async Task<IEnumerable<BookForResultDto>> RetrieveAllParticularAsync(long id, PaginationParams @params)
+    public async Task<IEnumerable<BookForResultDto>> RetrieveAllParticularBooksAsync(long id, PaginationParams @params)
     {
         var books = await this._repository.SelectAll()
             .Where(e => e.IsDeleted == false && e.LibraryId == id)

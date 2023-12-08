@@ -52,7 +52,7 @@ namespace Tahseen.Api.Controllers.BooksControllers
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await this.service.RetrieveAllParticularAsync(LibraryBranchId, @params)
+                Data = await this.service.RetrieveAllParticularBooksAsync(LibraryBranchId, @params)
 
             };
             return Ok(response);
