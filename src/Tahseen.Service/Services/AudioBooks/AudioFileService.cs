@@ -30,13 +30,13 @@ public class AudioFileService : IAudioFileService
     }
     public async Task<AudioFileForResultDto> AddAsync(AudioFileForCreationDto dto)
     {
-       /* var audioBook = await _audioBookRepository.SelectAll()
+         var audioBook = await _audioBookRepository.SelectAll()
             .Where(a => a.Id == dto.AudioBookId && a.IsDeleted == false)
             .FirstOrDefaultAsync();
 
         if (audioBook is null)
             throw new TahseenException(404, "AudioBook is not found");
-*/
+
         
         var FileUploadForCreation = new FileUploadForCreationDto
         {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
+using Tahseen.Domain.Entities;
 using Tahseen.Domain.Entities.Users;
 using Tahseen.Service.DTOs.Users.BorrowedBookCart;
 using Tahseen.Service.DTOs.Users.UserCart;
@@ -13,11 +14,12 @@ namespace Tahseen.Service.Services.Users
     {
         private readonly IMapper _mapper;
         private readonly IRepository<BorrowedBookCart> _repository;
-
-        public BorrowBookCartService(IMapper mapper, IRepository<BorrowedBookCart> repository)
+        private readonly IRepository<User> _userRepository;
+        public BorrowBookCartService(IMapper mapper, IRepository<BorrowedBookCart> repository,IRepository<User> userRepository)
         {
             _repository = repository;
             this._mapper = mapper;
+            _userRepository = userRepository;
         }
 
         
@@ -31,6 +33,15 @@ namespace Tahseen.Service.Services.Users
             {
                 throw new TahseenException(400, "BorrowedBookCart is exist");
             }
+
+            var user = await _userRepository.SelectAll()
+                .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new TahseenException(404, "User is not found");
+
             var data = this._mapper.Map<BorrowedBookCart>(dto);
             var result2 = await this._repository.CreateAsync(data);
             return this._mapper.Map<BorrowedBookCartForResultDto>(result2);

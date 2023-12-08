@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
+using Tahseen.Domain.Entities.Library;
 using Tahseen.Domain.Entities.SchoolAndEducations;
 using Tahseen.Service.DTOs.SchoolAndEducations;
 using Tahseen.Service.Exceptions;
@@ -12,11 +13,16 @@ public class SchoolBookService:ISchoolBookService
 {
     private readonly IMapper _mapper;
     private readonly IRepository<SchoolBook> _repository;
+    private readonly IRepository<LibraryBranch> _libraryRepository;
 
-    public SchoolBookService(IMapper mapper, IRepository<SchoolBook>repository)
+    public SchoolBookService(
+        IMapper mapper, 
+        IRepository<SchoolBook>repository,
+        IRepository<LibraryBranch> libraryRepository)
     {
         _mapper = mapper;
         _repository = repository;
+        _libraryRepository = libraryRepository;
     }
     public async Task<SchoolBookForResultDto> AddAsync(SchoolBookForCreationDto dto)
     {
@@ -25,6 +31,14 @@ public class SchoolBookService:ISchoolBookService
         {
             throw new TahseenException(409, "This book is exist");
         }
+        var library = await _libraryRepository.SelectAll()
+            .Where(l => l.IsDeleted == false && l.Id == dto.LibraryBranchId)
+            .AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (library is null)
+            throw new TahseenException(404, "LibraryBranch is not found");
+
         var mapped = _mapper.Map<SchoolBook>(dto);
         var result = _repository.CreateAsync(mapped);
         return _mapper.Map<SchoolBookForResultDto>(result);
@@ -37,6 +51,15 @@ public class SchoolBookService:ISchoolBookService
         {
             throw new TahseenException(404, "School Book is not found");
         }
+
+        var library = await _libraryRepository.SelectAll()
+            .Where(l => l.IsDeleted == false && l.Id == dto.LibraryBranchId)
+            .AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (library is null)
+            throw new TahseenException(404, "LibraryBranch is not found");
+
         var mapped = _mapper.Map(dto, book);
         mapped.UpdatedAt = DateTime.UtcNow;
         var result = _repository.UpdateAsync(mapped);
