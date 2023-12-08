@@ -42,15 +42,17 @@ namespace Tahseen.Api.Controllers.BooksControllers
                 Message = "Success",
                 Data = await this.service.RemoveAsync(id)
             });
+
         [HttpGet("ParticularLibraryBooks")]
         public async Task<IActionResult> GetParticularLibraryBooksAsync([FromQuery]PaginationParams @params)
         {
-            var LibraryBranchId = Convert.ToInt32(HttpContext.User.FindFirstValue("LibraryBranchId"));
+            var libraryBranchIdString = HttpContext.User.FindFirstValue("LibraryBranchId");
+            var LibraryBranchId = !string.IsNullOrEmpty(libraryBranchIdString) ? Convert.ToInt32(libraryBranchIdString) : 0;
             var response = new Response
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await this.service.RetrieveAllAsync(LibraryBranchId, @params)
+                Data = await this.service.RetrieveAllParticularAsync(LibraryBranchId, @params)
 
             };
             return Ok(response);

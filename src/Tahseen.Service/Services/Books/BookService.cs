@@ -74,7 +74,7 @@ public class BookService : IBookService
     /// <returns></returns>
 
 
-    public async Task<IEnumerable<BookForResultDto>> RetrieveAllAsync(long id, PaginationParams @params)
+    public async Task<IEnumerable<BookForResultDto>> RetrieveAllParticularAsync(long id, PaginationParams @params)
     {
         var books = await this._repository.SelectAll()
             .Where(e => e.IsDeleted == false && e.LibraryId == id)
@@ -89,12 +89,37 @@ public class BookService : IBookService
             .AsNoTracking()
             .ToListAsync();
 
-        if (books != null)
+        if(books.Count == 0)
         {
+            var PublicLibraries = await this._libraryRepository.SelectAll()
+                        .Where(l => l.LibraryType == LibraryType.Public && l.IsDeleted == false)
+                        .AsNoTracking()
+                        .ToListAsync();
+            if (PublicLibraries == null)
+            {
+                throw new TahseenException(404, "NotFound");
+            }
+            var publicLibraryBookIds = PublicLibraries.Select(l => l.Id);
+
+            var publicBooks = await this._repository.SelectAll()
+                .Where(e => publicLibraryBookIds.Contains(e.LibraryId) && e.IsDeleted == false)
+                .Include(l => l.Author)
+                .Include(l => l.LibraryBranch)
+                .Include(l => l.Publisher)
+                .Include(l => l.Language)
+                .Include(l => l.Genre)
+                .Include(b => b.Borrowers)
+                .ThenInclude(u => u.User)
+                .ToPagedList(@params)
+                .AsNoTracking()
+                .ToListAsync();
+            if (publicBooks != null)
+            {
+                return this._mapper.Map<IEnumerable<BookForResultDto>>(publicBooks);
+            }
+        }
             var result = this._mapper.Map<IEnumerable<BookForResultDto>>(books);
             return result;
-        }
-        throw new TahseenException(404, "NotFound");
     }
 
 

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Tahseen.Domain.Entities.Librarians;  // Include Librarian entity
 using Tahseen.Service.Interfaces.IAuthService;
 using Tahseen.Domain.Enums;
+using System.Data;
 
 namespace Tahseen.Service.Services.AuthService
 {
@@ -50,7 +51,8 @@ namespace Tahseen.Service.Services.AuthService
 
                 return new LoginForResultDto
                 {
-                    Token = GenerateToken(user)
+                    Token = GenerateToken(user),
+                    Role = user.Role.ToString(),
                 };
             }
 
@@ -71,7 +73,8 @@ namespace Tahseen.Service.Services.AuthService
 
                 return new LoginForResultDto
                 {
-                    Token = GenerateLibrarianToken(librarian)
+                    Token = GenerateLibrarianToken(librarian),
+                    Role = librarian.Roles.ToString(),
                 };
             }
 

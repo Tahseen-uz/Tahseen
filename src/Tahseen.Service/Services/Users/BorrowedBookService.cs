@@ -91,6 +91,8 @@ namespace Tahseen.Service.Services.Users
             var result = await this.BorrowedBook
                 .SelectAll()
                 .Where(t => t.IsDeleted == false)
+                .Include(b => b.Book)
+                .Include(u => u.User)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
             var res = this._mapper.Map<IEnumerable<BorrowedBookForResultDto>>(result);
