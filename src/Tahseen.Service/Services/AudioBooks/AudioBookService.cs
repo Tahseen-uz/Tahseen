@@ -149,11 +149,11 @@ public class AudioBookService : IAudioBookService
     {
         var results = await this._repository.SelectAll()
             .Where(a => !a.IsDeleted)
-            .Include(a => a.AudioFiles)
-            .ToPagedList(@params)
+            .Include(a => a.AudioFiles.Where(a => a.IsDeleted == false))
             .Include(a => a.Author)
             .Include(g => g.Genre)
             .Include(n => n.Narrator)
+            .ToPagedList(@params)
             .AsNoTracking()
             .ToListAsync();
 

@@ -237,7 +237,7 @@ public class BookService : IBookService
                               .Include(l => l.LibraryBranch)
                               .Include(l => l.Genre)
                               .Include(l => l.Language)
-                              .Include(b => b.Borrowers)
+                              .Include(b => b.Borrowers.Where(a => a.IsDeleted == false))
                               .ThenInclude(u => u.User)
                               .AsNoTracking()
                               .FirstOrDefaultAsync();
@@ -268,7 +268,7 @@ public class BookService : IBookService
             .Include(l => l.Publisher)
             .Include(l => l.Language)
             .Include(l => l.Genre)
-            .Include(b => b.Borrowers)
+            .Include(b => b.Borrowers.Where(a => a.IsDeleted == false))
             .ThenInclude(u => u.User)
             .ToPagedList(@params)
             .AsNoTracking()

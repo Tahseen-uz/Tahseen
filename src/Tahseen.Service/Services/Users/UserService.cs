@@ -207,7 +207,7 @@ namespace Tahseen.Service.Services.Users
         {
             var users = await _userRepository.SelectAll()
                 .Where(t => t.IsDeleted == false && t.LibraryBranchId == id)
-                .Include(b => b.BorrowedBooks)
+                .Include(b => b.BorrowedBooks.Where(n => n.IsDeleted == false))
                 .ToPagedList(@params)
                 .AsNoTracking()
                 .ToListAsync();
@@ -227,7 +227,7 @@ namespace Tahseen.Service.Services.Users
         {
             var data = await _userRepository.SelectAll()
                 .Where(t => t.Id == Id && t.IsDeleted == false)
-                .Include(b => b.BorrowedBooks.Where(e => e.IsDeleted == false))
+                .Include(b => b.BorrowedBooks.Where(n => n.IsDeleted == false))
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
