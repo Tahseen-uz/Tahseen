@@ -85,8 +85,8 @@ public class MappingProfile:Profile
 
         //Folder Name: Events
         CreateMap<Event, EventForCreationDto>().ReverseMap();
-        CreateMap<Event, EventForUpdateDto>().ReverseMap();
-        CreateMap<Event, EventForResultDto>().ReverseMap();
+        CreateMap<Event, EventForUpdateDto>().ReverseMap(); //done
+        CreateMap<Event, EventForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString() )).ReverseMap();
 
         CreateMap<EventRegistration, EventRegistrationForCreationDto>().ReverseMap();
         CreateMap<EventRegistration, EventRegistrationForUpdateDto>().ReverseMap();
