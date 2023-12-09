@@ -21,7 +21,7 @@ public class SurveyController : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _surveyService.RetrieveAllAsync()
+            Data = await _surveyService.RetrieveAllAsync()
         };
         return Ok(response);
     }

@@ -1,21 +1,28 @@
 ﻿using AutoMapper;
 using Tahseen.Domain.Entities;
+using Tahseen.Domain.Entities.AudioBooks;
 using Tahseen.Domain.Entities.Books;
+using Tahseen.Domain.Entities.EBooks;
 using Tahseen.Domain.Entities.Events;
 using Tahseen.Domain.Entities.Feedbacks;
 using Tahseen.Domain.Entities.Librarians;
 using Tahseen.Domain.Entities.Library;
+using Tahseen.Domain.Entities.Narrators;
 using Tahseen.Domain.Entities.Notifications;
 using Tahseen.Domain.Entities.Reservations;
 using Tahseen.Domain.Entities.Rewards;
 using Tahseen.Domain.Entities.SchoolAndEducations;
 using Tahseen.Domain.Entities.Users;
+using Tahseen.Service.DTOs.AudioBooks.AudioBook;
+using Tahseen.Service.DTOs.AudioBooks.AudioFile;
 using Tahseen.Service.DTOs.Books.Author;
 using Tahseen.Service.DTOs.Books.Book;
 using Tahseen.Service.DTOs.Books.BookReviews;
 using Tahseen.Service.DTOs.Books.CompletedBooks;
 using Tahseen.Service.DTOs.Books.Genre;
 using Tahseen.Service.DTOs.Books.Publishers;
+using Tahseen.Service.DTOs.EBooks.EBook;
+using Tahseen.Service.DTOs.EBooks.EBookFile;
 using Tahseen.Service.DTOs.Events.EventRegistration;
 using Tahseen.Service.DTOs.Events.Events;
 using Tahseen.Service.DTOs.Feedbacks.Feedback;
@@ -27,6 +34,7 @@ using Tahseen.Service.DTOs.Feedbacks.UserRatings;
 using Tahseen.Service.DTOs.Librarians;
 using Tahseen.Service.DTOs.Libraries.LibraryBranch;
 using Tahseen.Service.DTOs.Notifications;
+using Tahseen.Service.DTOs.Narrators;
 using Tahseen.Service.DTOs.Reservations;
 using Tahseen.Service.DTOs.Rewards.Badge;
 using Tahseen.Service.DTOs.Rewards.UserBadges;
@@ -40,6 +48,8 @@ using Tahseen.Service.DTOs.Users.UserCart;
 using Tahseen.Service.DTOs.Users.UserProgressTracking;
 using Tahseen.Service.DTOs.Users.UserSettings;
 using Tahseen.Service.DTOs.Users.Wishlists;
+using Tahseen.Domain.Entities.Languages;
+using Tahseen.Service.DTOs.Languages;
 
 namespace Tahseen.Service.Mappings;
 
@@ -63,7 +73,7 @@ public class MappingProfile:Profile
         
         CreateMap<Author, AuthorForCreationDto>().ReverseMap();
         CreateMap<Author, AuthorForUpdateDto>().ReverseMap();
-        CreateMap<Author, AuthorForResultDto>().ReverseMap();
+        CreateMap<Author, AuthorForResultDto>().ForMember(e => e.Nationality, o => o.MapFrom(src => src.Nationality.ToString())).ReverseMap();
 
         CreateMap<Book, BookForCreationDto>().ReverseMap();
         CreateMap<Book, BookForUpdateDto>().ReverseMap();
@@ -75,12 +85,12 @@ public class MappingProfile:Profile
 
         //Folder Name: Events
         CreateMap<Event, EventForCreationDto>().ReverseMap();
-        CreateMap<Event, EventForUpdateDto>().ReverseMap();
-        CreateMap<Event, EventForResultDto>().ReverseMap();
+        CreateMap<Event, EventForUpdateDto>().ReverseMap(); //done
+        CreateMap<Event, EventForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString() )).ReverseMap();
 
         CreateMap<EventRegistration, EventRegistrationForCreationDto>().ReverseMap();
         CreateMap<EventRegistration, EventRegistrationForUpdateDto>().ReverseMap();
-        CreateMap<EventRegistration, EventRegistrationForResultDto>().ReverseMap();
+        CreateMap<EventRegistration, EventRegistrationForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString())).ReverseMap();
 
         //Folder Name: Feedbacks
         CreateMap<Feedback,FeedbackForCreationDto>().ReverseMap();
@@ -92,7 +102,7 @@ public class MappingProfile:Profile
         CreateMap<News, NewsForUpdateDto>().ReverseMap();
         
         CreateMap<Surveys,SurveyForCreationDto>().ReverseMap();
-        CreateMap<Surveys,SurveyForResultDto>().ReverseMap();
+        CreateMap<Surveys,SurveyForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString())).ReverseMap();
         CreateMap<Surveys,SurveyForUpdateDto>().ReverseMap();
         
         CreateMap<SurveyResponses,SurveyResponseForCreationDto>().ReverseMap();
@@ -110,23 +120,23 @@ public class MappingProfile:Profile
         //Folder Name: Librarians and Library Branches
         CreateMap<Librarian, LibrarianForCreationDto>().ReverseMap();
         CreateMap<Librarian, LibrarianForUpdateDto>().ReverseMap();
-        CreateMap<Librarian, LibrarianForResultDto>().ReverseMap();
+        CreateMap<Librarian, LibrarianForResultDto>().ForMember(e => e.Roles, o => o.MapFrom(src => src.Roles.ToString())).ReverseMap();
 
         CreateMap<LibraryBranch, LibraryBranchForCreationDto>().ReverseMap();
-        CreateMap<LibraryBranch, LibraryBranchForResultDto>().ReverseMap();
+        CreateMap<LibraryBranch, LibraryBranchForResultDto>().ForMember(e => e.LibraryType, o => o.MapFrom(src => src.LibraryType.ToString())).ReverseMap();
         CreateMap<LibraryBranch, LibraryBranchForUpdateDto>().ReverseMap();
 
         //Folder Name: Notification
 
         CreateMap<Notification, NotificationForCreationDto>().ReverseMap();
-        CreateMap<Notification, NotificationForResultDto>().ReverseMap();
+        CreateMap<Notification, NotificationForResultDto>().ForMember(e => e.NotificationStatus, o => o.MapFrom(src => src.NotificationStatus.ToString())).ReverseMap();
         CreateMap<Notification, NotificationForUpdateDto>().ReverseMap();
 
         //Folder Name: Reservations
 
         CreateMap<Reservation, ReservationForCreationDto>().ReverseMap();
         CreateMap<Reservation, ReservationForUpdateDto>().ReverseMap();
-        CreateMap<Reservation, ReservationForResultDto>().ReverseMap();
+        CreateMap<Reservation, ReservationForResultDto>().ForMember(e => e.ReservationStatus, o => o.MapFrom(src => src.ReservationStatus.ToString())).ReverseMap();
 
 
         //Folder Name: Rewards
@@ -155,7 +165,7 @@ public class MappingProfile:Profile
 
         //Folder Name: Users
         CreateMap<User, UserForCreationDto>().ReverseMap();
-        CreateMap<User, UserForResultDto>().ReverseMap();
+        CreateMap<User, UserForResultDto>().ForMember(r => r.Roles, opt => opt.MapFrom(src => src.Role.ToString()) ).ReverseMap();
         CreateMap<User, UserForUpdateDto>().ReverseMap();
 
         CreateMap<UserCart, UserCartForCreationDto>().ReverseMap();
@@ -164,11 +174,11 @@ public class MappingProfile:Profile
 
         CreateMap<BorrowedBook, BorrowedBookForCreationDto>().ReverseMap();
         CreateMap<BorrowedBook, BorrowedBookForUpdateDto>().ReverseMap();
-        CreateMap<BorrowedBook, BorrowedBookForResultDto>().ReverseMap();
+        CreateMap<BorrowedBook, BorrowedBookForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString())).ReverseMap();
 
         CreateMap<Fine, FineForCreationDto>().ReverseMap();
         CreateMap<Fine, FineForUpdateDto>().ReverseMap();
-        CreateMap<Fine, FineForResultDto>().ReverseMap();
+        CreateMap<Fine, FineForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString())).ReverseMap();
 
         CreateMap<Registration, RegistrationForCreationDto>().ReverseMap();
         CreateMap<Registration, RegistrationForResultDto>().ReverseMap();
@@ -179,16 +189,49 @@ public class MappingProfile:Profile
 
         CreateMap<UserSettings, UserSettingsForCreationDto>().ReverseMap();
         CreateMap<UserSettings, UserSettingsForUpdateDto>().ReverseMap();
-        CreateMap<UserSettings, UserSettingsForResultDto>().ReverseMap();
+        CreateMap<UserSettings, UserSettingsForResultDto>().
+            ForMember(e => e.NotificationPreference, o => o.MapFrom(src => src.NotificationPreference.ToString())).
+            ForMember(e => e.ThemePreference, o => o.MapFrom(src => src.ThemePreference.ToString())).
+            ForMember(e => e.LanguagePreference, o => o.MapFrom(src => src.LanguagePreference.ToString())).ReverseMap();
 
         CreateMap<BorrowedBookCart, BorrowedBookCartForCreationDto>().ReverseMap();
         CreateMap<BorrowedBookCart, BorrowedBookCartForResultDto>().ReverseMap();
 
         CreateMap<WishList, WishlistForCreationDto>().ReverseMap();
-        CreateMap<WishList, WishlistForResultDto>().ReverseMap();
+        CreateMap<WishList, WishlistForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString())).ReverseMap();
         CreateMap<WishList, WishlistForUpdateDto>().ReverseMap();
 
+        //Folder Name: EBook
+        CreateMap<EBook, EBookForResultDto>().ReverseMap();
+        CreateMap<EBook, EBookForUpdateDto>().ReverseMap();
+        CreateMap<EBook, EBookForCreationDto>().ReverseMap();
 
+        CreateMap<EBookFile, EBookFileForResultDto>().ReverseMap();
+        CreateMap<EBookFile, EBookFileForUpdateDto>().ReverseMap();
+        CreateMap<EBookFile, EBookFileForCreationDto>().ReverseMap();
 
+        // Folder Name : AudiBook
+
+        CreateMap<AudioBook, AudioBookForResultDto>().ReverseMap();
+        CreateMap<AudioBook, AudioBookForUpdateDto>().ReverseMap();
+        CreateMap<AudioBook, AudioBookForCreationDto>().ReverseMap();
+
+        CreateMap<AudioFile, AudioFileForResultDto>().ReverseMap();
+        CreateMap<AudioFile, AudioFileForUpdateDto>().ReverseMap();
+        CreateMap<AudioFile, AudioFileForCreationDto>().ReverseMap();
+
+        // Folder Name: Narrator
+
+        CreateMap<Narrator, NarratorForResultDto>().ReverseMap();
+        CreateMap<Narrator, NarratorForUpdateDto>().ReverseMap();
+        CreateMap<Narrator, NarratorForCreationDto>().ReverseMap();
+
+        //Language 
+        CreateMap<Language, LanguageForCreationDto>().ReverseMap();
+        CreateMap<Language, LanguageForUpdateDto>().ReverseMap();
+        CreateMap<Language, LanguageForResultDto>().ReverseMap();
+
+        //Registration
+        CreateMap<User, RegistrationForResultDto>().ReverseMap();
     }
 }

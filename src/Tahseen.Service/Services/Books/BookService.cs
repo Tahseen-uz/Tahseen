@@ -8,8 +8,12 @@ using Tahseen.Service.Interfaces.IFileUploadService;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Domain.Entities.Library;
-using Tahseen.Service.Exceptions;
 using static System.Reflection.Metadata.BlobBuilder;
+using Tahseen.Service.Configurations;
+using Tahseen.Service.Extensions;
+using Tahseen.Domain.Enums;
+using Tahseen.Domain.Entities.EBooks;
+using Tahseen.Domain.Entities.Languages;
 
 namespace Tahseen.Service.Services.Books;
 
@@ -17,36 +21,95 @@ public class BookService : IBookService
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Book> _repository;
-    private readonly IRepository<LibraryBranch> _libraryRepository;
+    private readonly IRepository<Genre> _genreRepository;
     private readonly IFileUploadService _fileUploadService;
+    private readonly IRepository<Author> _authorRepository;
+    private readonly IRepository<Language> _languageRepository;
+    private readonly IRepository<Publisher> _publisherRepository;
+    private readonly IRepository<LibraryBranch> _libraryRepository;
 
 
-    public BookService(IMapper mapper, IRepository<Book> repository, IFileUploadService fileUploadService, IRepository<LibraryBranch> libraryRepository)
+    public BookService(
+        IMapper mapper,
+        IRepository<Book> repository,
+        IRepository<Genre> genreRepository,
+        IFileUploadService fileUploadService, 
+        IRepository<Author> authorRepository,
+        IRepository<Language> languageRepository,
+        IRepository<Publisher> publisherRepository,
+        IRepository<LibraryBranch> libraryRepository)
     {
         this._mapper = mapper;
         this._repository = repository;
         this._fileUploadService = fileUploadService;
         this._libraryRepository = libraryRepository;
-
+        _genreRepository = genreRepository;
+        _authorRepository = authorRepository;
+        _languageRepository = languageRepository;
+        _publisherRepository = publisherRepository;
     }
 
     public async Task<BookForResultDto> AddAsync(BookForCreationDto dto)
     {
         var book = await this._repository.SelectAll()
-            .Where(b => b.Title.ToLower() == dto.Title.ToLower() && b.IsDeleted == false)
+            .Where(b => b.Title.ToLower() == dto.Title.ToLower() && b.LibraryId == dto.LibraryId && b.IsDeleted == false)
             .FirstOrDefaultAsync();
         if (book is not null)
             throw new TahseenException(400, "Book is already exist");
 
-        var FileUploadForCreation = new FileUploadForCreationDto
+        var existingGenre = await this._genreRepository.SelectAll()
+        .Where(g => g.Id == dto.GenreId && g.IsDeleted == false).AsNoTracking()
+        .FirstOrDefaultAsync();
+
+        if (existingGenre is null)
         {
-            FolderPath = "BooksAssets",
-            FormFile = dto.BookImage,
-        };
-        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            throw new TahseenException(400, "Genre does not exist");
+        }
+        
+        var publisher = await _publisherRepository.SelectAll().
+            Where(p => p.Id == dto.PublisherId && p.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (publisher is null)
+            throw new TahseenException(404, "Publisher is not found");
+
+        var author = await _authorRepository.SelectAll().
+            Where(a => a.IsDeleted == false && a.Id == dto.AuthorId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (author is null)
+            throw new TahseenException(404, "Author is not found");
+
+        var library = await _libraryRepository.SelectAll()
+            .Where(l => l.IsDeleted == false && l.Id == dto.LibraryId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (library is null)
+            throw new TahseenException(404, "Library is not found");
+
+        var language = await _languageRepository.SelectAll().
+            Where(l => l.IsDeleted == false && l.Id == dto.LanguageId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (language is null)
+            throw new TahseenException(404, "Language is not found");
 
         var mapped = this._mapper.Map<Book>(dto);
-        mapped.BookImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        if(dto.BookImage != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "BooksAssets",
+                FormFile = dto.BookImage,
+            };
+            var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            mapped.BookImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        }
+
         var result = await _repository.CreateAsync(mapped);
         return _mapper.Map<BookForResultDto>(result);
     }
@@ -58,47 +121,52 @@ public class BookService : IBookService
     /// <returns></returns>
 
 
-    public async Task<IEnumerable<BookForResultDto>> RetrieveAllAsync(long? id)
+    public async Task<IEnumerable<BookForResultDto>> RetrieveAllParticularBooksAsync(long id, PaginationParams @params)
     {
-        if (id > 0)
+        var books = await this._repository.SelectAll()
+            .Where(e => e.IsDeleted == false && e.LibraryId == id)
+            .Include(l => l.Author) 
+            .Include(l => l.LibraryBranch)
+            .Include(l => l.Publisher)
+            .Include(l => l.Genre)
+            .Include(l => l.Language)
+            .Include(b => b.Borrowers)
+            .ThenInclude(u => u.User)
+            .ToPagedList(@params)
+            .AsNoTracking()
+            .ToListAsync();
+
+        if(books.Count == 0)
         {
-            var library = await this._libraryRepository.SelectAll().Where(l => l.Id == id).FirstOrDefaultAsync();
-            if (library == null || library.IsDeleted == true)
+            var PublicLibraries = await this._libraryRepository.SelectAll()
+                        .Where(l => l.LibraryType == LibraryType.Public && l.IsDeleted == false)
+                        .AsNoTracking()
+                        .ToListAsync();
+            if (PublicLibraries == null)
             {
-                // Handle the case where the specified library branch does not exist or is deleted
-                throw new TahseenException(404, "Library branch not found");
+                throw new TahseenException(404, "NotFound");
             }
-            var books = this._repository.SelectAll()
-                .Where(e => e.IsDeleted == false && e.LibraryId == id);
+            var publicLibraryBookIds = PublicLibraries.Select(l => l.Id);
 
-            // Update BookImage URLs
-            foreach (var book in books)
+            var publicBooks = await this._repository.SelectAll()
+                .Where(e => publicLibraryBookIds.Contains(e.LibraryId) && e.IsDeleted == false)
+                .Include(l => l.Author)
+                .Include(l => l.LibraryBranch)
+                .Include(l => l.Publisher)
+                .Include(l => l.Language)
+                .Include(l => l.Genre)
+                .Include(b => b.Borrowers)
+                .ThenInclude(u => u.User)
+                .ToPagedList(@params)
+                .AsNoTracking()
+                .ToListAsync();
+            if (publicBooks != null)
             {
-                book.BookImage = $"https://localhost:7020/{book.BookImage.Replace('\\', '/').TrimStart('/')}";
+                return this._mapper.Map<IEnumerable<BookForResultDto>>(publicBooks);
             }
-
-            return this._mapper.Map<IEnumerable<BookForResultDto>>(books);
         }
-        else if (id == null)
-        {
-            var allLibraries = this._libraryRepository.SelectAll().Where(e => e.IsDeleted == false && e.LibraryType == Domain.Enums.LibraryType.Public);
-            var publicLibraryIds = allLibraries.Select(l => l.Id).ToList();
-
-            var publicLibraryBooks = this._repository.SelectAll()
-                .Where(e => e.IsDeleted == false && publicLibraryIds.Contains(e.LibraryId));
-
-            foreach (var book in publicLibraryBooks)
-            {
-                book.BookImage = $"https://localhost:7020/{book.BookImage.Replace('\\', '/').TrimStart('/')}";
-            }
-
-            return this._mapper.Map<IEnumerable<BookForResultDto>>(publicLibraryBooks);
-        }
-        else
-        {
-            // Handle invalid input for libraryBranchId (less than 0)
-            throw new TahseenException(400, "Invalid library branch ID");
-        }
+            var result = this._mapper.Map<IEnumerable<BookForResultDto>>(books);
+            return result;
     }
 
 
@@ -112,23 +180,39 @@ public class BookService : IBookService
         if (book is null)
             throw new Exception("Book not found");
 
-        // delete image
-        await _fileUploadService.FileDeleteAsync(book.BookImage);
-
-        // uploading image
-        var FileUploadForCreation = new FileUploadForCreationDto
+        if (dto != null && dto.BookImage != null)
         {
-            FolderPath = "BooksAssets",
-            FormFile = dto.BookImage,
-        };
-        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+            if (book.BookImage != null)
+            {
+                await _fileUploadService.FileDeleteAsync(book.BookImage);
 
-        var mappedBook = _mapper.Map(dto, book);
-        mappedBook.UpdatedAt = DateTime.UtcNow;
-        mappedBook.BookImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-        await _repository.UpdateAsync(mappedBook);
-        return _mapper.Map<BookForResultDto>(mappedBook);
-        
+            }
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "BooksAssets",
+                FormFile = dto.BookImage,
+            };
+            var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+
+            book.BookImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            book.Title = !string.IsNullOrEmpty(dto.Title) ? dto.Title : book.Title;
+            book.Content = !string.IsNullOrEmpty(dto.Content) ? dto.Content : book.Content;
+            book.TotalCopies = dto.TotalCopies != null ? dto.TotalCopies : book.TotalCopies;
+            book.ShelfLocation = !string.IsNullOrEmpty(dto.ShelfLocation) ? dto.ShelfLocation : book.ShelfLocation;
+        }
+        if (dto != null && dto.BookImage == null)
+        {
+            book.BookImage = book.BookImage;
+            book.Title = !string.IsNullOrEmpty(dto.Title) ? dto.Title : book.Title;
+            book.Content = !string.IsNullOrEmpty(dto.Content) ? dto.Content : book.Content;
+            book.TotalCopies = dto.TotalCopies != null ? dto.TotalCopies : book.TotalCopies;
+            book.ShelfLocation = !string.IsNullOrEmpty(dto.ShelfLocation) ? dto.ShelfLocation : book.ShelfLocation;
+        }
+
+        book.UpdatedAt = DateTime.UtcNow;
+        await _repository.UpdateAsync(book);
+        return _mapper.Map<BookForResultDto>(book);
+        //Done
     }
 
     public async Task<bool> RemoveAsync(long id)
@@ -136,22 +220,64 @@ public class BookService : IBookService
         var book = await this._repository.SelectAll()
             .Where(b => b.Id == id && !b.IsDeleted)
             .FirstOrDefaultAsync();
-        if (book is null) 
+        if (book is null)
             throw new TahseenException(404, "Book is not found");
+        if (book.BookImage != null)
+            await _fileUploadService.FileDeleteAsync(book.BookImage);
 
-        await _fileUploadService.FileDeleteAsync(book.BookImage);
         return await _repository.DeleteAsync(id);
     }
 
     public async Task<BookForResultDto> RetrieveByIdAsync(long id)
     {
-        var book = await _repository.SelectByIdAsync(id);
-        if (book is not null && !book.IsDeleted)
+        var book = await this._repository.SelectAll()
+                       .Where(e => e.IsDeleted == false && e.Id == id)
+                              .Include(l => l.Author)
+                              .Include(l => l.Publisher)
+                              .Include(l => l.LibraryBranch)
+                              .Include(l => l.Genre)
+                              .Include(l => l.Language)
+                              .Include(b => b.Borrowers.Where(a => a.IsDeleted == false))
+                              .ThenInclude(u => u.User)
+                              .AsNoTracking()
+                              .FirstOrDefaultAsync();
+        if (book is not null)
         {
-            book.BookImage = $"https://localhost:7020/{book.BookImage.Replace('\\', '/').TrimStart('/')}";
             return _mapper.Map<BookForResultDto>(book);
         }
-        
-        throw new TahseenException(404,"Book does not found");
+
+        throw new TahseenException(404, "Book does not found");
+    }
+
+    public async Task<IEnumerable<BookForResultDto>> RetrieveAllPublicLibraryBooksAsync(PaginationParams @params)
+    {
+        var PublicLibraries = await this._libraryRepository.SelectAll()
+            .Where(l => l.LibraryType == LibraryType.Public && l.IsDeleted == false)
+            .AsNoTracking()
+            .ToListAsync();
+        if (PublicLibraries == null)
+        {
+            throw new TahseenException(404, "NotFound");
+        }
+        var publicLibraryBookIds = PublicLibraries.Select(l => l.Id);
+
+        var publicBooks = await this._repository.SelectAll()
+            .Where(e => publicLibraryBookIds.Contains(e.LibraryId) && e.IsDeleted == false)
+            .Include(l => l.Author)
+            .Include(l => l.LibraryBranch)
+            .Include(l => l.Publisher)
+            .Include(l => l.Language)
+            .Include(l => l.Genre)
+            .Include(b => b.Borrowers.Where(a => a.IsDeleted == false))
+            .ThenInclude(u => u.User)
+            .ToPagedList(@params)
+            .AsNoTracking()
+            .ToListAsync();
+        if (publicBooks != null)
+        {
+            return this._mapper.Map<IEnumerable<BookForResultDto>>(publicBooks);
+        }
+        throw new TahseenException(404, "NotFound");
+
     }
 }

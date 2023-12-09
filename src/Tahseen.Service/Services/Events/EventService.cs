@@ -1,13 +1,12 @@
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 using Tahseen.Data.IRepositories;
-using Tahseen.Domain.Entities.Books;
-using Tahseen.Domain.Entities.Events;
-using Tahseen.Service.DTOs.Books.Author;
-using Tahseen.Service.DTOs.Events.Events;
-using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.Exceptions;
+using Tahseen.Service.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Domain.Entities.Events;
+using Tahseen.Service.Configurations;
+using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Service.DTOs.Events.Events;
 using Tahseen.Service.Interfaces.IEventsServices;
 using Tahseen.Service.Interfaces.IFileUploadService;
 
@@ -20,7 +19,9 @@ public class EventService : IEventsService
     private readonly IFileUploadService _fileUploadService;
 
 
-    public EventService(IMapper mapper, IRepository<Event> repository, IFileUploadService fileUploadService)
+    public EventService(IMapper mapper, 
+        IRepository<Event> repository, 
+        IFileUploadService fileUploadService)
     {
         this._mapper = mapper;
         this._repository = repository;
@@ -29,21 +30,29 @@ public class EventService : IEventsService
 
     public async Task<EventForResultDto> AddAsync(EventForCreationDto dto)
     {
-        var Check = await this._repository.SelectAll().Where(a => a.Title == dto.Title && a.Location == dto.Location && a.IsDeleted == false).FirstOrDefaultAsync();
+        var Check = await this._repository
+            .SelectAll()
+            .Where(a => a.Title.ToLower() == dto.Title.ToLower() && a.Location == dto.Location && a.IsDeleted == false)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
         if (Check != null)
         {
             throw new TahseenException(409, "This Event is exist");
         }
-        var FileUploadForCreation = new FileUploadForCreationDto()
-        {
-            FolderPath = "EventImages",
-            FormFile = dto.Image,
-        };
-        var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
-
         var MappedData = this._mapper.Map<Event>(dto);
 
-        MappedData.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        if (dto.Image != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto()
+            {
+                FolderPath = "EventImages",
+                FormFile = dto.Image,
+            };
+            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+
+            MappedData.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        }
+
         var result = await _repository.CreateAsync(MappedData);
 
         return _mapper.Map<EventForResultDto>(result);
@@ -55,46 +64,80 @@ public class EventService : IEventsService
             .FirstOrDefaultAsync();
         if (@event is not null)
         {
-            //Deleting Image
-            await _fileUploadService.FileDeleteAsync(@event.Image);
-
-            //Uploading Image
-            var FileUploadForCreation = new FileUploadForCreationDto()
+            if(dto != null && dto.Image != null)
             {
-                FolderPath = "EventImages",
-                FormFile = dto.Image,
-            };
-            var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
+                if (dto.Image != null)
+                {
+                    await _fileUploadService.FileDeleteAsync(@event.Image);
+                }
+                var FileUploadForCreation = new FileUploadForCreationDto()
+                {
+                    FolderPath = "EventImages",
+                    FormFile = dto.Image,
+                };
+                var FileResult = await _fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-            var MappedData = this._mapper.Map(dto, @event);
-            MappedData.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-            MappedData.UpdatedAt = DateTime.UtcNow;
-            await _repository.UpdateAsync(MappedData);
-            return _mapper.Map<EventForResultDto>(MappedData);
+                @event.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                @event.Title = !string.IsNullOrEmpty(dto.Title) ? dto.Title : @event.Title;
+                @event.Description = !string.IsNullOrEmpty(dto.Description) ? dto.Description : @event.Description;
+                @event.Location = !string.IsNullOrEmpty(dto.Location) ? dto.Location : @event.Location;
+                @event.Participants = dto.Participants != null ? dto.Participants : @event.Participants;
+                @event.StartDate = dto.StartDate != null ? dto.StartDate : @event.StartDate;
+                @event.EndDate = dto.EndDate != null ? dto.EndDate : @event.EndDate;
+                @event.Status = dto.Status != null ? dto.Status : @event.Status;
+            }
+
+            if (dto !=null && dto.Image == null)
+            {
+                @event.Image = @event.Image;
+                @event.Title = !string.IsNullOrEmpty(dto.Title) ? dto.Title : @event.Title;
+                @event.Description = !string.IsNullOrEmpty(dto.Description) ? dto.Description : @event.Description;
+                @event.Location = !string.IsNullOrEmpty(dto.Location) ? dto.Location : @event.Location;
+                @event.Participants = dto.Participants != null ? dto.Participants : @event.Participants;
+                @event.StartDate = dto.StartDate != null ? dto.StartDate : @event.StartDate;
+                @event.EndDate = dto.EndDate != null ? dto.EndDate : @event.EndDate;
+                @event.Status = dto.Status != null ? dto.Status : @event.Status;
+            }
+
+            @event.UpdatedAt = DateTime.UtcNow;
+            await _repository.UpdateAsync(@event);
+            return _mapper.Map<EventForResultDto>(@event);
         }
         throw new Exception("Event not found");
     }
 
     public async Task<bool> RemoveAsync(long id)
     {
-        var results = await this._repository.SelectAll().Where(a => a.Id == id && a.IsDeleted == false)
+        var results = await this._repository
+            .SelectAll()
+            .Where(a => a.Id == id && a.IsDeleted == false)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
         if(results is null)
         {
             throw new TahseenException(404, "Not found");
         }
-        await _fileUploadService.FileDeleteAsync(results.Image);
+        if (results.Image != null)
+        {
+            await _fileUploadService.FileDeleteAsync(results.Image);
+        }
         return await _repository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<EventForResultDto>> RetrieveAllAsync()
+    public async Task<IEnumerable<EventForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
-        var results = this._repository.SelectAll().Where(a => !a.IsDeleted);
-        foreach (var result in results)
+        var results = await this._repository.SelectAll()
+            .Where(a => !a.IsDeleted)
+            .ToPagedList(@params)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var result = this._mapper.Map<IEnumerable<EventForResultDto>>(results);
+        foreach(var item in result)
         {
-            result.Image = $"https://localhost:7020/{result.Image.Replace('\\', '/').TrimStart('/')}";
+            item.Status = item.Status.ToString();
         }
-        return _mapper.Map<IEnumerable<EventForResultDto>>(results);
+        return result;
     }
 
     public async Task<EventForResultDto> RetrieveByIdAsync(long id)
@@ -102,8 +145,9 @@ public class EventService : IEventsService
         var result = await _repository.SelectByIdAsync(id);
         if (result is not null && !result.IsDeleted)
         {
-            result.Image = $"https://localhost:7020/{result .Image.Replace('\\', '/').TrimStart('/')}";
-            return _mapper.Map<EventForResultDto>(result);
+            var res =  this._mapper.Map<EventForResultDto>(result);
+            res.Status = res.Status.ToString();
+            return res;
         }
 
         throw new TahseenException(404, "Event not found");

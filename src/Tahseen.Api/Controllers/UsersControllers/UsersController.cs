@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tahseen.Api.Models;
+using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Users.User;
 using Tahseen.Service.Interfaces.IUsersService;
 
@@ -17,15 +19,15 @@ namespace Tahseen.Api.Controllers.UsersControllers
 
         ///
         ///
-        [Authorize(Policy = "Admins")]
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery]PaginationParams @params)
         {
+            var libraryBranchId = Convert.ToInt32(HttpContext.User.FindFirstValue("LibraryBranchId"));
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = _userService.RetrieveAllAsync()
+                Data =  await _userService.RetrieveAllAsync(@params,libraryBranchId)
             };
             return Ok(response);
         }
@@ -81,6 +83,22 @@ namespace Tahseen.Api.Controllers.UsersControllers
             return Ok(response);
         }
         //Added
+
+
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetLoggedAsync()
+        {
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirstValue("Id"));
+            var response = new Response()
+            {
+                StatusCode = 200,
+                Message = "Success",
+                Data = await _userService.RetrieveByIdAsync(UserId)
+            };
+            return Ok(response);
+        }
 
     }
 }

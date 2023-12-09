@@ -20,7 +20,7 @@ public class FeedbackController : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _feedbackService.RetrieveAllAsync()
+            Data = await _feedbackService.RetrieveAllAsync()
         };
         return Ok(response);
     }

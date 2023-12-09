@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Service.DTOs.Books.Book;
 using Tahseen.Service.Interfaces.IBookServices;
+using Tahseen.Service.Configurations;
+using System.Security.Claims;
 
 namespace Tahseen.Api.Controllers.BooksControllers
 {
@@ -40,14 +42,31 @@ namespace Tahseen.Api.Controllers.BooksControllers
                 Message = "Success",
                 Data = await this.service.RemoveAsync(id)
             });
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync([FromQuery] long? id) => // librarybranchID
+
+        [HttpGet("ParticularLibraryBooks")]
+        public async Task<IActionResult> GetParticularLibraryBooksAsync([FromQuery]PaginationParams @params)
+        {
+            var libraryBranchIdString = HttpContext.User.FindFirstValue("LibraryBranchId");
+            var LibraryBranchId = !string.IsNullOrEmpty(libraryBranchIdString) ? Convert.ToInt32(libraryBranchIdString) : 0;
+            var response = new Response
+            {
+                StatusCode = 200,
+                Message = "Success",
+                Data = await this.service.RetrieveAllParticularBooksAsync(LibraryBranchId, @params)
+
+            };
+            return Ok(response);
+        }
+
+        [HttpGet("AllPublicLibraryBooks")]
+        public async Task<IActionResult> GetAllPublicLibraryBooksAsync([FromQuery] PaginationParams @params) =>
             Ok(new Response
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await this.service.RetrieveAllAsync(id)
+                Data = await this.service.RetrieveAllPublicLibraryBooksAsync(@params)
             });
+
 
 
 

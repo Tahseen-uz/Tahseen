@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
+using Tahseen.Domain.Entities.Library;
 using Tahseen.Domain.Entities.SchoolAndEducations;
 using Tahseen.Service.DTOs.SchoolAndEducations;
 using Tahseen.Service.Exceptions;
@@ -12,8 +13,16 @@ public class PupilBookConnectionService:IPupilBookConnectionService
 {
     private readonly IMapper _mapper;
     private readonly IRepository<PupilBookConnection> _repository;
-
-    public PupilBookConnectionService(IMapper mapper, IRepository<PupilBookConnection>repository)
+    private readonly IRepository<Pupil> _pupilRepository;
+    private readonly IRepository<SchoolBook> _schoolBookRepository;
+    private readonly IRepository<LibraryBranch> _libraryRepository;
+    public PupilBookConnectionService(
+        IMapper mapper, 
+        IRepository<PupilBookConnection> repository,
+        IRepository<Pupil> pupilRepository,
+        IRepository<SchoolBook> schoolBookRepository,
+        IRepository<LibraryBranch> libraryRepository
+        )
     {
         _mapper = mapper;
         _repository = repository;
@@ -21,6 +30,31 @@ public class PupilBookConnectionService:IPupilBookConnectionService
     public async Task<PupilBookConnectionForResultDto> AddAsync(PupilBookConnectionForCreationDto dto)
     {
         var Check = this._repository.SelectAll().Where(p => p.PupilId == dto.PupilId && p.SchoolBookId == dto.SchoolBookId && p.LibraryBranchId == dto.PupilId && p.IsDeleted == false);
+
+        var pupil = await _pupilRepository.SelectAll()
+            .Where(p => p.Id == dto.PupilId && p.IsDeleted == false)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (pupil is null)
+            throw new TahseenException(404, "Pupil is not found");
+
+        var schoolBook = await _schoolBookRepository.SelectAll()
+            .Where(s => s.IsDeleted == false && s.Id == dto.SchoolBookId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (schoolBook is null)
+            throw new TahseenException(404, "SchoolBook is not found");
+
+        var library = await _libraryRepository.SelectAll()
+            .Where(l => l.IsDeleted == false && l.Id == dto.LibraryBranchId)
+            .AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (library is null)
+            throw new TahseenException(404, "LibraryBranch is not found");
+
         if(Check != null)
         {
             throw new TahseenException(409, "This pupil has this book");
@@ -37,6 +71,31 @@ public class PupilBookConnectionService:IPupilBookConnectionService
         {
             throw new TahseenException(404, "PupilBookConnection is not found");
         }
+
+        var pupil = await _pupilRepository.SelectAll()
+           .Where(p => p.Id == dto.PupilId && p.IsDeleted == false)
+           .AsNoTracking()
+           .FirstOrDefaultAsync();
+
+        if (pupil is null)
+            throw new TahseenException(404, "Pupil is not found");
+
+        var schoolBook = await _schoolBookRepository.SelectAll()
+            .Where(s => s.IsDeleted == false && s.Id == dto.SchoolBookId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (schoolBook is null)
+            throw new TahseenException(404, "SchoolBook is not found");
+
+        var library = await _libraryRepository.SelectAll()
+            .Where(l => l.IsDeleted == false && l.Id == dto.LibraryBranchId)
+            .AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (library is null)
+            throw new TahseenException(404, "LibraryBranch is not found");
+
         var updated = _mapper.Map(dto,mapped);
         updated.UpdatedAt = DateTime.UtcNow;
         var result = _repository.UpdateAsync(updated);

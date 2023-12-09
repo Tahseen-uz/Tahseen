@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Tahseen.Data.IRepositories;
 using Tahseen.Service.Exceptions;
 using Tahseen.Domain.Entities.Books;
@@ -7,6 +7,8 @@ using Tahseen.Service.Interfaces.IBookServices;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Service.Interfaces.IFileUploadService;
 using Tahseen.Service.DTOs.FileUpload;
+using Tahseen.Service.Configurations;
+using Tahseen.Service.Extensions;
 
 namespace Tahseen.Service.Services.Books;
 
@@ -29,16 +31,20 @@ public class PublisherService : IPublisherService
         {
             throw new TahseenException(409, "This Publisher is exist");
         }
-
-        var FileUploadForCreation = new FileUploadForCreationDto()
-        {
-            FolderPath = "PublisherImages",
-            FormFile = dto.Image,
-        };
-        var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
-
         var mapped = mapper.Map<Publisher>(dto);
-        mapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+
+        if (dto.Image != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto()
+            {
+                FolderPath = "PublisherImages",
+                FormFile = dto.Image,
+            };
+            var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
+            mapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+
+        }
+
         var result = await this.repository.CreateAsync(mapped);
 
         return mapper.Map<PublisherForResultDto>(result);
@@ -50,7 +56,6 @@ public class PublisherService : IPublisherService
         if (publisher == null || publisher.IsDeleted)
             throw new TahseenException(404, "Publisher doesn't found");
 
-        publisher.Image = $"https://localhost:7020/{publisher.Image.Replace('\\', '/').TrimStart('/')}";
         return mapper.Map<PublisherForResultDto>(publisher);
     }
 
@@ -60,20 +65,35 @@ public class PublisherService : IPublisherService
         if (publisher == null)
             throw new TahseenException(404, "Publisher doesn't found");
 
-        await this.fileUploadService.FileDeleteAsync(publisher.Image);
-
-        var FileUploadForCreation = new FileUploadForCreationDto()
+        if(dto != null && dto.Image != null)
         {
-            FolderPath = "PublisherImages",
-            FormFile = dto.Image,
-        };
-        var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
+            if(publisher.Image != null)
+            {
+                await this.fileUploadService.FileDeleteAsync(publisher.Image);
+            }
 
-        var publisherMapped = mapper.Map(dto, publisher);
-        publisherMapped.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-        publisherMapped.UpdatedAt = DateTime.UtcNow;
-        var result = await this.repository.UpdateAsync(publisherMapped);
+            var FileUploadForCreation = new FileUploadForCreationDto()
+            {
+                FolderPath = "PublisherImages",
+                FormFile = dto.Image,
+            };
+            var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
 
+            publisher.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            publisher.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : publisher.Name;
+            publisher.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : publisher.Address;
+            publisher.ContactInformation = !string.IsNullOrEmpty(dto.ContactInformation) ? dto.ContactInformation : publisher.ContactInformation;
+        }
+        if(dto != null && dto.Image == null)
+        {
+            publisher.Image = publisher.Image;
+            publisher.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : publisher.Name;
+            publisher.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : publisher.Address;
+            publisher.ContactInformation = !string.IsNullOrEmpty(dto.ContactInformation) ? dto.ContactInformation : publisher.ContactInformation;
+        }
+
+        publisher.UpdatedAt = DateTime.UtcNow;
+        var result = await this.repository.UpdateAsync(publisher);
         return mapper.Map<PublisherForResultDto>(result);
     }
 
@@ -86,18 +106,21 @@ public class PublisherService : IPublisherService
         if (publisher is null)
             throw new TahseenException(404, "Publisher is not found");
 
-        await fileUploadService.FileDeleteAsync(publisher.Image);
+        if (publisher.Image != null)
+        {
+            await fileUploadService.FileDeleteAsync(publisher.Image);
+        }
 
         return await repository.DeleteAsync(id);
     }
    
-    public async Task<IEnumerable<PublisherForResultDto>> RetrieveAllAsync()
+    public async Task<IEnumerable<PublisherForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
-        var results = this.repository.SelectAll().Where(t => !t.IsDeleted);
-        foreach (var result in results)
-        {
-            result.Image = $"https://localhost:7020/{result.Image.Replace('\\', '/').TrimStart('/')}";
-        }
+        var results = await this.repository.SelectAll()
+            .Where(t => !t.IsDeleted)
+            .ToPagedList(@params)
+            .ToListAsync();
+
         return mapper.Map<IEnumerable<PublisherForResultDto>>(results);
     }
 }

@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities.Library;
+using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.FileUpload;
 using Tahseen.Service.DTOs.Libraries.LibraryBranch;
 using Tahseen.Service.Exceptions;
+using Tahseen.Service.Extensions;
 using Tahseen.Service.Interfaces.IFileUploadService;
 using Tahseen.Service.Interfaces.ILibrariesService;
 
@@ -30,16 +32,18 @@ public class LibraryBranchService : ILibraryBranchService
             throw new TahseenException(409, "This LibraryBranch is exist");
         }
 
-        // upload image
-        var FileUploadForCreation = new FileUploadForCreationDto
-        {
-            FolderPath = "LibraryBranchAssets",
-            FormFile = dto.Image
-        };
-
-        var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
         var mappedLibraryBranch = this.mapper.Map<LibraryBranch>(dto);
-        mappedLibraryBranch.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        if(dto.Image != null)
+        {
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "LibraryBranchAssets",
+                FormFile = dto.Image
+            };
+            var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
+            mappedLibraryBranch.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+        }
+
         var result = await this.repository.CreateAsync(mappedLibraryBranch);
         return this.mapper.Map<LibraryBranchForResultDto>(result);
     }
@@ -50,23 +54,40 @@ public class LibraryBranchService : ILibraryBranchService
         if (libraryBranch == null)
             throw new TahseenException(404, "LibraryBranch not found");
 
-        //delete image
-        await fileUploadService.FileDeleteAsync(libraryBranch.Image);
-
-        //upload image
-        var FileUploadForCreation = new FileUploadForCreationDto
+        if(dto != null && dto.Image != null)
         {
-            FolderPath = "LibraryBranchAssets",
-            FormFile = dto.Image
-        };
+            if(dto.Image != null)
+            {
+                await fileUploadService.FileDeleteAsync(libraryBranch.Image);
+            }
+            var FileUploadForCreation = new FileUploadForCreationDto
+            {
+                FolderPath = "LibraryBranchAssets",
+                FormFile = dto.Image
+            };
 
-        var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
+            var FileResult = await fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-        var mappedLibraryBranch = mapper.Map(dto,libraryBranch);
-        mappedLibraryBranch.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-        mappedLibraryBranch.UpdatedAt = DateTime.UtcNow;
+            libraryBranch.Image = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            libraryBranch.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : libraryBranch.Name;
+            libraryBranch.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : libraryBranch.Address;
+            libraryBranch.PhoneNumber = !string.IsNullOrEmpty(dto.PhoneNumber) ? dto.PhoneNumber : libraryBranch.PhoneNumber;
+            libraryBranch.OpeningHours = !string.IsNullOrEmpty(dto.OpeningHours) ? dto.OpeningHours : libraryBranch.OpeningHours;
+            libraryBranch.LibraryType = dto.LibraryType != null ? dto.LibraryType : libraryBranch.LibraryType;
+        }
+        if (dto != null && dto.Image == null)
+        {
+            libraryBranch.Image = libraryBranch.Image;
+            libraryBranch.Name = !string.IsNullOrEmpty(dto.Name) ? dto.Name : libraryBranch.Name;
+            libraryBranch.Address = !string.IsNullOrEmpty(dto.Address) ? dto.Address : libraryBranch.Address;
+            libraryBranch.PhoneNumber = !string.IsNullOrEmpty(dto.PhoneNumber) ? dto.PhoneNumber : libraryBranch.PhoneNumber;
+            libraryBranch.OpeningHours = !string.IsNullOrEmpty(dto.OpeningHours) ? dto.OpeningHours : libraryBranch.OpeningHours;
+            libraryBranch.LibraryType = dto.LibraryType != null ? dto.LibraryType : libraryBranch.LibraryType;
+        }
 
-        var result = await this.repository.UpdateAsync(mappedLibraryBranch);
+        libraryBranch.UpdatedAt = DateTime.UtcNow;
+
+        var result = await this.repository.UpdateAsync(libraryBranch);
         return this.mapper.Map<LibraryBranchForResultDto>(result);
     }
 
@@ -75,29 +96,42 @@ public class LibraryBranchService : ILibraryBranchService
         var libraryBranch = await this.repository.SelectAll().Where(a => a.Id == id && a.IsDeleted == false).FirstOrDefaultAsync();
         if (libraryBranch == null)
             throw new TahseenException(404, "LibraryBranch not found");
-
-        await fileUploadService.FileDeleteAsync(libraryBranch.Image);
+        if (libraryBranch.Image != null)
+            await fileUploadService.FileDeleteAsync(libraryBranch.Image);
 
         return await this.repository.DeleteAsync(libraryBranch.Id);
     }
 
-    public async Task<IEnumerable<LibraryBranchForResultDto>> RetrieveAllAsync()
+    public async Task<IEnumerable<LibraryBranchForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
-        var result = this.repository.SelectAll().Where(l => !l.IsDeleted);
-        foreach (var res in result)
+        var result = await this.repository.SelectAll()
+            .Where(l => l.IsDeleted == false)
+            .Include(l => l.Librarians.Where(lib => lib.IsDeleted == false)) // Filter Librarians where IsDeleted is false
+            .Include(b => b.TotalBooks.Where(t => t.IsDeleted == false))
+            .ToPagedList(@params)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var MappedData = this.mapper.Map<IEnumerable<LibraryBranchForResultDto>>(result);
+        foreach (var res in MappedData)
         {
-            res.Image = $"https://localhost:7020/{res.Image.Replace('\\', '/').TrimStart('/')}";
+            res.LibraryType = res.LibraryType.ToString();
         }
-        return this.mapper.Map<IEnumerable<LibraryBranchForResultDto>>(result);
+        return MappedData;
+
     }
 
     public async Task<LibraryBranchForResultDto> RetrieveByIdAsync(long id)
     {
-        var libraryBranch = await this.repository.SelectByIdAsync(id);
+        var libraryBranch = await this.repository.SelectAll()
+            .Where(l => !l.IsDeleted)
+            .Include(l => l.Librarians.Where(lib => lib.IsDeleted == false)) // Filter Librarians where IsDeleted is false
+            .Include(b => b.TotalBooks.Where(t => t.IsDeleted == false))
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
         if (libraryBranch == null || libraryBranch.IsDeleted)
             throw new TahseenException(404, "LibraryBranch not found");
 
-        libraryBranch.Image = $"https://localhost:7020/{libraryBranch.Image.Replace('\\', '/').TrimStart('/')}";
         return mapper.Map<LibraryBranchForResultDto>(libraryBranch);
     }
 }

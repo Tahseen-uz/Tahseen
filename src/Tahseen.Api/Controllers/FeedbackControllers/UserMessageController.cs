@@ -21,7 +21,7 @@ public class UserMessageController : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _userMessageService.RetrieveAllAsync()
+            Data = await _userMessageService.RetrieveAllAsync()
         };
         return Ok(response);
     }

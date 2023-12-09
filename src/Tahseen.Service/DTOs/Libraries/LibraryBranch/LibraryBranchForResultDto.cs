@@ -1,5 +1,9 @@
-﻿using Tahseen.Domain.Entities.Librarians;
+﻿using System.Text.Json.Serialization;
+using Tahseen.Domain.Entities.Books;
+using Tahseen.Domain.Entities.Librarians;
 using Tahseen.Domain.Enums;
+using Tahseen.Service.DTOs.Books.Book;
+using Tahseen.Service.DTOs.Librarians;
 
 namespace Tahseen.Service.DTOs.Libraries.LibraryBranch;
 
@@ -11,6 +15,12 @@ public class LibraryBranchForResultDto
     public string Image {  get; set; }
     public string PhoneNumber { get; set; }
     public string OpeningHours { get; set; }
-    public LibraryType LibraryType { get; set; }
-    public IEnumerable<Librarian> Librarians { get; set; }
+    public string LibraryType { get; set; }
+
+
+    [JsonIgnore]
+    public IEnumerable<LibrarianForResultDto> Librarians { get; set; }
+    [JsonIgnore]
+    public IEnumerable<BookForResultDto> TotalBooks { get; set; }
+
 }

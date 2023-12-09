@@ -56,7 +56,7 @@ namespace Tahseen.Api.Controllers.EventsControllers
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = this.service.RetrieveAllAsync()
+                Data = await this.service.RetrieveAllAsync()
             });
     }
 }

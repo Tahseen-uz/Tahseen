@@ -21,7 +21,7 @@ public class UserBadgeController : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _userBadgesService.RetrieveAllAsync()
+            Data = await _userBadgesService.RetrieveAllAsync()
         };
         return Ok(response);
     }

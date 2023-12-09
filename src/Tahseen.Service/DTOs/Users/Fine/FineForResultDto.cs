@@ -9,6 +9,6 @@ namespace Tahseen.Service.DTOs.Users.Fine
         public long BookId { get; set; }
         public decimal Amount { get; set; }
         public string Reason { get; set; }
-        public FineStatus Status { get; set; }
+        public string Status { get; set; }
     }
 }

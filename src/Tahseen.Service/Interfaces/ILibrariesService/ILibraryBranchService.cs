@@ -1,4 +1,5 @@
-﻿using Tahseen.Service.DTOs.Libraries.LibraryBranch;
+﻿using Tahseen.Service.Configurations;
+using Tahseen.Service.DTOs.Libraries.LibraryBranch;
 
 namespace Tahseen.Service.Interfaces.ILibrariesService;
 
@@ -8,5 +9,5 @@ public interface ILibraryBranchService
     public Task<LibraryBranchForResultDto> ModifyAsync(long id, LibraryBranchForUpdateDto dto);
     public Task<bool> RemoveAsync(long id);
     public Task<LibraryBranchForResultDto> RetrieveByIdAsync(long id);
-    public Task<IEnumerable<LibraryBranchForResultDto>> RetrieveAllAsync();
+    public Task<IEnumerable<LibraryBranchForResultDto>> RetrieveAllAsync(PaginationParams @params);
 }

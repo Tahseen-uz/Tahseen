@@ -10,6 +10,10 @@ using Tahseen.Domain.Entities.Reservations;
 using Tahseen.Domain.Entities.Notifications;
 using Tahseen.Domain.Entities.SchoolAndEducations;
 using Tahseen.Domain.Entities.Feedbacks;
+using Tahseen.Domain.Entities.AudioBooks;
+using Tahseen.Domain.Entities.EBooks;
+using Tahseen.Domain.Entities.Narrators;
+using Tahseen.Domain.Entities.Languages;
 
 namespace Tahseen.Data.DbContexts;
 
@@ -43,7 +47,6 @@ public class AppDbContext : DbContext
 
     //Folder Name: Libraries
     public DbSet<LibraryBranch> LibraryBranches { get; set; }
-    public DbSet<LibraryStatistics> LibraryStatistics { get; set; }
 
     //Notification
     public DbSet<Notification> Notification { get; set; }
@@ -74,6 +77,20 @@ public class AppDbContext : DbContext
     public DbSet<UserSettings> UserSettings { get; set; }
     public DbSet<WishList> WishLists { get; set; }
 
+    //FolderName : AudioBook
+    public DbSet<AudioBook> AudioBooks { get; set; }
+    public DbSet<AudioFile> AudioFiles { get; set; }
+
+    // Language
+
+    public DbSet<Language> Languages { get; set; }
+    // Foleder name : EBook
+    public DbSet<EBook> EBooks { get; set; }
+    public DbSet<EBookFile> EBooksFiles { get; set; }
+
+    // Folder Name : Narrator
+
+    public DbSet<Narrator> Narrators { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Book>()
@@ -85,5 +102,8 @@ public class AppDbContext : DbContext
             .HasOne(b => b.Publisher)
             .WithMany(p => p.Books)
             .HasForeignKey(b => b.PublisherId);
+
+
+    
     }
 }

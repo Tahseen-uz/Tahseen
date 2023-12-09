@@ -8,5 +8,5 @@ public class SurveyResponses:Auditable
     public User User { get; set; }
     public long SurveyId { get; set; }
     public Surveys Surveys { get; set; }
-    public DateTime SubmissionDate { get; set; }
+    public string SubmissionDate { get; set; }
 }

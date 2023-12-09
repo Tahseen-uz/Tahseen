@@ -22,7 +22,7 @@ public class PupilsControllers : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _pupilService.RetrieveAllAsync()
+            Data = await _pupilService.RetrieveAllAsync()
         };
         return Ok(response);
     }

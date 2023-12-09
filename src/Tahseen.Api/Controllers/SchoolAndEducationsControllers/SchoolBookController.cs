@@ -22,7 +22,7 @@ public class SchoolBookController : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _schoolBookService.RetrieveAllAsync()
+            Data = await _schoolBookService.RetrieveAllAsync()
         };
         return Ok(response);
     }

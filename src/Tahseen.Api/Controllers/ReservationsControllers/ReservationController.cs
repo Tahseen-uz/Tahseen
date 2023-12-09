@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Api.Models;
+using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Reservations;
 using Tahseen.Service.Interfaces.IReservationsServices;
 
@@ -62,13 +63,13 @@ public class ReservationController:BaseController
           }
           
           [HttpGet]
-          public async Task<IActionResult> GetAllAsync()
+          public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params)
           {
               var response = new Response()
               {
                   StatusCode = 200,
                   Message = "Success",
-                  Data = _reservationService.RetrieveAllAsync()
+                  Data = await _reservationService.RetrieveAllAsync(@params)
               };
               return Ok(response);
           }

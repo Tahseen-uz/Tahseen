@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Service.DTOs.Events.Events;
 using Tahseen.Service.Interfaces.IEventsServices;
+using Tahseen.Service.Configurations;
 
 namespace Tahseen.Api.Controllers.EventsControllers
 {
@@ -49,12 +50,12 @@ namespace Tahseen.Api.Controllers.EventsControllers
             });
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() =>
+        public async Task<IActionResult> GetAll([FromQuery] PaginationParams @params) =>
             Ok(new Response
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = this.service.RetrieveAllAsync()
+                Data = await this.service.RetrieveAllAsync(@params)
             });
     }
 }

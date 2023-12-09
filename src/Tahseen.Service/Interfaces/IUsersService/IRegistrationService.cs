@@ -1,12 +1,13 @@
-﻿using Tahseen.Service.DTOs.Users.Registration;
+﻿using Tahseen.Service.DTOs.Registrations;
+using Tahseen.Service.DTOs.Users.Registration;
 
 namespace Tahseen.Service.Interfaces.IUsersService
 {
     public interface IRegistrationService
     {
         public Task<RegistrationForResultDto> AddAsync(RegistrationForCreationDto dto);
-        public Task<bool> RemoveAsync(long Id);
-        public Task<RegistrationForResultDto> RetrieveByIdAsync(long Id);
-        public Task<IEnumerable<RegistrationForResultDto>> RetrieveAllAsync();
+        public Task<string> SendVerificationCodeAsync(SendVerificationCodeDto dto);
+        public Task<bool> VerifyCodeAsync(VerifyCodeDto dto);
+
     }
 }

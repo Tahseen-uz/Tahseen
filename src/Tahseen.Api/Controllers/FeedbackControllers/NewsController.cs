@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Api.Models;
+using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Feedbacks.News;
 using Tahseen.Service.Interfaces.IFeedbackService;
 
@@ -15,13 +16,13 @@ public class NewsController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params)
     {
         var response = new Response()
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _newsService.RetrieveAllAsync()
+            Data = await _newsService.RetrieveAllAsync(@params)
         };
         return Ok(response);
     }

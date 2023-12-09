@@ -1,30 +1,44 @@
+using AspNetCoreRateLimit;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Serilog;
 using Tahseen.Api.Extensions;
 using Tahseen.Api.Middlewares;
 using Tahseen.Data.DbContexts;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
 using Tahseen.Service.Helpers;
-using Microsoft.AspNetCore.Http.Features;
+using Tahseen.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+     .AddNewtonsoftJson(options =>
+     {
+         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
 //JWT
 builder.Services.AddJwtService(builder.Configuration);
 //Swagger
 builder.Services.AddSwaggerService();
 //Database Configuration
-builder.Services.AddDbContext<AppDbContext>(option 
+builder.Services.AddDbContext<AppDbContext>(option
     => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 builder.Services.AddCustomService();
-var jsonFormatter = builder.Configuration.GetSection("Formatters:JsonFormatter");
-jsonFormatter["SerializerSettings:DateFormatString"] = "dd-MM-yyyy HH:mm";
 
 // MiddleWares
 /*builder.Services.Configure<FormOptions>(options =>
@@ -54,14 +68,19 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
-WebEnvironmentHost.WebRootPath = Path.GetFullPath("wwwroot");
+WebEnvironmentHost.WebRootPath = Path.GetFullPath("wwwroot"); 
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+/*    app.UseIpRateLimiting();
+*/
 }
-
+// Init accessor
+app.UseCors("AllowAll");
+app.UseRouting();
+app.InitAccessor();
 app.UseMiddleware<ExceptionHandlerMiddleWare>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();

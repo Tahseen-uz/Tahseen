@@ -55,6 +55,6 @@ public class BookReviewsController : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = this.service.RetrieveAllAsync()
+            Data = await this.service.RetrieveAllAsync()
         });
 }

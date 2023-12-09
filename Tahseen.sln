@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tahseen.Service", "src\Tahs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tahseen.Data", "src\Tahseen.Data\Tahseen.Data.csproj", "{F3CB94DE-DF1F-4B37-895D-3794AC0B3C20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tahseen.Shared", "src\Tahseen.Shared\Tahseen.Shared.csproj", "{8FFDDB62-D91D-45E5-964F-776F2466A922}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{F3CB94DE-DF1F-4B37-895D-3794AC0B3C20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3CB94DE-DF1F-4B37-895D-3794AC0B3C20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3CB94DE-DF1F-4B37-895D-3794AC0B3C20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FFDDB62-D91D-45E5-964F-776F2466A922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FFDDB62-D91D-45E5-964F-776F2466A922}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FFDDB62-D91D-45E5-964F-776F2466A922}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FFDDB62-D91D-45E5-964F-776F2466A922}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{9204C319-C247-419B-AAB8-68058383523E} = {D4220DF6-948F-4167-8CCD-5DE43D7B7757}
 		{E726765A-20C2-467A-82E9-9BEC1D5A2D06} = {D4220DF6-948F-4167-8CCD-5DE43D7B7757}
 		{F3CB94DE-DF1F-4B37-895D-3794AC0B3C20} = {D4220DF6-948F-4167-8CCD-5DE43D7B7757}
+		{8FFDDB62-D91D-45E5-964F-776F2466A922} = {D4220DF6-948F-4167-8CCD-5DE43D7B7757}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B47AEE6F-64E9-40AB-BB57-D48C631976EF}

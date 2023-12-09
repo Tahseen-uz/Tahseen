@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Api.Models;
+using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Libraries.LibraryBranch;
 using Tahseen.Service.Interfaces.ILibrariesService;
 using Tahseen.Service.Services.Libraries;
@@ -64,13 +65,13 @@ public class LibraryBranchController : BaseController
     }
           
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params)
     {
         var response = new Response()
         {
             StatusCode = 200,
             Message = "Success",
-            Data = await this._libraryBranchService.RetrieveAllAsync()        
+            Data = await this._libraryBranchService.RetrieveAllAsync(@params)        
         };
         return Ok(response);
     }

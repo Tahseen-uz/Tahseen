@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Service.DTOs.Books.Publishers;
 using Tahseen.Service.Interfaces.IBookServices;
+using Tahseen.Service.Configurations;
 
 namespace Tahseen.Api.Controllers.BooksControllers
 {
@@ -51,12 +52,12 @@ namespace Tahseen.Api.Controllers.BooksControllers
             });
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync() =>
+        public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params) =>
             Ok(new Response
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data =  this.service.RetrieveAllAsync()
+                Data = await this.service.RetrieveAllAsync(@params)
             });
     }
 }

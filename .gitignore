@@ -477,7 +477,3 @@ wwwroot
 *.lnk
 /src/Tahseen.Api/obj/
 /src/Tahseen.Api/appsettings.json
-/src/Tahseen.Data/Migrations/
-/src/Tahseen.Data/Migrations/20231017174425_Init.cs
-/src/Tahseen.Data/Migrations/AppDbContextModelSnapshot.cs
-/src/Tahseen.Data/Migrations/20231020104734_InitialMigration.cs

@@ -21,7 +21,7 @@ public class PupilBookConnectionController : BaseController
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _pupilBookConnectionService.RetrieveAllAsync()
+            Data = await _pupilBookConnectionService.RetrieveAllAsync()
         };
         return Ok(response);
     }

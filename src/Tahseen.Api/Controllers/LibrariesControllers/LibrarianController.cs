@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tahseen.Api.Models;
+using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Librarians;
 using Tahseen.Service.Interfaces.ILibrariansService;
 
@@ -63,15 +66,30 @@ public class LibrarianController:BaseController
     }
           
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params)
     {
         var response = new Response()
         {
             StatusCode = 200,
             Message = "Success",
-            Data = _librarianService.RetrieveAllAsync()
+            Data = await _librarianService.RetrieveAllAsync(@params)
         };
         return Ok(response);
     }
-    
+
+    [Authorize]
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetLoggedAsync()
+    {
+        var librarianId = Convert.ToInt32(HttpContext.User.FindFirstValue("Id"));
+        var response = new Response()
+        {
+            StatusCode = 200,
+            Message = "Success",
+            Data = await _librarianService.RetrieveByIdAsync(librarianId)
+        };
+        return Ok(response);
+    }
+
 }

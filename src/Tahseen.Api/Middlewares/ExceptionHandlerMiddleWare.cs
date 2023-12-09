@@ -1,4 +1,4 @@
-﻿    using Tahseen.Api.Models;
+﻿using Tahseen.Api.Models;
 using Tahseen.Service.Exceptions;
 
 namespace Tahseen.Api.Middlewares
@@ -30,7 +30,7 @@ namespace Tahseen.Api.Middlewares
                 });
             }
             catch (Exception ex)
-            {
+                {
                 this._logger.LogError($"{ex}\n\n");
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new Response
@@ -39,6 +39,6 @@ namespace Tahseen.Api.Middlewares
                     Message = ex.Message,
                 });
             }
-            }
+        }
     }
 }

@@ -6,21 +6,32 @@ using Tahseen.Service.Interfaces.IFeedbackService;
 using Tahseen.Domain.Entities.Feedbacks;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.Repositories;
+using Tahseen.Domain.Entities.Books;
+using Tahseen.Domain.Entities;
 
 namespace Tahseen.Service.Services.Users;
 
 public class UserRatingService : IUserRatingService
 {
     private readonly IMapper mapper;
-
     private readonly IRepository<UserRatings> repository;
-    public UserRatingService(IMapper mapper, IRepository<UserRatings> repository)
+    private readonly IRepository<User> _userRepository;
+    public UserRatingService(IMapper mapper, IRepository<UserRatings> repository, IRepository<User> userRepository)
     {
         this.mapper = mapper;
         this.repository = repository;
+        this._userRepository = userRepository;
     }
     public async Task<UserRatingForResultDto> AddAsync(UserRatingForCreationDto dto)
     {
+        var user = await _userRepository.SelectAll()
+            .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (user is null)
+            throw new TahseenException(404, "User is not found");
+
         var existingRating = await this.repository.SelectAll()
             .Where(u => u.UserId == dto.UserId && u.IsDeleted == false)
             .FirstOrDefaultAsync();
@@ -36,8 +47,17 @@ public class UserRatingService : IUserRatingService
     }
 
     // o'zgartiriladi
+    // yoge aldameng ezizbe
     public async Task<UserRatingForResultDto> ModifyAsync(long Id, UserRatingForUpdateDto dto)
     {
+        var user = await _userRepository.SelectAll()
+            .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (user is null)
+            throw new TahseenException(404, "User is not found");
+
         var userRating = await repository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync(); 
         if (userRating == null)
             throw new TahseenException(404, "UserRating not found");
@@ -55,7 +75,10 @@ public class UserRatingService : IUserRatingService
 
     public async Task<IEnumerable<UserRatingForResultDto>> RetrieveAllAsync()
     {
-        var results = repository.SelectAll().Where(t => !t.IsDeleted);
+        var results = await repository.SelectAll()
+            .Where(t => !t.IsDeleted)
+            .AsNoTracking().
+            ToListAsync();
         return mapper.Map<IEnumerable<UserRatingForResultDto>>(results);
     }
 
@@ -68,9 +91,10 @@ public class UserRatingService : IUserRatingService
         return mapper.Map<UserRatingForResultDto>(result);
     }
 
-    public async Task<UserRatingForResultDto> RetrieveByUserId(long userId)
+    public async Task<UserRatingForResultDto> RetrieveByUserIdAsync(long userId)
     {
-        var result = repository.SelectAll().Where(t => t.UserId == userId && !t.IsDeleted);
+        var result = repository.SelectAll()
+            .Where(t => t.UserId == userId && !t.IsDeleted);
         if (result == null)
             throw new TahseenException(404, "UserRating not found");
         return mapper.Map<UserRatingForResultDto>(result);

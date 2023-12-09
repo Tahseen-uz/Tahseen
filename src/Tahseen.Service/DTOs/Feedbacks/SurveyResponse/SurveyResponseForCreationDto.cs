@@ -6,8 +6,6 @@ namespace Tahseen.Service.DTOs.Feedbacks.SurveyResponses;
 public class SurveyResponseForCreationDto
 {
     public long UserId { get; set; }
-    public UserForCreationDto User { get; set; }
     public long SurveyId { get; set; }
-    public SurveyForCreationDto Survey { get; set; }
-    public DateTime SubmissionDate { get; set; }
+    public string SubmissionDate { get; set; }
 }

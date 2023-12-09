@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
+using Tahseen.Domain.Entities.Books;
+using Tahseen.Domain.Entities;
 using Tahseen.Domain.Entities.Users;
 using Tahseen.Service.DTOs.Users.UserCart;
 using Tahseen.Service.Exceptions;
@@ -12,10 +14,12 @@ namespace Tahseen.Service.Services.Users
     {
         private readonly IRepository<UserCart> _repository;
         private readonly IMapper _mapper;
-        public UserCartService(IRepository<UserCart> Repository, IMapper Mapper)
+        private readonly IRepository<User> _userRepository;
+        public UserCartService(IRepository<UserCart> Repository, IMapper Mapper, IRepository<User> userRepository)
         {
             this._repository = Repository;
             this._mapper = Mapper;
+            this._userRepository = userRepository;
         }
         public async Task<UserCartForResultDto> AddAsync(UserCartForCreationDto dto)
         {
@@ -26,6 +30,15 @@ namespace Tahseen.Service.Services.Users
             {
                 throw new TahseenException(400, "User is exist");
             }
+
+            var user = await _userRepository.SelectAll()
+                .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new TahseenException(404, "User is not found");
+
             var data = this._mapper.Map<UserCart>(dto);
             var CreatedData = await this._repository.CreateAsync(data);
             return _mapper.Map<UserCartForResultDto>(CreatedData);
@@ -39,7 +52,10 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<IEnumerable<UserCartForResultDto>> RetrieveAllAsync()
         {
-            var AllData = this._repository.SelectAll().Where(t => t.IsDeleted == false);
+            var AllData = await this._repository.SelectAll()
+                .Where(t => t.IsDeleted == false)
+                .AsNoTracking()
+                .ToListAsync();
             return this._mapper.Map<IEnumerable<UserCartForResultDto>>(AllData);
             
         }

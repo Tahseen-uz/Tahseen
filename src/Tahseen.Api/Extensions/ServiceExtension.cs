@@ -23,12 +23,28 @@ using Tahseen.Service.Interfaces.IReservationsServices;
 using Tahseen.Service.Interfaces.IAuthService;
 using Tahseen.Service.Services.AuthService;
 using Microsoft.OpenApi.Models;
+using Tahseen.Service.Helpers;
+
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Tahseen.Service.Interfaces.IFileUploadService;
 using Tahseen.Service.Services.FileUploadService;
+using Tahseen.Service.Helpers;
+using Tahseen.Service.Interfaces.IEBookServices;
+using Tahseen.Domain.Entities.EBooks;
+using Tahseen.Service.Services.EBooks;
+using Tahseen.Service.Interfaces.IAudioBookServices;
+using Tahseen.Service.Services.AudiBooks;
+using Tahseen.Service.Interfaces.INurratorServices;
+using Tahseen.Service.Services.Narrators;
+using Tahseen.Service.Interfaces.IMessageServices;
+using Tahseen.Service.Services.MessageServices;
+using Microsoft.Extensions.Caching.Memory;
+using AspNetCoreRateLimit;
+using Tahseen.Service.Interfaces.ILanguageServices;
+using Tahseen.Service.Services.Languages;
 
 namespace Tahseen.Api.Extensions;
 
@@ -45,11 +61,14 @@ public static class ServiceExtension
         services.AddScoped<IFineService, FineService>();
         services.AddScoped<IUserCartService, UserCartService>();
         services.AddScoped<IWishlistService, WishlistService>();
-        services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IUserRatingService, UserRatingService>();
         services.AddScoped<IUserSettingService, UserSettingsService>();
+        services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IBorrowedBookService, BorrowedBookService>();
         services.AddScoped<IBorrowBookCartService, BorrowBookCartService>();
         services.AddScoped<IUserProgressTrackingService, UserProgressTrackingService>();
+        services.AddScoped<WebEnvironmentHost, WebEnvironmentHost>();
+
 
 
         //Folder Name: IBookService
@@ -68,9 +87,19 @@ public static class ServiceExtension
         services.AddScoped<INewsService, NewsService>();
         services.AddScoped<ISurveyService, SurveyService>();
         services.AddScoped<IFeedbackService, FeedbackService>();
-        services.AddScoped<IUserRatingService, UserRatingService>();
         services.AddScoped<IUserMessageService, UserMessageService>();
         services.AddScoped<ISurveyResponseService, SurveyResponseService>();
+
+        // Folder Name: IEBookService
+        services.AddScoped<IEBookService, EBookService>();
+        services.AddScoped<IEBookFileService, EBookFileService>();
+
+        // Folder Name : IAudioBook
+        services.AddScoped<IAudioBookService,AudioBookService>();
+        services.AddScoped<IAudioFileService, AudioFileService>();
+
+        // Folder Name : INarrator
+        services.AddScoped<INarratorService, NarratorService>();
 
         //Folder Name:ILibrariansService
         services.AddScoped<ILibrarianService, LibrarianService>();
@@ -98,6 +127,41 @@ public static class ServiceExtension
 
         //Folder Name: FileUploadService
         services.AddScoped<IFileUploadService, FileUploadService>();
+        
+        //Folder Name: MessageService
+        services.AddScoped<IMessageSevice, MessageService>();
+        //Language
+
+        services.AddScoped<ILanguageService, LanguageService>();
+        //MemoryCache
+        services.AddMemoryCache();
+
+        /*//Rate Limiter
+        services.Configure<IpRateLimitOptions>(options =>
+        {
+            options.EnableEndpointRateLimiting = true;
+            options.StackBlockedRequests = false;
+            options.HttpStatusCode = 429;
+            options.RealIpHeader = "X-Real-IP";
+            options.ClientIdHeader = "X-ClientId";
+            options.GeneralRules = new List<RateLimitRule>
+            {
+                new RateLimitRule
+                {
+                    Endpoint = "*",
+                    Period = "1s",
+                    Limit = 1,
+                }
+            };
+        });
+
+        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        services.AddInMemoryRateLimiting();
+
+*/
     }
 
 
@@ -128,7 +192,7 @@ public static class ServiceExtension
     {
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shamsheer.Api", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tahseen.Api", Version = "v1" });
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

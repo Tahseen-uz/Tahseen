@@ -1,4 +1,5 @@
-﻿using Tahseen.Service.DTOs.Reservations;
+﻿using Tahseen.Service.Configurations;
+using Tahseen.Service.DTOs.Reservations;
 
 namespace Tahseen.Service.Interfaces.IReservationsServices
 {
@@ -8,6 +9,6 @@ namespace Tahseen.Service.Interfaces.IReservationsServices
         public Task<ReservationForResultDto> ModifyAsync(long Id, ReservationForUpdateDto dto);
         public Task<bool> RemoveAsync(long Id);
         public Task<ReservationForResultDto> RetrieveByIdAsync(long Id);
-        public Task<IEnumerable<ReservationForResultDto>> RetrieveAllAsync();
+        public Task<IEnumerable<ReservationForResultDto>> RetrieveAllAsync(PaginationParams @params);
     }
 }
