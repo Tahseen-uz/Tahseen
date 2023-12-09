@@ -4,6 +4,7 @@ using Tahseen.Data.IRepositories;
 using Tahseen.Data.Repositories;
 using Tahseen.Domain.Entities.Books;
 using Tahseen.Domain.Entities.Librarians;
+using Tahseen.Domain.Entities.Library;
 using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Books.Author;
 using Tahseen.Service.DTOs.FileUpload;
@@ -23,11 +24,17 @@ public class LibrarianService : ILibrarianService
     private readonly IRepository<Librarian> repository;
     private readonly IMapper mapper;
     private readonly IFileUploadService _fileUploadService;
-    public LibrarianService(IRepository<Librarian> repository, IMapper mapper, IFileUploadService fileUploadService)
+    private readonly IRepository<LibraryBranch> _libraryRepository;
+    public LibrarianService(
+        IRepository<Librarian> repository, 
+        IMapper mapper, 
+        IFileUploadService fileUploadService,
+        IRepository<LibraryBranch> libraryRepository)
     {
         this.repository = repository;
         this.mapper = mapper;
         this._fileUploadService = fileUploadService;
+        this._libraryRepository = libraryRepository;
     }
 
     public async Task<LibrarianForResultDto> AddAsync(LibrarianForCreationDto dto)
@@ -37,6 +44,15 @@ public class LibrarianService : ILibrarianService
         {
             throw new TahseenException(409, "This Librarian is exist");
         }
+
+        var library = await _libraryRepository.SelectAll().
+            Where(l => l.Id == dto.LibraryBranchId && l.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (library is null)
+            throw new TahseenException(404, "Library is not found");
+
         var mappedLibrarian = mapper.Map<Librarian>(dto);
 
         if(dto.Image != null)

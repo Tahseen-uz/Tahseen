@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
+using Tahseen.Domain.Entities.Books;
 using Tahseen.Service.DTOs.Users.UserSettings;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.Interfaces.IUsersService;
@@ -12,13 +13,23 @@ namespace Tahseen.Service.Services.Users
     {
         private readonly IRepository<UserSettings> _repository;
         private readonly IMapper _mapper;
-        public UserSettingsService(IRepository<UserSettings> Repository, IMapper Mapper)
+        private readonly IRepository<User> _userRepository;
+        public UserSettingsService(IRepository<UserSettings> Repository, IMapper Mapper, IRepository<User> userRepository)
         {
             this._mapper = Mapper;
             this._repository = Repository;
+            this._userRepository = userRepository;
         }
         public async Task<UserSettingsForResultDto> AddAsync(UserSettingsForCreationDto dto)
         {
+            var user = await _userRepository.SelectAll()
+                .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new TahseenException(404, "User is not found");
+
             var existingUser = await this._repository.SelectAll()
                 .Where(u => u.UserId == dto.UserId && u.IsDeleted == false)
                 .AsNoTracking()
@@ -38,6 +49,7 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<UserSettingsForResultDto> ModifyAsync(long Id, UserSettingsForUpdateDto dto)
         {
+           
             var Data = await this._repository
                 .SelectAll()
                 .Where(e => e.Id == Id && e.IsDeleted == false)

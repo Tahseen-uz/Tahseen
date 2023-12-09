@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Tahseen.Domain.Entities.Events;
 using Tahseen.Service.Interfaces.IEventsServices;
 using Tahseen.Service.DTOs.Events.EventRegistration;
+using Tahseen.Domain.Entities;
 
 namespace Tahseen.Service.Services.Events;
 
@@ -12,12 +13,20 @@ public class EventRegistrationService : IEventRegistrationService
 {
     private readonly IMapper _mapper;
     private readonly IRepository<EventRegistration> _repository;
-
-    public EventRegistrationService(IMapper mapper, IRepository<EventRegistration> repository)
+    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<Event> _eventRepository;
+    public EventRegistrationService(
+        IMapper mapper, 
+        IRepository<EventRegistration> repository,
+        IRepository<Event> eventRepository,
+        IRepository<User> userRepository)
     {
         this._mapper = mapper;
         this._repository = repository;
+        _eventRepository = eventRepository;
+        _userRepository = userRepository;
     }
+
 
     public async Task<EventRegistrationForResultDto> AddAsync(EventRegistrationForCreationDto dto)
     {
@@ -29,7 +38,23 @@ public class EventRegistrationService : IEventRegistrationService
 
         if (Check != null)
             throw new TahseenException(409, "This EventRegistration is exist");
-        
+
+        var user = await _userRepository.SelectAll().
+            Where(u => u.Id == dto.UserId && u.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (user == null)
+            throw new TahseenException(404, "User is not found");
+
+        var @event = await _eventRepository.SelectAll().
+            Where(e => e.Id == dto.EventId && e.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (@event == null)
+            throw new TahseenException(404, "Event is not found");
+
         var eventRegistration = this._mapper.Map<EventRegistration>(dto);
         var result= await this._repository.CreateAsync(eventRegistration);
         return this._mapper.Map<EventRegistrationForResultDto>(result);
@@ -41,6 +66,22 @@ public class EventRegistrationService : IEventRegistrationService
             .SelectAll()
             .Where(a => a.Id == id && a.IsDeleted == false)
             .FirstOrDefaultAsync();
+
+        var user = await _userRepository.SelectAll().
+           Where(u => u.Id == dto.UserId && u.IsDeleted == false).
+           AsNoTracking().
+           FirstOrDefaultAsync();
+
+        if (user == null)
+            throw new TahseenException(404, "User is not found");
+
+        var @event = await _eventRepository.SelectAll().
+            Where(e => e.Id == dto.EventId && e.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (@event == null)
+            throw new TahseenException(404, "Event is not found");
 
         if (eventRegistration is not null)
         {

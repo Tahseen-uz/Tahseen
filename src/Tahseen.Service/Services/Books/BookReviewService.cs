@@ -5,6 +5,7 @@ using Tahseen.Domain.Entities.Books;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Service.DTOs.Books.BookReviews;
 using Tahseen.Service.Interfaces.IBookServices;
+using Tahseen.Domain.Entities;
 
 namespace Tahseen.Service.Services.Books;
 
@@ -12,10 +13,18 @@ public class BookReviewService : IBookReviewService
 {
     private readonly IMapper _mapper;
     private readonly IRepository<BookReviews> _repository;
-    public BookReviewService(IMapper mapper, IRepository<BookReviews> repository)
+    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<Book> _bookRepository;
+    public BookReviewService(
+        IMapper mapper, 
+        IRepository<BookReviews> repository,
+        IRepository<Book> bookRepository,
+        IRepository<User> userRepository)
     {
-        this._mapper = mapper;
-        this._repository = repository;
+        _mapper = mapper;
+        _repository = repository;
+        _bookRepository = bookRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<BookReviewForResultDto> AddAsync(BookReviewForCreationDto dto)

@@ -13,6 +13,7 @@ using Tahseen.Service.Configurations;
 using Tahseen.Service.Extensions;
 using Tahseen.Domain.Enums;
 using Tahseen.Domain.Entities.EBooks;
+using Tahseen.Domain.Entities.Languages;
 
 namespace Tahseen.Service.Services.Books;
 
@@ -21,17 +22,31 @@ public class BookService : IBookService
     private readonly IMapper _mapper;
     private readonly IRepository<Book> _repository;
     private readonly IRepository<Genre> _genreRepository;
-    private readonly IRepository<LibraryBranch> _libraryRepository;
     private readonly IFileUploadService _fileUploadService;
+    private readonly IRepository<Author> _authorRepository;
+    private readonly IRepository<Language> _languageRepository;
+    private readonly IRepository<Publisher> _publisherRepository;
+    private readonly IRepository<LibraryBranch> _libraryRepository;
 
 
-    public BookService(IMapper mapper, IRepository<Book> repository, IFileUploadService fileUploadService, IRepository<LibraryBranch> libraryRepository, IRepository<Genre> genreRepository)
+    public BookService(
+        IMapper mapper,
+        IRepository<Book> repository,
+        IRepository<Genre> genreRepository,
+        IFileUploadService fileUploadService, 
+        IRepository<Author> authorRepository,
+        IRepository<Language> languageRepository,
+        IRepository<Publisher> publisherRepository,
+        IRepository<LibraryBranch> libraryRepository)
     {
         this._mapper = mapper;
         this._repository = repository;
         this._fileUploadService = fileUploadService;
         this._libraryRepository = libraryRepository;
         _genreRepository = genreRepository;
+        _authorRepository = authorRepository;
+        _languageRepository = languageRepository;
+        _publisherRepository = publisherRepository;
     }
 
     public async Task<BookForResultDto> AddAsync(BookForCreationDto dto)
@@ -50,6 +65,38 @@ public class BookService : IBookService
         {
             throw new TahseenException(400, "Genre does not exist");
         }
+        
+        var publisher = await _publisherRepository.SelectAll().
+            Where(p => p.Id == dto.PublisherId && p.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (publisher is null)
+            throw new TahseenException(404, "Publisher is not found");
+
+        var author = await _authorRepository.SelectAll().
+            Where(a => a.IsDeleted == false && a.Id == dto.AuthorId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (author is null)
+            throw new TahseenException(404, "Author is not found");
+
+        var library = await _libraryRepository.SelectAll()
+            .Where(l => l.IsDeleted == false && l.Id == dto.LibraryId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (library is null)
+            throw new TahseenException(404, "Library is not found");
+
+        var language = await _languageRepository.SelectAll().
+            Where(l => l.IsDeleted == false && l.Id == dto.LanguageId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (language is null)
+            throw new TahseenException(404, "Language is not found");
 
         var mapped = this._mapper.Map<Book>(dto);
         if(dto.BookImage != null)
