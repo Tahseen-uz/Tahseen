@@ -1,26 +1,27 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
-using Tahseen.Domain.Entities.Books;
-using Tahseen.Service.DTOs.Users.UserProgressTracking;
 using Tahseen.Service.Exceptions;
+using Tahseen.Data.IRepositories;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Domain.Entities.Books;
 using Tahseen.Service.Interfaces.IUsersService;
+using Tahseen.Service.DTOs.Users.UserProgressTracking;
+using Npgsql.Internal;
 
 namespace Tahseen.Service.Services.Users
 {
     public class UserProgressTrackingService : IUserProgressTrackingService
     {
-        private readonly IRepository<UserProgressTracking> _repository;
         private readonly IMapper _mapper;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<UserProgressTracking> _repository;
 
         public UserProgressTrackingService(
             IMapper mapper,
-            IRepository<UserProgressTracking> repository,
             IRepository<User> userRepository,
-            IRepository<Book> bookRepository
+            IRepository<Book> bookRepository,
+            IRepository<UserProgressTracking> repository
             )
         {
             _mapper = mapper;
@@ -86,6 +87,14 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<bool> RemoveAsync(long Id)
         {
+            var data = await this._repository
+                .SelectAll()
+                .Where(u => u.Id == Id && !u.IsDeleted)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (data is null)
+                throw new TahseenException(404,"UserProgress is not found");
+
             return await this._repository.DeleteAsync(Id);
         }
 

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Tahseen.Data.IRepositories;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.DTOs.Feedbacks.UserRatings;
