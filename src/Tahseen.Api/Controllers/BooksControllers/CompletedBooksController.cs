@@ -51,12 +51,17 @@ namespace Tahseen.Api.Controllers.BooksControllers
             });
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync() =>
-            Ok(new Response
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirst("Id"));
+            var response = new Response
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await this.service.RetrieveAllAsync()
-            });
+                Data = await this.service.RetrieveAllAsync(UserId)
+            };
+            return Ok(response);
+
+        }
     }
 }

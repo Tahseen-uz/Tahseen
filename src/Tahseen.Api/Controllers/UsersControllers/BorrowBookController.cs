@@ -17,11 +17,12 @@ namespace Tahseen.Api.Controllers.UsersControllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirst("Id"));
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await _borrowedBookService.RetrieveAllAsync()
+                Data = await _borrowedBookService.RetrieveAllAsync(UserId)
             };
             return Ok(response);
         }
