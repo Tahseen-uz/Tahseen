@@ -32,6 +32,23 @@ namespace Tahseen.Service.Services.Users
         public async Task<BorrowedBookForResultDto> AddAsync(BorrowedBookForCreationDto dto)
         {
             //var Check = this.BorrowedBook.SelectAll().Where(b => b.UserId == dto.UserId && b.UserId == dto.UserId && b.BookId == dto.BookId && b.IsDeleted == false);
+            var user = await _userRepository.SelectAll()
+                .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new TahseenException(404, "User is not found");
+
+
+            var book = await _bookRepository.SelectAll()
+                .Where(u => u.IsDeleted == false && u.Id == dto.BookId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (book is null)
+                throw new TahseenException(404, "Book is not found");
+
             var UserBorrowedBookCart = (await this._bookCartService.RetrieveAllAsync())
                             .Where(e => e.UserId == dto.UserId)
                             .FirstOrDefault();
@@ -71,6 +88,23 @@ namespace Tahseen.Service.Services.Users
                 .Where(e => e.Id == Id && e.IsDeleted == false)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
+
+            var user = await _userRepository.SelectAll()
+                .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new TahseenException(404, "User is not found");
+
+
+            var book = await _bookRepository.SelectAll()
+                .Where(u => u.IsDeleted == false && u.Id == dto.BookId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (book is null)
+                throw new TahseenException(404, "Book is not found");
             if (data is not null)
             {
                 var MappedData = this._mapper.Map(dto, data);

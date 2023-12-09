@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
+using Tahseen.Domain.Entities;
 using Tahseen.Domain.Entities.Books;
 using Tahseen.Domain.Entities.Reservations;
 using Tahseen.Service.Configurations;
@@ -17,11 +18,18 @@ public class ReservationService : IReservationsService
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Reservation> _repository;
-
-    public ReservationService(IMapper mapper, IRepository<Reservation> repository)
+    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<Book> _bookRepository;
+    public ReservationService(
+        IMapper mapper, 
+        IRepository<Reservation> repository,
+        IRepository<Book> bookRepository,
+        IRepository<User> userRepository)
     {
         this._mapper = mapper;
         this._repository = repository;
+        _bookRepository = bookRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<ReservationForResultDto> AddAsync(ReservationForCreationDto dto)
@@ -34,6 +42,23 @@ public class ReservationService : IReservationsService
         {
             throw new TahseenException(409, "This reservation is exist");
         }
+
+        var user = await _userRepository.SelectAll().
+           Where(u => u.Id == dto.UserId && u.IsDeleted == false).
+           AsNoTracking().
+           FirstOrDefaultAsync();
+
+        if (user == null)
+            throw new TahseenException(404, "User is not found");
+
+        var book = await _bookRepository.SelectAll().
+            Where(e => e.Id == dto.BookId && e.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (book == null)
+            throw new TahseenException(404, "Book is not found");
+
         var reservation = _mapper.Map<Reservation>(dto);
         var result= await _repository.CreateAsync(reservation);
         return _mapper.Map<ReservationForResultDto>(result);
@@ -41,6 +66,22 @@ public class ReservationService : IReservationsService
 
     public async Task<ReservationForResultDto> ModifyAsync(long id, ReservationForUpdateDto dto)
     {
+        var user = await _userRepository.SelectAll().
+           Where(u => u.Id == dto.UserId && u.IsDeleted == false).
+           AsNoTracking().
+           FirstOrDefaultAsync();
+
+        if (user == null)
+            throw new TahseenException(404, "User is not found");
+
+        var book = await _bookRepository.SelectAll().
+            Where(e => e.Id == dto.BookId && e.IsDeleted == false).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+
+        if (book == null)
+            throw new TahseenException(404, "Book is not found");
+
         var reservation = await _repository.SelectAll().Where(r => r.Id == id && r.IsDeleted == false).FirstOrDefaultAsync();
         if (reservation is not null)
         {
