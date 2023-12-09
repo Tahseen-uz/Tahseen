@@ -31,9 +31,9 @@ namespace Tahseen.Service.Services.Users
         public async Task<UserProgressTrackingForResultDto> AddAsync(UserProgressTrackingForCreationDto dto)
         {
             var user = await _userRepository.SelectAll()
-    .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
-    .AsNoTracking()
-    .FirstOrDefaultAsync();
+                .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
             if (user is null)
                 throw new TahseenException(404, "User is not found");

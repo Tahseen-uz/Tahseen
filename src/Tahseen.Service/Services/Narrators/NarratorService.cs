@@ -123,8 +123,8 @@ public class NarratorService : INarratorService
     {
         var narrators = await _repository.SelectAll()
             .Where(n => n.IsDeleted == false)
-            .Include(n => n.AudioBooks) // Include the AudioBooks navigation property
-            .ThenInclude(ab => ab.AudioFiles) // If needed, include additional navigation properties within AudioBooks
+            .Include(n => n.AudioBooks.Where(n => n.IsDeleted == false)) // Include the AudioBooks navigation property
+            .ThenInclude(ab => ab.AudioFiles.Where(ab => ab.IsDeleted == false)) // If needed, include additional navigation properties within AudioBooks
             .AsNoTracking()
             .ToListAsync();
 
@@ -137,8 +137,8 @@ public class NarratorService : INarratorService
     {
         var narrator = await _repository.SelectAll()
             .Where(n => n.Id == id && n.IsDeleted == false)
-            .Include(n => n.AudioBooks) // Include the AudioBooks navigation property
-            .ThenInclude(ab => ab.AudioFiles) // If needed, include additional navigation properties within AudioBooks
+            .Include(n => n.AudioBooks.Where(n => n.IsDeleted==false)) // Include the AudioBooks navigation property
+            .ThenInclude(ab => ab.AudioFiles.Where(ab => ab.IsDeleted == false)) // If needed, include additional navigation properties within AudioBooks
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
