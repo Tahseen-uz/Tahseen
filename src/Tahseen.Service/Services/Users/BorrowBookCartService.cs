@@ -1,24 +1,26 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
-using Tahseen.Domain.Entities.Users;
-using Tahseen.Service.DTOs.Users.BorrowedBookCart;
-using Tahseen.Service.DTOs.Users.UserCart;
 using Tahseen.Service.Exceptions;
+using Tahseen.Data.IRepositories;
+using Tahseen.Domain.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 using Tahseen.Service.Interfaces.IUsersService;
+using Tahseen.Service.DTOs.Users.BorrowedBookCart;
 
 namespace Tahseen.Service.Services.Users
 {
     public class BorrowBookCartService : IBorrowBookCartService
     {
         private readonly IMapper _mapper;
-        private readonly IRepository<BorrowedBookCart> _repository;
         private readonly IRepository<User> _userRepository;
-        public BorrowBookCartService(IMapper mapper, IRepository<BorrowedBookCart> repository,IRepository<User> userRepository)
+        private readonly IRepository<BorrowedBookCart> _repository;
+        public BorrowBookCartService(
+            IMapper mapper, 
+            IRepository<User> userRepository,
+            IRepository<BorrowedBookCart> repository)
         {
+            _mapper = mapper;
             _repository = repository;
-            this._mapper = mapper;
             _userRepository = userRepository;
         }
 
@@ -28,11 +30,10 @@ namespace Tahseen.Service.Services.Users
         {
             var result = await _repository.SelectAll()
                 .Where(e => e.UserId == dto.UserId && e.IsDeleted == false)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
             if (result != null)
-            {
                 throw new TahseenException(400, "BorrowedBookCart is exist");
-            }
 
             var user = await _userRepository.SelectAll()
                 .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
@@ -57,7 +58,7 @@ namespace Tahseen.Service.Services.Users
             var AllData = await this._repository.SelectAll()
                 .Where(t => t.IsDeleted == false)
                 .Include(b => b.BorrowedBook.Where(n => n.IsDeleted == false))
-                .ThenInclude(b => b.Book)
+                .ThenInclude(b => b.Book.IsDeleted == false)
                 .AsNoTracking()
                 .ToListAsync();
             return this._mapper.Map<IEnumerable<BorrowedBookCartForResultDto>>(AllData);
@@ -68,7 +69,7 @@ namespace Tahseen.Service.Services.Users
             var data = await this._repository.SelectAll()
                             .Where(t => t.IsDeleted == false)
                             .Include(b => b.BorrowedBook.Where(n => n.IsDeleted == false))
-                            .ThenInclude(b => b.Book)
+                            .ThenInclude(b => b.Book.IsDeleted == false)
                             .AsNoTracking()
                             .FirstOrDefaultAsync(); 
             if (data != null && data.IsDeleted == false)

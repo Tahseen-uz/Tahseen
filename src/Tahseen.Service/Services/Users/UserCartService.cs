@@ -1,30 +1,33 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
-using Tahseen.Domain.Entities.Books;
 using Tahseen.Domain.Entities;
+using Tahseen.Data.IRepositories;
+using Tahseen.Service.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Tahseen.Domain.Entities.Users;
 using Tahseen.Service.DTOs.Users.UserCart;
-using Tahseen.Service.Exceptions;
 using Tahseen.Service.Interfaces.IUsersService;
 
 namespace Tahseen.Service.Services.Users
 {
     public class UserCartService : IUserCartService
     {
-        private readonly IRepository<UserCart> _repository;
         private readonly IMapper _mapper;
+        private readonly IRepository<UserCart> _repository;
         private readonly IRepository<User> _userRepository;
-        public UserCartService(IRepository<UserCart> Repository, IMapper Mapper, IRepository<User> userRepository)
+        public UserCartService(
+            IMapper Mapper, 
+            IRepository<UserCart> Repository, 
+            IRepository<User> userRepository)
         {
-            this._repository = Repository;
             this._mapper = Mapper;
+            this._repository = Repository;
             this._userRepository = userRepository;
         }
         public async Task<UserCartForResultDto> AddAsync(UserCartForCreationDto dto)
         {
             var result = await this._repository.SelectAll()
                 .Where(e => e.UserId == dto.UserId && e.IsDeleted == false)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
             if (result != null)
             {
@@ -47,6 +50,14 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<bool> RemoveAsync(long Id)
         {
+            var data = await this._repository
+                .SelectAll()
+                .Where(u => u.Id == Id && !u.IsDeleted)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (data is null)
+                throw new TahseenException(404, "UserCart is not found");
+
             return await this._repository.DeleteAsync(Id);
         }
 

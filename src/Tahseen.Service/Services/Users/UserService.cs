@@ -1,72 +1,80 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
+using Tahseen.Service.Helpers;
 using Tahseen.Domain.Entities;
+using Tahseen.Data.IRepositories;
+using Tahseen.Service.Extensions;
+using Tahseen.Service.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Tahseen.Domain.Entities.Library;
 using Tahseen.Service.Configurations;
-using Tahseen.Service.DTOs.Feedbacks.UserRatings;
 using Tahseen.Service.DTOs.FileUpload;
-using Tahseen.Service.DTOs.Users.BorrowedBookCart;
-using Tahseen.Service.DTOs.Users.ChangePassword;
 using Tahseen.Service.DTOs.Users.User;
 using Tahseen.Service.DTOs.Users.UserCart;
 using Tahseen.Service.DTOs.Users.UserSettings;
-using Tahseen.Service.Exceptions;
-using Tahseen.Service.Extensions;
-using Tahseen.Service.Helpers;
+using Tahseen.Service.Interfaces.IUsersService;
+using Tahseen.Service.DTOs.Users.ChangePassword;
+using Tahseen.Service.DTOs.Feedbacks.UserRatings;
+using Tahseen.Service.DTOs.Users.BorrowedBookCart;
 using Tahseen.Service.Interfaces.IFeedbackService;
 using Tahseen.Service.Interfaces.IFileUploadService;
-using Tahseen.Service.Interfaces.IUsersService;
 
 namespace Tahseen.Service.Services.Users
 {
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _userRepository;
-        private readonly IRepository<LibraryBranch> _libraryBranchRepository;
         private readonly IMapper _mapper;
         private readonly IFineService _fineService;
-        private readonly IUserProgressTrackingService _userProgressTrackingService;
-        private readonly IUserSettingService _userSettingService;
-        private readonly IUserRatingService _userRatingService;
         private readonly IUserCartService _userCartService;
-        private readonly IBorrowBookCartService _borrowBookCartService;
+        private readonly IRepository<User> _userRepository;
+        private readonly IUserRatingService _userRatingService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IUserSettingService _userSettingService;
+        private readonly IBorrowBookCartService _borrowBookCartService;
+        private readonly IRepository<LibraryBranch> _libraryBranchRepository;
+        private readonly IUserProgressTrackingService _userProgressTrackingService;
 
-        public UserService(IRepository<User> userRepository,
+        public UserService(
             IMapper mapper,
             IFineService fineService,
-            IUserProgressTrackingService userProgressTrackingService,
-            IUserSettingService userSettingService,
-            IUserRatingService userRatingService,
             IUserCartService userCartService,
-            IBorrowBookCartService borrowBookCartService,
+            IRepository<User> userRepository,
+            IUserRatingService userRatingService,
             IFileUploadService fileUploadService,
-            IRepository<LibraryBranch> libraryBranchRepository)
+            IUserSettingService userSettingService,
+            IBorrowBookCartService borrowBookCartService,
+            IRepository<LibraryBranch> libraryBranchRepository,
+            IUserProgressTrackingService userProgressTrackingService)
         {
-            this._userRepository = userRepository;
             this._mapper = mapper;
             this._fineService = fineService;
-            this._userProgressTrackingService = userProgressTrackingService;
-            this._userSettingService = userSettingService;
-            this._userRatingService = userRatingService;
+            this._userRepository = userRepository;
             this._userCartService = userCartService;
-            this._borrowBookCartService = borrowBookCartService;
             this._fileUploadService = fileUploadService;
-            _libraryBranchRepository = libraryBranchRepository;
+            this._userRatingService = userRatingService;
+            this._userSettingService = userSettingService;
+            this._borrowBookCartService = borrowBookCartService;
+            this._libraryBranchRepository = libraryBranchRepository;
+            this._userProgressTrackingService = userProgressTrackingService;
         }
         public async Task<UserForResultDto> AddAsync(UserForCreationDto dto)
         {
-            var result = await _userRepository.SelectAll().Where(e => e.FirstName == dto.FirstName && e.LastName == dto.LastName && e.LibraryBranchId == dto.LibraryBranchId && e.IsDeleted == false).FirstOrDefaultAsync();
-            var LibraryChecking = await _libraryBranchRepository.SelectAll().Where(l => l.Id == dto.LibraryBranchId).FirstOrDefaultAsync();
+            var result = await _userRepository.SelectAll()
+                .Where(e => e.FirstName == dto.FirstName 
+                        && e.LastName == dto.LastName  
+                        && e.LibraryBranchId == dto.LibraryBranchId 
+                        && e.IsDeleted == false)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            var LibraryChecking = await _libraryBranchRepository
+                .SelectAll().Where(l => l.Id == dto.LibraryBranchId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
             if(LibraryChecking == null)
-            {
                 throw new TahseenException(404, "This library is not found");
-            }
+            
             if (result != null)
-            {
                 throw new TahseenException(400, "User is exist");
-            }
+            
             var data = this._mapper.Map<User>(dto);
 
             if(dto.UserImage != null)
@@ -100,8 +108,6 @@ namespace Tahseen.Service.Services.Users
             var UserCartCreation = new UserCartForCreationDto()
             {
                 UserId = CreatedData.Id,
-                
-
             };
             await this._userCartService.AddAsync(UserCartCreation);
 
@@ -128,7 +134,10 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<bool> ChangePasswordAsync(long Id, UserForChangePasswordDto dto)
         {
-            var data = await _userRepository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
+            var data = await _userRepository
+                .SelectAll()
+                .Where(e => e.Id == Id && e.IsDeleted == false)
+                .FirstOrDefaultAsync();
             if(data == null || PasswordHelper.Verify(dto.OldPassword, data.Salt, data.Password) == false){
                 throw new TahseenException(400, "User or Password is Incorrect");
             }
@@ -145,7 +154,10 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<UserForResultDto> ModifyAsync(long Id, UserForUpdateDto dto)
         {
-            var data = await _userRepository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
+            var data = await _userRepository
+                .SelectAll()
+                .Where(e => e.Id == Id && e.IsDeleted == false)
+                .FirstOrDefaultAsync();
             if (data is not null)
             {
                 if (dto != null)
@@ -191,6 +203,7 @@ namespace Tahseen.Service.Services.Users
         {
             var user = await this._userRepository.SelectAll()
                 .Where(u => u.Id == Id && u.IsDeleted == false)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (user is null)

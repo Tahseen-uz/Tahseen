@@ -1,23 +1,24 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
-using Tahseen.Domain.Entities.Books;
-using Tahseen.Service.DTOs.Users.Fine;
+using Tahseen.Data.IRepositories;
 using Tahseen.Service.Exceptions;
+using Tahseen.Domain.Entities.Books;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Service.DTOs.Users.Fine;
 using Tahseen.Service.Interfaces.IUsersService;
+using System.Runtime.InteropServices;
 
 namespace Tahseen.Service.Services.Users
 {
     public class FineService : IFineService
     {
-        private readonly IRepository<Fine> _fineRepository;
         private readonly IMapper _mapper;
+        private readonly IRepository<Fine> _fineRepository;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Book> _bookRepository;
         public FineService(
-            IRepository<Fine> fineRepository, 
             IMapper mapper,
+            IRepository<Fine> fineRepository, 
             IRepository<User> userRepository,
             IRepository<Book> bookRepository)
         {
@@ -52,7 +53,9 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<FineForResultDto> ModifyAsync(long Id, FineForUpdateDto dto)
         {
-            var data = await this._fineRepository.SelectAll().FirstOrDefaultAsync(e => e.Id == Id);
+            var data = await this._fineRepository.SelectAll()
+                .Where(e => e.Id == Id && !e.IsDeleted)
+                .FirstOrDefaultAsync();
 
             var user = await _userRepository.SelectAll()
                 .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
@@ -82,18 +85,34 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<bool> RemoveAsync(long Id)
         {
+            var data = await this._fineRepository
+                .SelectAll()
+                .Where(f => f.Id == Id && !f.IsDeleted)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (data is null)
+                throw new TahseenException(404, "Fine is not found");
             return await this._fineRepository.DeleteAsync(Id);
         }
 
         public async Task<IEnumerable<FineForResultDto>> RetrieveAllAsync()
         {
-            var AllData = this._fineRepository.SelectAll();
+            var AllData = await this._fineRepository
+                .SelectAll()
+                .AsNoTracking()
+                .ToListAsync();
             return this._mapper.Map<IEnumerable<FineForResultDto>>(AllData);
         }
 
         public async Task<FineForResultDto> RetrieveByIdAsync(long Id)
         {
-            var data = await this._fineRepository.SelectByIdAsync(Id);
+            var data = await this._fineRepository.
+                SelectAll()
+                .Where(f => f.Id == Id && !f.IsDeleted)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (data is null)
+                throw new TahseenException(404, "Fine is not fount");
             return this._mapper.Map<FineForResultDto>(data);
         }
     }

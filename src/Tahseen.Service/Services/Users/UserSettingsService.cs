@@ -1,20 +1,22 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
-using Tahseen.Domain.Entities.Books;
-using Tahseen.Service.DTOs.Users.UserSettings;
 using Tahseen.Service.Exceptions;
+using Tahseen.Data.IRepositories;
+using Microsoft.EntityFrameworkCore;
+using Tahseen.Service.DTOs.Users.UserSettings;
 using Tahseen.Service.Interfaces.IUsersService;
 
 namespace Tahseen.Service.Services.Users
 {
     public class UserSettingsService : IUserSettingService
     {
-        private readonly IRepository<UserSettings> _repository;
         private readonly IMapper _mapper;
         private readonly IRepository<User> _userRepository;
-        public UserSettingsService(IRepository<UserSettings> Repository, IMapper Mapper, IRepository<User> userRepository)
+        private readonly IRepository<UserSettings> _repository;
+        public UserSettingsService(
+            IMapper Mapper, 
+            IRepository<User> userRepository,
+            IRepository<UserSettings> Repository)
         {
             this._mapper = Mapper;
             this._repository = Repository;
@@ -46,7 +48,6 @@ namespace Tahseen.Service.Services.Users
 
         }
 
-
         public async Task<UserSettingsForResultDto> ModifyAsync(long Id, UserSettingsForUpdateDto dto)
         {
            
@@ -66,6 +67,14 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<bool> RemoveAsync(long Id)
         {
+            var data = await this._repository
+                .SelectAll()
+                .Where(u => u.Id == Id && u.IsDeleted == false)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (data is null)
+                throw new TahseenException(404, "UserSetting is not found");
+
             return await this._repository.DeleteAsync(Id);
         }
 

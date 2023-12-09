@@ -104,8 +104,12 @@ public class WishlistService : IWishlistService
 
     public async Task<bool> RemoveAsync(long id)
     {
-        var wishlist = await repository.SelectByIdAsync(id);
-        if (wishlist == null || wishlist.IsDeleted)
+        var wishlist = await repository
+            .SelectAll()
+            .Where(w => w.Id == id && !w.IsDeleted)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (wishlist == null)
             throw new TahseenException(404, "Wishlist not found");
 
         return await repository.DeleteAsync(wishlist.Id);

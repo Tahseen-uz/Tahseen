@@ -1,33 +1,33 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
+using Tahseen.Service.Exceptions;
+using Tahseen.Data.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using Tahseen.Domain.Entities.Books;
 using Tahseen.Service.DTOs.Users.BorrowedBook;
-using Tahseen.Service.Exceptions;
 using Tahseen.Service.Interfaces.IUsersService;
 
 namespace Tahseen.Service.Services.Users
 {
     public class BorrowedBookService : IBorrowedBookService
     {
-        private readonly IRepository<BorrowedBook> BorrowedBook;
+        private readonly IMapper _mapper;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Book> _bookRepository;
-        private readonly IMapper _mapper;
+        private readonly IRepository<BorrowedBook> _borrowedBook;
         private readonly IBorrowBookCartService _bookCartService;
         public BorrowedBookService(
-            IRepository<BorrowedBook> BorrowedBook, 
             IMapper mapper, 
-            IBorrowBookCartService _bookCartService, 
             IRepository<User> userRepository, 
-            IRepository<Book> bookRepository)
+            IRepository<Book> bookRepository,
+            IRepository<BorrowedBook> borrowedBook, 
+            IBorrowBookCartService bookCartService) 
         {
             this._mapper = mapper;
-            this.BorrowedBook = BorrowedBook;
-            this._bookCartService = _bookCartService;
+            this._borrowedBook = borrowedBook;
             this._userRepository = userRepository;
             this._bookRepository = bookRepository;
+            this._bookCartService = bookCartService;
         }
         public async Task<BorrowedBookForResultDto> AddAsync(BorrowedBookForCreationDto dto)
         {
@@ -39,7 +39,6 @@ namespace Tahseen.Service.Services.Users
 
             if (user is null)
                 throw new TahseenException(404, "User is not found");
-
 
             var book = await _bookRepository.SelectAll()
                 .Where(u => u.IsDeleted == false && u.Id == dto.BookId)
@@ -53,7 +52,7 @@ namespace Tahseen.Service.Services.Users
                             .Where(e => e.UserId == dto.UserId)
                             .FirstOrDefault();
             var userLibraryBranch = await this._userRepository.SelectAll().Where(e => e.Id == dto.UserId && e.IsDeleted == false).FirstOrDefaultAsync();
-            var BorrowedBooks = await this.BorrowedBook.SelectAll().Where(e => e.UserId == dto.UserId && e.IsDeleted == false).FirstOrDefaultAsync();
+            var BorrowedBooks = await this._borrowedBook.SelectAll().Where(e => e.UserId == dto.UserId && e.IsDeleted == false).FirstOrDefaultAsync();
             var SelectedBook = await this._bookRepository.SelectAll().Where(b => b.Id == dto.BookId && b.IsDeleted == false).FirstOrDefaultAsync();
             if (BorrowedBooks != null && BorrowedBooks.BookId == dto.BookId)
             {
@@ -78,13 +77,13 @@ namespace Tahseen.Service.Services.Users
             {
                 throw new TahseenException(400, "Book is not available for now");
             }
-            var result = await this.BorrowedBook.CreateAsync(data);
+            var result = await this._borrowedBook.CreateAsync(data);
             return this._mapper.Map<BorrowedBookForResultDto>(result);
         }
 
         public async Task<BorrowedBookForResultDto> ModifyAsync(long Id, BorrowedBookForUpdateDto dto)
         {
-            var data = await this.BorrowedBook.SelectAll()
+            var data = await this._borrowedBook.SelectAll()
                 .Where(e => e.Id == Id && e.IsDeleted == false)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -109,7 +108,7 @@ namespace Tahseen.Service.Services.Users
             {
                 var MappedData = this._mapper.Map(dto, data);
                 MappedData.UpdatedAt = DateTime.UtcNow;
-                var result = await BorrowedBook.UpdateAsync(MappedData);
+                var result = await _borrowedBook.UpdateAsync(MappedData);
                 return this._mapper.Map<BorrowedBookForResultDto>(result);
             }
             throw new TahseenException(404, "Borrowed book is not found");
@@ -117,16 +116,16 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<bool> RemoveAsync(long Id)
         {
-            return await this.BorrowedBook.DeleteAsync(Id);
+            return await this._borrowedBook.DeleteAsync(Id);
         }
 
         public async Task<IEnumerable<BorrowedBookForResultDto>> RetrieveAllAsync()
         {
-            var result = await this.BorrowedBook
+            var result = await this._borrowedBook
                 .SelectAll()
                 .Where(t => t.IsDeleted == false)
-                .Include(b => b.Book)
-                .Include(u => u.User)
+                .Include(b => b.Book.IsDeleted == false)
+                .Include(u => u.User.IsDeleted == false)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
             var res = this._mapper.Map<IEnumerable<BorrowedBookForResultDto>>(result);
@@ -140,10 +139,10 @@ namespace Tahseen.Service.Services.Users
 
         public async Task<BorrowedBookForResultDto> RetrieveByIdAsync(long Id)
         {
-            var data = await this.BorrowedBook.SelectAll()
+            var data = await this._borrowedBook.SelectAll()
                 .Where(t => t.IsDeleted == false)
-                .Include(b => b.Book)
-                .Include(u => u.User)
+                .Include(b => b.Book.IsDeleted == false)
+                .Include(u => u.User.IsDeleted == false)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(); 
             if (data != null && data.IsDeleted == false)
