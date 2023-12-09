@@ -1,5 +1,7 @@
 ﻿using Tahseen.Domain.Entities;
 using Tahseen.Domain.Enums;
+using Tahseen.Service.DTOs.Books.CompletedBooks;
+using Tahseen.Service.DTOs.Feedbacks.UserRatings;
 using Tahseen.Service.DTOs.Users.BorrowedBook;
 
 namespace Tahseen.Service.DTOs.Users.User
@@ -17,8 +19,9 @@ namespace Tahseen.Service.DTOs.Users.User
         public string UserImage { get; set; }
         public string Roles { get; set; }
         public long LibraryBranchId { get; set; }
-
         public IEnumerable<BorrowedBookForResultDto> BorrowedBooks { get; set; }
+        public IEnumerable<CompletedBookForResultDto> CompletedBooks { get; set; }
+        public IEnumerable<UserRatingForResultDto> UserRating { get; set; }
 
     }
 }

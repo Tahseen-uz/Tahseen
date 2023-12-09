@@ -80,13 +80,13 @@ public class CompletedBookService : ICompletedBookService
     public Task<bool> RemoveAsync(long id)
     => this._repository.DeleteAsync(id);
 
-    public async Task<IEnumerable<CompletedBookForResultDto>> RetrieveAllAsync()
+    public async Task<IEnumerable<CompletedBookForResultDto>> RetrieveAllAsync(long Id) // id == userId
     {
         var bookCompleted = await this._repository
             .SelectAll()
-            .Where(t=>!t.IsDeleted)
+            .Where(b => b.UserId == Id && b.IsDeleted == false)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .ToListAsync();
 
         return this._mapper.Map<IEnumerable<CompletedBookForResultDto>>(bookCompleted);
     }

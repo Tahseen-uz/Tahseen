@@ -8,6 +8,6 @@ namespace Tahseen.Service.Interfaces.IUsersService
         public Task<BorrowedBookForResultDto> ModifyAsync(long Id, BorrowedBookForUpdateDto dto);
         public Task<bool> RemoveAsync(long Id);
         public Task<BorrowedBookForResultDto> RetrieveByIdAsync(long Id);
-        public Task<IEnumerable<BorrowedBookForResultDto>> RetrieveAllAsync();
+        public Task<IEnumerable<BorrowedBookForResultDto>> RetrieveAllAsync(long Id);
     }
 }
