@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Tahseen.Api.Models;
-using Tahseen.Service.Configurations;
 using Tahseen.Service.DTOs.Feedbacks.UserRatings;
-using Tahseen.Service.DTOs.Users.User;
 using Tahseen.Service.Interfaces.IFeedbackService;
-using Tahseen.Service.Interfaces.IUsersService;
 
 namespace Tahseen.Api.Controllers.UsersControllers
 {
@@ -30,7 +26,7 @@ namespace Tahseen.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-        [HttpGet("{id}")]
+/*        [HttpGet("{id}")]
 
         public async Task<IActionResult> GetAsync([FromRoute(Name = "id")] long Id)
         {
@@ -41,7 +37,7 @@ namespace Tahseen.Api.Controllers.UsersControllers
                 Data = await _userRatingService.RetrieveByIdAsync(Id)
             };
             return Ok(response);
-        }
+        }*/
 
         [HttpGet("{userId}")]
 
@@ -81,7 +77,7 @@ namespace Tahseen.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-        [HttpPut("{id}")]
+/*        [HttpPut("{id}")]
 
         public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long Id, [FromForm] UserRatingForUpdateDto dto)
         {
@@ -92,6 +88,6 @@ namespace Tahseen.Api.Controllers.UsersControllers
                 Data = await _userRatingService.ModifyAsync(Id, dto)
             };
             return Ok(response);
-        }
+        }*/
     }
 }

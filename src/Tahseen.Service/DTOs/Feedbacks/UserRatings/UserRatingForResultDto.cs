@@ -8,5 +8,5 @@ public class UserRatingForResultDto
     public long UserId { get; set; }
     public UserForResultDto User { get; set; }
     public long BooksCompleted { get; set; }
-    public decimal Rating { get; set; }
+    public long Rating { get; set; }
 }
