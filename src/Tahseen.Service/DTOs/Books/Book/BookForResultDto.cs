@@ -26,7 +26,6 @@ public class BookForResultDto
     public string Content { get; set; }
     public string BookFormat { get; set; }
     public string ShelfLocation { get; set; }
-    public string Condition { get; set; }
     public string BookImage { get; set; }
     public AuthorForResultDto Author { get; set; }
     public GenreForResultDto Genre { get; set; }

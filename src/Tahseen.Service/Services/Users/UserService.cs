@@ -227,7 +227,7 @@ namespace Tahseen.Service.Services.Users
         {
             var data = await _userRepository.SelectAll()
                 .Where(t => t.Id == Id && t.IsDeleted == false)
-                .Include(b => b.BorrowedBooks)
+                .Include(b => b.BorrowedBooks.Where(e => e.IsDeleted == false))
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
