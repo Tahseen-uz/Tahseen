@@ -135,17 +135,16 @@ namespace Tahseen.Service.Services.Users
         {
             var result = await this.BorrowedBook
                 .SelectAll()
-                .Where(t => t.IsDeleted == false && t.UserId == Id)
+                .Where(t => t.UserId == Id && t.IsDeleted == false)
                 .Include(b => b.Book)
-                .Include(u => u.User)
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .ToListAsync();
             var res = this._mapper.Map<IEnumerable<BorrowedBookForResultDto>>(result);
-            foreach (var item in res)
+       /*     foreach (var item in res)
             {
                 item.Status = item.Status.ToString();
                 item.BookTitle = item.BookTitle.ToString();
-            }
+            }*/
             return res;
         }
 
@@ -154,14 +153,13 @@ namespace Tahseen.Service.Services.Users
             var data = await this.BorrowedBook.SelectAll()
                 .Where(t => t.IsDeleted == false)
                 .Include(b => b.Book)
-                .Include(u => u.User)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(); 
             if (data != null && data.IsDeleted == false)
             {
                 var result = this._mapper.Map<BorrowedBookForResultDto>(data);
-                result.Status = result.Status.ToString();
-                result.BookTitle = result.BookTitle.ToString();
+/*                result.Status = result.Status.ToString();
+                result.BookTitle = result.BookTitle.ToString();*/
                 return result;
             }
             throw new TahseenException(404, "Borrowed book is not found");

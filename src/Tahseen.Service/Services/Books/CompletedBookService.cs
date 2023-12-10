@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Tahseen.Service.Interfaces.IBookServices;
 using Tahseen.Service.DTOs.Books.CompletedBooks;
 using Tahseen.Domain.Entities;
+using Tahseen.Domain.Entities.Feedbacks;
+using Tahseen.Service.Interfaces.IFeedbackService;
+using Tahseen.Service.DTOs.Feedbacks.UserRatings;
 
 namespace Tahseen.Service.Services.Books;
 
@@ -15,16 +18,19 @@ public class CompletedBookService : ICompletedBookService
     private readonly IRepository<CompletedBooks> _repository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<Book> _bookRepository;
+    private readonly IUserRatingService userRatingService;
     public CompletedBookService(
-        IMapper mapper, 
+        IMapper mapper,
         IRepository<CompletedBooks> repository,
         IRepository<Book> bookRepository,
-        IRepository<User> userRepository)
+        IRepository<User> userRepository,
+        IUserRatingService userRatingService)
     {
         this._mapper = mapper;
         this._repository = repository;
         _bookRepository = bookRepository;
         _userRepository = userRepository;
+        this.userRatingService = userRatingService;
     }
 
     public async Task<CompletedBookForResultDto> AddAsync(CompletedBookForCreationDto dto)
@@ -46,6 +52,13 @@ public class CompletedBookService : ICompletedBookService
 
         var mapped = this._mapper.Map<CompletedBooks>(dto);
         var result = await this._repository.CreateAsync(mapped);
+
+
+        var TotalCompletedBooks = await this._repository.SelectAll().Where(e => e.UserId == dto.UserId).CountAsync();
+        var ratingUpdate = new UserRatingForUpdateDto();
+        ratingUpdate.BooksCompleted = TotalCompletedBooks + 1;
+        await this.userRatingService.ModifyAsync(dto.UserId, ratingUpdate);
+
         return this._mapper.Map<CompletedBookForResultDto>(result);
     }
 
@@ -95,7 +108,7 @@ public class CompletedBookService : ICompletedBookService
     {
         var book = await this._repository
             .SelectAll()
-            .Where(c => c.Id == id && !c.IsDeleted)
+            .Where(c => c.UserId == id && c.IsDeleted == false)
             .AsNoTracking()
             .FirstOrDefaultAsync();
         if (book is null)

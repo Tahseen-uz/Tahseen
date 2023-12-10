@@ -21,5 +21,6 @@ namespace Tahseen.Domain.Entities
         public DateTime ReturnDate { get; set; }
         public BorrowedBookStatus Status { get; set; }
         public decimal FineAmount { get; set; }
+
     }
 }

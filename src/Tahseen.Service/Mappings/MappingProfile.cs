@@ -174,7 +174,7 @@ public class MappingProfile:Profile
 
         CreateMap<BorrowedBook, BorrowedBookForCreationDto>().ReverseMap();
         CreateMap<BorrowedBook, BorrowedBookForUpdateDto>().ReverseMap();
-        CreateMap<BorrowedBook, BorrowedBookForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString())).ReverseMap();
+        CreateMap<BorrowedBook, BorrowedBookForResultDto>().ReverseMap();
 
         CreateMap<Fine, FineForCreationDto>().ReverseMap();
         CreateMap<Fine, FineForUpdateDto>().ReverseMap();

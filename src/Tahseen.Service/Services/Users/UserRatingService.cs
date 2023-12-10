@@ -17,11 +17,12 @@ public class UserRatingService : IUserRatingService
     private readonly IRepository<UserRatings> repository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<CompletedBooks> _CompletedBooksRepository;
-    public UserRatingService(IMapper mapper, IRepository<UserRatings> repository, IRepository<User> userRepository)
+    public UserRatingService(IMapper mapper, IRepository<UserRatings> repository, IRepository<User> userRepository, IRepository<CompletedBooks> completedBooksRepository)
     {
         this.mapper = mapper;
         this.repository = repository;
         this._userRepository = userRepository;
+        _CompletedBooksRepository = completedBooksRepository;
     }
     public async Task<UserRatingForResultDto> AddAsync(UserRatingForCreationDto dto)
     {
@@ -47,27 +48,27 @@ public class UserRatingService : IUserRatingService
         return mapper.Map<UserRatingForResultDto>(userRating);
     }
 
-    /*    public async Task<UserRatingForResultDto> ModifyAsync(long Id, UserRatingForUpdateDto dto)
-        {
-            var user = await _userRepository.SelectAll()
-                .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+    public async Task<UserRatingForResultDto> ModifyAsync(long Id, UserRatingForUpdateDto dto)
+    {
+        var user = await _userRepository.SelectAll()
+            .Where(u => u.IsDeleted == false && u.Id == Id)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
-            if (user is null)
-                throw new TahseenException(404, "User is not found");
+        if (user is null)
+            throw new TahseenException(404, "User is not found");
 
-            var userRating = await repository.SelectAll().Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync(); 
-            if (userRating == null)
-                throw new TahseenException(404, "UserRating not found");
+        var userRating = await repository.SelectAll().Where(e => e.UserId == Id && e.IsDeleted == false).FirstOrDefaultAsync();
+        if (userRating == null)
+            throw new TahseenException(404, "UserRating not found");
 
-            var mappedUserRating = mapper.Map(dto, userRating);
-            var result = await repository.UpdateAsync(mappedUserRating);
+        var mappedUserRating = mapper.Map(dto, userRating);
+        var result = await repository.UpdateAsync(mappedUserRating);
 
-            return mapper.Map<UserRatingForResultDto>(result);
-        }
+        return mapper.Map<UserRatingForResultDto>(result);
+    }
 
-      */
+
 
     public async Task<bool> RemoveAsync(long Id)
     {
@@ -142,10 +143,15 @@ public class UserRatingService : IUserRatingService
         if (userRatingEntity == null)
             throw new TahseenException(404, "UserRating not found");
 
+        if(userRatingEntity.BooksCompleted == 0)
+        {
+            return this.mapper.Map<UserRatingForResultDto>(userRatingEntity);
+        }
+
         var booksCompletedCount = await _CompletedBooksRepository
-            .SelectAll()
-            .Where(c => c.UserId == userId)
-            .CountAsync();
+           .SelectAll()
+           .Where(c => c.UserId == userId)
+           .CountAsync();
 
         userRatingEntity.BooksCompleted = booksCompletedCount;
 

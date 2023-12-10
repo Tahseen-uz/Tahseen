@@ -58,7 +58,7 @@ namespace Tahseen.Service.Services.Users
             var AllData = await this._repository.SelectAll()
                 .Where(t => t.IsDeleted == false)
                 .Include(b => b.BorrowedBook.Where(n => n.IsDeleted == false))
-                .ThenInclude(b => b.Book.IsDeleted == false)
+                .ThenInclude(b => b.Book)
                 .AsNoTracking()
                 .ToListAsync();
             return this._mapper.Map<IEnumerable<BorrowedBookCartForResultDto>>(AllData);
@@ -69,7 +69,7 @@ namespace Tahseen.Service.Services.Users
             var data = await this._repository.SelectAll()
                             .Where(t => t.IsDeleted == false)
                             .Include(b => b.BorrowedBook.Where(n => n.IsDeleted == false))
-                            .ThenInclude(b => b.Book.IsDeleted == false)
+                            .ThenInclude(b => b.Book)
                             .AsNoTracking()
                             .FirstOrDefaultAsync(); 
             if (data != null && data.IsDeleted == false)

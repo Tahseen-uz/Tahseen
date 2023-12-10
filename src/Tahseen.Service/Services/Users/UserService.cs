@@ -221,18 +221,14 @@ namespace Tahseen.Service.Services.Users
             var users = await _userRepository.SelectAll()
                 .Where(t => t.IsDeleted == false && t.LibraryBranchId == id)
                 .Include(b => b.BorrowedBooks.Where(n => n.IsDeleted == false))
+                .Include(l => l.LibraryBranch) // Include related LibraryBranch
+                .Where(l => l.LibraryBranch.IsDeleted == false)
                 .ToPagedList(@params)
                 .AsNoTracking()
                 .ToListAsync();
                 
             var result = _mapper.Map<IEnumerable<UserForResultDto>>(users);
-            foreach (var res in result)
-            {
-                if(res.Roles != null)
-                {
-                    res.Roles = res.Roles.ToString();
-                };
-            };
+ 
             return result;
         }
 
@@ -241,6 +237,8 @@ namespace Tahseen.Service.Services.Users
             var data = await _userRepository.SelectAll()
                 .Where(t => t.Id == Id && t.IsDeleted == false)
                 .Include(b => b.BorrowedBooks.Where(n => n.IsDeleted == false))
+                .Include(l => l.LibraryBranch) // Include related LibraryBranch
+                //.Where(l => l.LibraryBranch.IsDeleted == false)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
