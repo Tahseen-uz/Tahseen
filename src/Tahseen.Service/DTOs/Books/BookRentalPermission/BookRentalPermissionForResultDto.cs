@@ -6,6 +6,7 @@ namespace Tahseen.Service.DTOs.Books.BookRentalPermission
 {
     public class BookRentalPermissionForResultDto
     {
+        public long Id { get; set; }    
         public long UserId { get; set; }
         public UserForResultDto User { get; set; }
         public long BookId { get; set; }
