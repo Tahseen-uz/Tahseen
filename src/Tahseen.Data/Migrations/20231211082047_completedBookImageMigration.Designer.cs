@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tahseen.Data.DbContexts;
@@ -11,9 +12,11 @@ using Tahseen.Data.DbContexts;
 namespace Tahseen.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231211082047_completedBookImageMigration")]
+    partial class completedBookImageMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -389,9 +392,6 @@ namespace Tahseen.Data.Migrations
                     b.Property<long>("BookId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("BookImage")
-                        .HasColumnType("text");
-
                     b.Property<string>("BookTitle")
                         .HasColumnType("text");
 
@@ -409,9 +409,6 @@ namespace Tahseen.Data.Migrations
 
                     b.Property<long?>("LibraryBranchId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("LibraryBranchName")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("timestamp with time zone");

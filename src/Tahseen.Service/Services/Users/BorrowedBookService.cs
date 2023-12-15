@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Tahseen.Data.IRepositories;
 using Tahseen.Domain.Entities;
 using Tahseen.Domain.Entities.Books;
+using Tahseen.Domain.Entities.Library;
 using Tahseen.Service.DTOs.Users.BorrowedBook;
 using Tahseen.Service.Exceptions;
 using Tahseen.Service.Interfaces.IUsersService;
@@ -14,20 +15,23 @@ namespace Tahseen.Service.Services.Users
         private readonly IRepository<BorrowedBook> BorrowedBook;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<LibraryBranch> _libraryBranchRepository;
         private readonly IMapper _mapper;
         private readonly IBorrowBookCartService _bookCartService;
         public BorrowedBookService(
-            IRepository<BorrowedBook> BorrowedBook, 
-            IMapper mapper, 
-            IBorrowBookCartService _bookCartService, 
-            IRepository<User> userRepository, 
-            IRepository<Book> bookRepository)
+            IRepository<BorrowedBook> BorrowedBook,
+            IMapper mapper,
+            IBorrowBookCartService _bookCartService,
+            IRepository<User> userRepository,
+            IRepository<Book> bookRepository,
+            IRepository<LibraryBranch> libraryBranchRepository)
         {
             this._mapper = mapper;
             this.BorrowedBook = BorrowedBook;
             this._bookCartService = _bookCartService;
             this._userRepository = userRepository;
             this._bookRepository = bookRepository;
+            _libraryBranchRepository = libraryBranchRepository;
         }
         public async Task<BorrowedBookForResultDto> AddAsync(BorrowedBookForCreationDto dto)
         {
@@ -54,10 +58,10 @@ namespace Tahseen.Service.Services.Users
                             .FirstOrDefault();
 
             var userLibraryBranch = await this._userRepository.SelectAll().Where(e => e.Id == dto.UserId && e.IsDeleted == false).FirstOrDefaultAsync();
-            var BorrowedBooks = await this.BorrowedBook.SelectAll().Where(e => e.UserId == dto.UserId && e.IsDeleted == false).FirstOrDefaultAsync();
+            var BorrowedBook = await this.BorrowedBook.SelectAll().Where(e => e.UserId == dto.UserId && e.IsDeleted == false).FirstOrDefaultAsync();
             var SelectedBook = await this._bookRepository.SelectAll().Where(b => b.Id == dto.BookId && b.IsDeleted == false).FirstOrDefaultAsync();
-            
-            if (BorrowedBooks != null && BorrowedBooks.BookId == dto.BookId)
+            var selectedLibraryBranch = await this._libraryBranchRepository.SelectAll().Where(e => e.Id == SelectedBook.LibraryId).AsNoTracking().FirstOrDefaultAsync();
+            if (BorrowedBook != null && BorrowedBook.BookId == dto.BookId)
             {
                 throw new TahseenException(409, "You have already this book in your cart");
             }
@@ -74,7 +78,9 @@ namespace Tahseen.Service.Services.Users
             data.BookTitle = SelectedBook.Title;
             data.Status = 0;
             data.FineAmount = 0;
-            if(SelectedBook != null && SelectedBook.AvailableCopies > 0)
+            data.BookImage = SelectedBook.BookImage;
+            data.LibraryBranchName = selectedLibraryBranch.Name;
+            if (SelectedBook != null && SelectedBook.AvailableCopies > 0)
             {
                 SelectedBook.AvailableCopies = SelectedBook.AvailableCopies - 1;
                 await _bookRepository.UpdateAsync(SelectedBook);
@@ -136,7 +142,6 @@ namespace Tahseen.Service.Services.Users
             var result = await this.BorrowedBook
                 .SelectAll()
                 .Where(t => t.UserId == Id && t.IsDeleted == false)
-                .Include(b => b.Book)
                 .AsNoTracking()
                 .ToListAsync();
             var res = this._mapper.Map<IEnumerable<BorrowedBookForResultDto>>(result);
@@ -152,7 +157,6 @@ namespace Tahseen.Service.Services.Users
         {
             var data = await this.BorrowedBook.SelectAll()
                 .Where(t => t.IsDeleted == false)
-                .Include(b => b.Book)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(); 
             if (data != null && data.IsDeleted == false)

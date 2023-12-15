@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tahseen.Data.DbContexts;
@@ -11,9 +12,11 @@ using Tahseen.Data.DbContexts;
 namespace Tahseen.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231211060723_UserRatingMigration")]
+    partial class UserRatingMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,12 +289,6 @@ namespace Tahseen.Data.Migrations
                     b.Property<long>("BookId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("BookImage")
-                        .HasColumnType("text");
-
-                    b.Property<string>("BookTitle")
-                        .HasColumnType("text");
-
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
@@ -300,9 +297,6 @@ namespace Tahseen.Data.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("LibraryBranchName")
-                        .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -389,9 +383,6 @@ namespace Tahseen.Data.Migrations
                     b.Property<long>("BookId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("BookImage")
-                        .HasColumnType("text");
-
                     b.Property<string>("BookTitle")
                         .HasColumnType("text");
 
@@ -409,9 +400,6 @@ namespace Tahseen.Data.Migrations
 
                     b.Property<long?>("LibraryBranchId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("LibraryBranchName")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("timestamp with time zone");
@@ -807,7 +795,8 @@ namespace Tahseen.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("UserRatings");
                 });
@@ -1342,6 +1331,9 @@ namespace Tahseen.Data.Migrations
                     b.Property<string>("UserImage")
                         .HasColumnType("text");
 
+                    b.Property<long>("UserRatingId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LibraryBranchId");
@@ -1619,7 +1611,7 @@ namespace Tahseen.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Tahseen.Domain.Entities.User", "User")
-                        .WithMany("CompletedBooks")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1761,8 +1753,8 @@ namespace Tahseen.Data.Migrations
             modelBuilder.Entity("Tahseen.Domain.Entities.Feedbacks.UserRatings", b =>
                 {
                     b.HasOne("Tahseen.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("UserRatings")
+                        .HasForeignKey("Tahseen.Domain.Entities.Feedbacks.UserRatings", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2022,7 +2014,7 @@ namespace Tahseen.Data.Migrations
                 {
                     b.Navigation("BorrowedBooks");
 
-                    b.Navigation("CompletedBooks");
+                    b.Navigation("UserRatings");
                 });
 
             modelBuilder.Entity("Tahseen.Domain.Entities.Users.BorrowedBookCart", b =>

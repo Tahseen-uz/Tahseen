@@ -10,6 +10,5 @@ namespace Tahseen.Service.DTOs.Users.User
         public string LastName { get; set; }
         public string Address { get; set; }
         public string DateOfBirth { get; set; }
-        public IFormFile UserImage { get; set; }
     }
 }

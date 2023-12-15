@@ -28,5 +28,6 @@ public class User:Auditable
     public long? LibraryBranchId { get; set; }
     public LibraryBranch LibraryBranch { get; set; }
     public IEnumerable<BorrowedBook> BorrowedBooks { get; set;}
+    public IEnumerable<CompletedBooks> CompletedBooks { get; set; }
 
 }

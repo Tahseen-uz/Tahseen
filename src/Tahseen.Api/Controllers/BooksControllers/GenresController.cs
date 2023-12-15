@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Service.DTOs.Books.Genre;
 using Tahseen.Service.Interfaces.IBookServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tahseen.Api.Controllers.BooksControllers
 {

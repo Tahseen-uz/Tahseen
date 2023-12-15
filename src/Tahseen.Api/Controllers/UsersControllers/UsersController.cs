@@ -70,20 +70,33 @@ namespace Tahseen.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("UserUpdate")]
 
-        public async Task<IActionResult> PutAsync([FromRoute(Name = "id")]long Id, [FromForm]UserForUpdateDto dto)
+        public async Task<IActionResult> PutAsync([FromBody]UserForUpdateDto dto)
         {
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirstValue("id"));
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await _userService.ModifyAsync(Id, dto)
+                Data = await _userService.ModifyAsync(UserId, dto)
             };
             return Ok(response);
         }
         //Added
 
+        [HttpPut("UserImageUpdate")]
+        public async Task<IActionResult> PutUserImageAsync([FromForm]UserImageUpdateDto dto)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirstValue("id"));
+            var response = new Response()
+            {
+                StatusCode = 200,
+                Message = "Success",
+                Data = await this._userService.ModifyUserImageAsync(userId, dto)
+            };
+            return Ok(response);
+        }
 
 
         [Authorize]

@@ -9,6 +9,7 @@ using Tahseen.Domain.Entities;
 using Tahseen.Domain.Entities.Feedbacks;
 using Tahseen.Service.Interfaces.IFeedbackService;
 using Tahseen.Service.DTOs.Feedbacks.UserRatings;
+using Tahseen.Domain.Entities.Library;
 
 namespace Tahseen.Service.Services.Books;
 
@@ -18,19 +19,22 @@ public class CompletedBookService : ICompletedBookService
     private readonly IRepository<CompletedBooks> _repository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<Book> _bookRepository;
+    private readonly IRepository<LibraryBranch> _libraryBranchRepository;
     private readonly IUserRatingService userRatingService;
     public CompletedBookService(
         IMapper mapper,
         IRepository<CompletedBooks> repository,
         IRepository<Book> bookRepository,
         IRepository<User> userRepository,
-        IUserRatingService userRatingService)
+        IUserRatingService userRatingService,
+        IRepository<LibraryBranch> libraryBranchRepository)
     {
         this._mapper = mapper;
         this._repository = repository;
         _bookRepository = bookRepository;
         _userRepository = userRepository;
         this.userRatingService = userRatingService;
+        _libraryBranchRepository = libraryBranchRepository;
     }
 
     public async Task<CompletedBookForResultDto> AddAsync(CompletedBookForCreationDto dto)
@@ -50,7 +54,17 @@ public class CompletedBookService : ICompletedBookService
         if (book == null)
             throw new TahseenException(404, "Book is not found");
 
+        var libraryBranch = await this._libraryBranchRepository.SelectAll().Where(l => l.Id == book.LibraryId).AsNoTracking().FirstOrDefaultAsync();
+
+        if(libraryBranch == null)
+        {
+            throw new TahseenException(404, "This library branch is not found");
+        }
+
         var mapped = this._mapper.Map<CompletedBooks>(dto);
+        mapped.BookTitle = book.Title;
+        mapped.LibraryBranchName = libraryBranch.Name;
+        mapped.BookImage = book.BookImage;
         var result = await this._repository.CreateAsync(mapped);
 
 
@@ -100,6 +114,7 @@ public class CompletedBookService : ICompletedBookService
             .Where(b => b.UserId == Id && b.IsDeleted == false)
             .AsNoTracking()
             .ToListAsync();
+        
 
         return this._mapper.Map<IEnumerable<CompletedBookForResultDto>>(bookCompleted);
     }

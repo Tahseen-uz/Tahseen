@@ -1,4 +1,5 @@
 ﻿using Tahseen.Domain.Entities;
+using Tahseen.Domain.Entities.Books;
 using Tahseen.Domain.Entities.Library;
 using Tahseen.Domain.Enums;
 using Tahseen.Service.DTOs.Books.CompletedBooks;
@@ -24,7 +25,7 @@ namespace Tahseen.Service.DTOs.Users.User
         public LibraryBranchForResultDto LibraryBranch { get; set; }
         public IEnumerable<BorrowedBookForResultDto> BorrowedBooks { get; set; }
         public IEnumerable<CompletedBookForResultDto> CompletedBooks { get; set; }
-        public IEnumerable<UserRatingForResultDto> UserRating { get; set; }
+
 
     }
 }

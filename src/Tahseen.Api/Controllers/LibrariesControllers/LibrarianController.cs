@@ -7,6 +7,8 @@ using Tahseen.Service.DTOs.Librarians;
 using Tahseen.Service.Interfaces.ILibrariansService;
 
 namespace Tahseen.Api.Controllers.LibrariesControllers;
+//[Authorize(Roles = "Librarian")]
+
 public class LibrarianController:BaseController
 {
     
@@ -77,7 +79,6 @@ public class LibrarianController:BaseController
         return Ok(response);
     }
 
-    [Authorize]
 
     [HttpGet("me")]
     public async Task<IActionResult> GetLoggedAsync()

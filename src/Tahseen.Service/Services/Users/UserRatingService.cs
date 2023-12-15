@@ -124,14 +124,6 @@ public class UserRatingService : IUserRatingService
     }
 
 
-    /*    public async Task<UserRatingForResultDto> RetrieveByIdAsync(long id)
-        {
-            var result = await repository.SelectByIdAsync(id);
-            if (result == null && result.IsDeleted == true)
-                throw new TahseenException(404, "UserRating is not found");
-
-            return mapper.Map<UserRatingForResultDto>(result);
-        }*/
 
     public async Task<UserRatingForResultDto> RetrieveByUserIdAsync(long userId)
     {

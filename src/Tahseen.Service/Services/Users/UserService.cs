@@ -17,6 +17,7 @@ using Tahseen.Service.DTOs.Feedbacks.UserRatings;
 using Tahseen.Service.DTOs.Users.BorrowedBookCart;
 using Tahseen.Service.Interfaces.IFeedbackService;
 using Tahseen.Service.Interfaces.IFileUploadService;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Tahseen.Service.Services.Users
 {
@@ -162,23 +163,6 @@ namespace Tahseen.Service.Services.Users
             {
                 if (dto != null)
                 {
-                    if (dto.UserImage != null)
-                    {
-                        if (data.UserImage != null)
-                        {
-                            await this._fileUploadService.FileDeleteAsync(data.UserImage);
-                        }
-
-                        var FileUploadForCreation = new FileUploadForCreationDto
-                        {
-                            FolderPath = "UsersAssets",
-                            FormFile = dto.UserImage
-                        };
-                        var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
-
-                        data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
-                    }
-
                     // Update other properties only if dto's property is not null or empty
                     data.FirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : data.FirstName;
                     data.LastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : data.LastName;
@@ -198,6 +182,36 @@ namespace Tahseen.Service.Services.Users
             throw new TahseenException(404, "User is not found");
         }
 
+        public async Task<UserForResultDto> ModifyUserImageAsync(long Id, UserImageUpdateDto dto)
+        {
+            var data = await _userRepository
+            .SelectAll()
+            .Where(e => e.Id == Id && e.IsDeleted == false)
+            .FirstOrDefaultAsync();
+
+            if (dto.UserImage != null)
+            {
+                if (data.UserImage != null)
+                {
+                    await this._fileUploadService.FileDeleteAsync(data.UserImage);
+                }
+
+                var FileUploadForCreation = new FileUploadForCreationDto
+                {
+                    FolderPath = "UsersAssets",
+                    FormFile = dto.UserImage
+                };
+                var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+
+                data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+            }
+            else if(dto.UserImage == null)
+            {
+                data.UserImage = data.UserImage;
+
+            }
+            return this._mapper.Map<UserForResultDto>(data);
+        }
 
         public async Task<bool> RemoveAsync(long Id)
         {
@@ -222,7 +236,8 @@ namespace Tahseen.Service.Services.Users
                 .Where(t => t.IsDeleted == false && t.LibraryBranchId == id)
                 .Include(b => b.BorrowedBooks.Where(n => n.IsDeleted == false))
                 .Include(l => l.LibraryBranch) // Include related LibraryBranch
-                .Where(l => l.LibraryBranch.IsDeleted == false)
+                //.Where(l => l.LibraryBranch.IsDeleted == false)
+                .Include(c => c.CompletedBooks)
                 .ToPagedList(@params)
                 .AsNoTracking()
                 .ToListAsync();
@@ -239,6 +254,7 @@ namespace Tahseen.Service.Services.Users
                 .Include(b => b.BorrowedBooks.Where(n => n.IsDeleted == false))
                 .Include(l => l.LibraryBranch) // Include related LibraryBranch
                 //.Where(l => l.LibraryBranch.IsDeleted == false)
+                .Include(c => c.CompletedBooks)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 

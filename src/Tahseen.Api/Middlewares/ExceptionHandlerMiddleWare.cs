@@ -21,7 +21,7 @@ namespace Tahseen.Api.Middlewares
                 await _next(context);
             }
             catch (TahseenException ex)
-            {
+          {
                 context.Response.StatusCode = ex.statusCode;
                 await context.Response.WriteAsJsonAsync(new Response
                 {

@@ -11,10 +11,12 @@ namespace Tahseen.Service.DTOs.Users.BorrowedBook
         public long Id { get; set; }
         public long UserId { get; set; }
         public long BookId { get; set; }
-        public Book Book { get; set; }
         public string BookTitle { get; set; }
         public DateTime ReturnDate { get; set; }
         public string Status { get; set; }
         public decimal FineAmount { get; set; }
+        public string LibraryBranchName { get; set; }
+        public string BookImage { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

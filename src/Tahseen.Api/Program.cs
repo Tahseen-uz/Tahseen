@@ -59,11 +59,12 @@ var logger = new LoggerConfiguration()
   .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admins", policy =>
+    options.AddPolicy("LibrarianPolicy", policy =>
     {
-        policy.RequireRole("Admin");
+        policy.RequireRole("Admin", "Librarian"); // Use an array of roles
     });
 });
 

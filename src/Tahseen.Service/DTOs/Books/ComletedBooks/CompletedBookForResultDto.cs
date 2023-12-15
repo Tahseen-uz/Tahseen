@@ -10,4 +10,8 @@ public class CompletedBookForResultDto
     public long BookId { get; set; }
     public BookForResultDto Book { get; set; }
     public string Comment { get; set; }
+    public string BookTitle { get; set; }
+    public string LibraryBranchName { get; set; }
+    public string BookImage { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

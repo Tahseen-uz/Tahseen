@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tahseen.Api.Models;
 using Tahseen.Service.DTOs.Feedbacks.UserRatings;
 using Tahseen.Service.Interfaces.IFeedbackService;
@@ -26,28 +27,17 @@ namespace Tahseen.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-/*        [HttpGet("{id}")]
 
-        public async Task<IActionResult> GetAsync([FromRoute(Name = "id")] long Id)
+        [HttpGet("GetByUserId")]
+
+        public async Task<IActionResult> GetByUserIdAsync()
         {
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirstValue("id"));
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await _userRatingService.RetrieveByIdAsync(Id)
-            };
-            return Ok(response);
-        }*/
-
-        [HttpGet("{userId}")]
-
-        public async Task<IActionResult> GetByUserIdAsync([FromRoute(Name = "userId")] long Id)
-        {
-            var response = new Response()
-            {
-                StatusCode = 200,
-                Message = "Success",
-                Data = await _userRatingService.RetrieveByUserIdAsync(Id)
+                Data = await _userRatingService.RetrieveByUserIdAsync(UserId)
             };
             return Ok(response);
         }
@@ -77,17 +67,6 @@ namespace Tahseen.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-/*        [HttpPut("{id}")]
 
-        public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long Id, [FromForm] UserRatingForUpdateDto dto)
-        {
-            var response = new Response()
-            {
-                StatusCode = 200,
-                Message = "Success",
-                Data = await _userRatingService.ModifyAsync(Id, dto)
-            };
-            return Ok(response);
-        }*/
     }
 }
