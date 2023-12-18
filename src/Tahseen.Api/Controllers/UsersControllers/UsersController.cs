@@ -71,7 +71,6 @@ namespace Tahseen.Api.Controllers.UsersControllers
         }
 
         [HttpPut("UserUpdate")]
-
         public async Task<IActionResult> PutAsync([FromBody]UserForUpdateDto dto)
         {
             var UserId = Convert.ToInt32(HttpContext.User.FindFirstValue("id"));

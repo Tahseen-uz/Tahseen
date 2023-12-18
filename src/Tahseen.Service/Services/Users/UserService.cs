@@ -189,28 +189,38 @@ namespace Tahseen.Service.Services.Users
             .Where(e => e.Id == Id && e.IsDeleted == false)
             .FirstOrDefaultAsync();
 
-            if (dto.UserImage != null)
+            if(data == null)
             {
-                if (data.UserImage != null)
+                throw new TahseenException(404, "Not Found");
+            }
+            else
+            {
+                if (dto.UserImage != null)
                 {
-                    await this._fileUploadService.FileDeleteAsync(data.UserImage);
+                    if (data.UserImage != null)
+                    {
+                        await this._fileUploadService.FileDeleteAsync(data.UserImage);
+                    }
+
+                    var FileUploadForCreation = new FileUploadForCreationDto
+                    {
+                        FolderPath = "UsersAssets",
+                        FormFile = dto.UserImage
+                    };
+                    var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+
+                    data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
                 }
-
-                var FileUploadForCreation = new FileUploadForCreationDto
+                else if (dto.UserImage == null)
                 {
-                    FolderPath = "UsersAssets",
-                    FormFile = dto.UserImage
-                };
-                var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
+                    if (data.UserImage != null)
+                    {
+                        data.UserImage = data.UserImage;
+                    }
 
-                data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                }
+                return this._mapper.Map<UserForResultDto>(data);
             }
-            else if(dto.UserImage == null)
-            {
-                data.UserImage = data.UserImage;
-
-            }
-            return this._mapper.Map<UserForResultDto>(data);
         }
 
         public async Task<bool> RemoveAsync(long Id)
