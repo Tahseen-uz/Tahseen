@@ -77,6 +77,9 @@ public class AppDbContext : DbContext
     public DbSet<UserSettings> UserSettings { get; set; }
     public DbSet<WishList> WishLists { get; set; }
 
+    // BookRentalPermission
+    public DbSet<BookRentalPermission> BookRentalPermissions { get; set; }  
+
     //FolderName : AudioBook
     public DbSet<AudioBook> AudioBooks { get; set; }
     public DbSet<AudioFile> AudioFiles { get; set; }
