@@ -133,6 +133,10 @@ public static class ServiceExtension
         //Language
 
         services.AddScoped<ILanguageService, LanguageService>();
+
+        //BookRentalPermission
+        services.AddScoped<IBookRentalPermissionService, BookRentalPermissionService>();
+
         //MemoryCache
         services.AddMemoryCache();
 
