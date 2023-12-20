@@ -6,9 +6,8 @@ namespace Tahseen.Domain.Entities.Users;
 
 public class WishList : Auditable
 {
-    public long UserCartId { get; set; }
-    public UserCart Cart { get; set; }
+    public long UserId { get; set; }
+    public User User { get; set; }
     public long BookId { get; set; }
     public Book Book { get; set; }
-    public WishListStatus Status { get; set; }
 }

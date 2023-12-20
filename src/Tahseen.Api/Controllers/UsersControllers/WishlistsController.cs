@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Tahseen.Service.DTOs.Users.Wishlists;
 using Tahseen.Service.Interfaces.IUsersService;
+using System.Security.Claims;
+using Tahseen.Domain.Entities;
 
 namespace Tahseen.Api.Controllers.UsersControllers
 {
@@ -15,13 +17,19 @@ namespace Tahseen.Api.Controllers.UsersControllers
         }
 
         [HttpGet]
-        public IEnumerable<IActionResult> GetAll()
-            => (IEnumerable<IActionResult>)Ok(new Response
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirstValue("Id"));
+            var result = new Response()
             {
                 StatusCode = 200,
-                Message = "Successful",
-                Data = this._wishlistService.RetrieveAllAsync()
-            });
+                Message = "Success",
+                Data = await _wishlistService.RetrieveAllAsync(UserId)
+            };
+            return Ok(result);
+
+        }
+           
 
 
         [HttpGet("{id}")]
@@ -36,12 +44,17 @@ namespace Tahseen.Api.Controllers.UsersControllers
 
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]WishlistForCreationDto dto)
-            => Ok(new Response
+        {
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirstValue("Id"));
+            var result = new Response()
             {
                 StatusCode = 200,
                 Message = "Successful",
-                Data = await this._wishlistService.AddAsync(dto)
-            });
+                Data = await this._wishlistService.AddAsync(UserId, dto)
+            };
+            return Ok(result);
+
+        }
 
 
         [HttpDelete("{id}")]

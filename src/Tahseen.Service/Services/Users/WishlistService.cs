@@ -15,31 +15,33 @@ public class WishlistService : IWishlistService
 {
     private readonly IMapper mapper;
     private readonly IRepository<WishList> repository;
-    private readonly IRepository<UserCart> userCartRepository;
     private readonly IRepository<Book> bookRepository;
     private readonly IRepository<User> _userRepository;
     public WishlistService(
         IMapper mapper, 
         IRepository<WishList> repository,
-        IRepository<UserCart> userCartRepository,
         IRepository<Book> bookRepository,
         IRepository<User> userRepository)
     {
         this.mapper = mapper;
         this.repository = repository;
-        this.userCartRepository = userCartRepository;
         this.bookRepository = bookRepository;
-        _userRepository = userRepository;
+        this._userRepository = userRepository;
     }
 
-    public async Task<WishlistForResultDto> AddAsync(WishlistForCreationDto dto)
+    public async Task<WishlistForResultDto> AddAsync(long UserId, WishlistForCreationDto dto)
     {
+        var checkAvailibility = await repository.SelectAll().Where(e => e.UserId == UserId && e.BookId == dto.BookId && e.IsDeleted == false).AsNoTracking().FirstOrDefaultAsync();
+        if(checkAvailibility != null)
+        {
+            throw new TahseenException(400, "This book is available in your cart");
+        }
         var user = await _userRepository.SelectAll()
-            .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
+            .Where(u => u.IsDeleted == false && u.Id == UserId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (user is null)
+        if (user == null || user.IsDeleted == true)
             throw new TahseenException(404, "User is not found");
 
         var book = await bookRepository
@@ -47,19 +49,12 @@ public class WishlistService : IWishlistService
             .Where(b => b.Id == dto.BookId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
-        if (book == null || book.IsDeleted)
+        if (book == null || book.IsDeleted == true)
             throw new TahseenException(404, "Book not found");
-        //shu joyini korib chiqamiz
-        var cart = await userCartRepository.SelectAll().Where(u => u.UserId == dto.UserId && u.IsDeleted == false).FirstOrDefaultAsync();
-        if(cart == null)
-        {
-            throw new TahseenException(404, "cart is not found");
-        }
         var wishlist = new WishList
         {
-            UserCartId = cart.Id,
             BookId = dto.BookId,
-            Status = dto.Status
+            UserId = UserId
         };
 
         var insertedWishlist = await repository.CreateAsync(wishlist);
@@ -67,23 +62,20 @@ public class WishlistService : IWishlistService
         return mapper.Map<WishlistForResultDto>(insertedWishlist);
     }
 
+
+    //No need
     public async Task<WishlistForResultDto> ModifyAsync(long id, WishlistForUpdateDto dto)
     {
-        var wishlist = await this.repository.SelectAll().Where(e => e.Id == id && e.IsDeleted == false).FirstOrDefaultAsync();
-        if (wishlist == null)
+        var wishlist = await this.repository.SelectAll().Where(e => e.Id == id && e.IsDeleted == false).AsNoTracking().FirstOrDefaultAsync();
+        if (wishlist == null || wishlist.IsDeleted == true)
             throw new TahseenException(404, "wishlist not found");
-        var cart = await userCartRepository.SelectAll().Where(u => u.UserId == dto.UserId && u.IsDeleted == false).FirstOrDefaultAsync();
-        if (cart == null)
-        {
-            throw new TahseenException(404, "cart is not found");
-        }
-
+ 
         var user = await _userRepository.SelectAll()
             .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (user is null)
+        if (user == null || user.IsDeleted == true)
             throw new TahseenException(404, "User is not found");
 
         var book = await bookRepository.SelectAll()
@@ -91,22 +83,20 @@ public class WishlistService : IWishlistService
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (book is null)
+        if (book == null || user.IsDeleted == true)
             throw new TahseenException(404, "Book is not found");
 
-        wishlist.UserCartId = cart.Id;
         wishlist.BookId = dto.BookId;
-        wishlist.Status = dto.Status;
         wishlist.UpdatedAt = DateTime.UtcNow;
-
-        return mapper.Map<WishlistForResultDto>(await repository.UpdateAsync(wishlist));
+        var res = await repository.UpdateAsync(wishlist);
+        return mapper.Map<WishlistForResultDto>(await repository.UpdateAsync(res));
     }
 
     public async Task<bool> RemoveAsync(long id)
     {
         var wishlist = await repository
             .SelectAll()
-            .Where(w => w.Id == id && !w.IsDeleted)
+            .Where(w => w.Id == id && w.IsDeleted == false)
             .AsNoTracking()
             .FirstOrDefaultAsync();
         if (wishlist == null)
@@ -115,28 +105,24 @@ public class WishlistService : IWishlistService
         return await repository.DeleteAsync(wishlist.Id);
     }
 
-    public async Task<IEnumerable<WishlistForResultDto>> RetrieveAllAsync()
+    public async Task<IEnumerable<WishlistForResultDto>> RetrieveAllAsync(long UserId) // UserId
     {
         var wishlists = await this.repository.SelectAll()
-            .Where(w => !w.IsDeleted)
+            .Where(e => e.UserId == UserId && e.IsDeleted == false)
+            .Include(e => e.Book)
+            .ThenInclude(e => e.LibraryBranch)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
-        var result = this.mapper.Map<IEnumerable<WishlistForResultDto>>(wishlists);
-        foreach(var wishList in result)
-        {
-            wishList.Status = wishList.Status.ToString();
-        }
-        return result;
+            .ToListAsync();
+        return this.mapper.Map<IEnumerable<WishlistForResultDto>>(wishlists); 
     }
 
-    public async Task<WishlistForResultDto> RetrieveByIdAsync(long id)
+    public async Task<WishlistForResultDto> RetrieveByIdAsync(long id) //UserId
     {
         var wishlist = await repository.SelectByIdAsync(id);
         if (wishlist is null || wishlist.IsDeleted)
             throw new TahseenException(404, "Wishlist not found");
 
         var result =  this.mapper.Map<WishlistForResultDto>(wishlist);
-        result.Status = result.Status.ToString();
         return result;  
     }
 }

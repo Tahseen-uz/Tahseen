@@ -22,7 +22,6 @@ public class Book : Auditable
     public long AuthorId { get; set; }
     [ForeignKey("AuthorId")]
     public Author Author { get; set; }
-    
     public long GenreId { get; set; }
     [ForeignKey("GenreId")]
     public Genre Genre { get; set; }
@@ -40,9 +39,7 @@ public class Book : Auditable
     public long LanguageId { get; set; }
     [ForeignKey("LanguageId")]
     public Language Language { get; set; }
-    
-    [JsonIgnore]
-    public IEnumerable<BorrowedBook> Borrowers { get; set; }
+
 
 
 

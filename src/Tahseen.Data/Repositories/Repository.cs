@@ -24,7 +24,7 @@ namespace Tahseen.Data.Repositories
         public async Task<bool> DeleteAsync(long Id)
         {
             var result = await dbSet.Where(e => e.Id == Id && e.IsDeleted == false).FirstOrDefaultAsync();
-            result.IsDeleted = true;
+            result.IsDeleted = true; 
             await dbContext.SaveChangesAsync();
             return true;
         }

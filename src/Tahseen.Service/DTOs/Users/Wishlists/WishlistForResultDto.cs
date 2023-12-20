@@ -9,8 +9,6 @@ public class WishlistForResultDto
     public long Id { get; set; }
     public long UserId { get; set; }
     public UserForResultDto User { get; set; }
-    public long UserCartId { get; set; }
     public long BookId { get; set; }
     public BookForResultDto Book { get; set; }
-    public string Status { get; set; }
 }

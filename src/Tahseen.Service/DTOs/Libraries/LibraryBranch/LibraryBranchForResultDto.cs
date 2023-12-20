@@ -17,9 +17,6 @@ public class LibraryBranchForResultDto
     public string OpeningHours { get; set; }
     public string LibraryType { get; set; }
 
-
-    [JsonIgnore]
-    public IEnumerable<LibrarianForResultDto> Librarians { get; set; }
     [JsonIgnore]
     public IEnumerable<BookForResultDto> TotalBooks { get; set; }
 

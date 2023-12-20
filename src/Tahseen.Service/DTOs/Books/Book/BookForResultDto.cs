@@ -33,7 +33,6 @@ public class BookForResultDto
     public PublisherForResultDto Publisher { get; set; }
     public BookReviewForResultDto BookReviews { get; set; }
     public Language Language { get; set; }
-    public IEnumerable<BorrowedBookForResultDto> Borrowers { get; set; }
     public string PrintedIn { get; set; }
     public long TotalPages { get; set; }
 

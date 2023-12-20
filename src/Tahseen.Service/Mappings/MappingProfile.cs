@@ -171,6 +171,7 @@ public class MappingProfile : Profile
         CreateMap<User, UserForCreationDto>().ReverseMap();
         CreateMap<User, UserForResultDto>().ForMember(r => r.Roles, opt => opt.MapFrom(src => src.Role.ToString())).ReverseMap();
         CreateMap<User, UserForUpdateDto>().ReverseMap();
+        CreateMap<User, UserImageUpdateDto>().ReverseMap();
 
         CreateMap<UserCart, UserCartForCreationDto>().ReverseMap();
         CreateMap<UserCart, UserCartForResultDto>().ReverseMap();
@@ -202,8 +203,9 @@ public class MappingProfile : Profile
         CreateMap<BorrowedBookCart, BorrowedBookCartForResultDto>().ReverseMap();
 
         CreateMap<WishList, WishlistForCreationDto>().ReverseMap();
-        CreateMap<WishList, WishlistForResultDto>().ForMember(e => e.Status, o => o.MapFrom(src => src.Status.ToString())).ReverseMap();
+        CreateMap<WishList, WishlistForResultDto>().ReverseMap();
         CreateMap<WishList, WishlistForUpdateDto>().ReverseMap();
+
 
         //Folder Name: EBook
         CreateMap<EBook, EBookForResultDto>().ReverseMap();

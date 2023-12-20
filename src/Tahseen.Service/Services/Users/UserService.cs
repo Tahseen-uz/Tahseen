@@ -209,7 +209,9 @@ namespace Tahseen.Service.Services.Users
                     };
                     var FileResult = await this._fileUploadService.FileUploadAsync(FileUploadForCreation);
 
-                    data.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                    var MappedData = this._mapper.Map(dto, data);
+                    MappedData.UserImage = Path.Combine("Assets", $"{FileResult.FolderPath}", FileResult.FileName);
+                    await this._userRepository.UpdateAsync(MappedData);
                 }
                 else if (dto.UserImage == null)
                 {
