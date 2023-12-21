@@ -12,8 +12,8 @@ using Tahseen.Data.DbContexts;
 namespace Tahseen.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231220074950_BorrowBookPermissionMigration")]
-    partial class BorrowBookPermissionMigration
+    [Migration("20231221102824_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -280,6 +280,46 @@ namespace Tahseen.Data.Migrations
                     b.ToTable("BookBorrowPermissions");
                 });
 
+            modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookCompletePermission", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("LibraryBranchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("LibraryBranchId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BookCompletePermissions");
+                });
+
             modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookReviews", b =>
                 {
                     b.Property<long>("Id")
@@ -326,12 +366,6 @@ namespace Tahseen.Data.Migrations
                     b.Property<long>("BookId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("BookImage")
-                        .HasColumnType("text");
-
-                    b.Property<string>("BookTitle")
-                        .HasColumnType("text");
-
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
@@ -341,8 +375,8 @@ namespace Tahseen.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("LibraryBranchName")
-                        .HasColumnType("text");
+                    b.Property<long?>("LibraryBranchId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -353,6 +387,8 @@ namespace Tahseen.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BookId");
+
+                    b.HasIndex("LibraryBranchId");
 
                     b.HasIndex("UserId");
 
@@ -1660,6 +1696,33 @@ namespace Tahseen.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookCompletePermission", b =>
+                {
+                    b.HasOne("Tahseen.Domain.Entities.Books.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tahseen.Domain.Entities.Library.LibraryBranch", "LibraryBranch")
+                        .WithMany()
+                        .HasForeignKey("LibraryBranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tahseen.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("LibraryBranch");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookReviews", b =>
                 {
                     b.HasOne("Tahseen.Domain.Entities.Books.Book", "Book")
@@ -1687,6 +1750,10 @@ namespace Tahseen.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Tahseen.Domain.Entities.Library.LibraryBranch", "LibraryBranch")
+                        .WithMany("CompletedBooks")
+                        .HasForeignKey("LibraryBranchId");
+
                     b.HasOne("Tahseen.Domain.Entities.User", "User")
                         .WithMany("CompletedBooks")
                         .HasForeignKey("UserId")
@@ -1694,6 +1761,8 @@ namespace Tahseen.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Book");
+
+                    b.Navigation("LibraryBranch");
 
                     b.Navigation("User");
                 });
@@ -2071,6 +2140,8 @@ namespace Tahseen.Data.Migrations
 
             modelBuilder.Entity("Tahseen.Domain.Entities.Library.LibraryBranch", b =>
                 {
+                    b.Navigation("CompletedBooks");
+
                     b.Navigation("TotalBooks");
                 });
 
