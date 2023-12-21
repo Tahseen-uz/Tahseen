@@ -29,7 +29,7 @@ public class AppDbContext : DbContext
     public DbSet<CompletedBooks> CompletedBooks { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Publisher> Publishers { get; set; }
-
+    public DbSet<BookCompletePermission> BookCompletePermissions { get; set; }
     //Folder Name: Events
     public DbSet<Event> Events { get; set; }
     public DbSet<EventRegistration> EventsRegistration { get; set; }
@@ -94,6 +94,7 @@ public class AppDbContext : DbContext
     // Folder Name : Narrator
 
     public DbSet<Narrator> Narrators { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Book>()

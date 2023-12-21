@@ -16,6 +16,7 @@ public class LibraryBranch:Auditable
     public LibraryType LibraryType { get; set; }
 
     [JsonIgnore]
-    public IEnumerable<Book> TotalBooks { get; set; }
+    public IEnumerable<Book>? TotalBooks { get; set; }
+    public IEnumerable<CompletedBooks>? CompletedBooks { get; set; }
 
 }

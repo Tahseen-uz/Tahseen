@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tahseen.Data.DbContexts;
@@ -11,9 +12,11 @@ using Tahseen.Data.DbContexts;
 namespace Tahseen.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231221092628_BookCompleteMigration2")]
+    partial class BookCompleteMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -275,46 +278,6 @@ namespace Tahseen.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("BookBorrowPermissions");
-                });
-
-            modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookCompletePermission", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("BookId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("LibraryBranchId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("LibraryBranchId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BookCompletePermissions");
                 });
 
             modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookReviews", b =>
@@ -1667,33 +1630,6 @@ namespace Tahseen.Data.Migrations
                 });
 
             modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookBorrowPermission", b =>
-                {
-                    b.HasOne("Tahseen.Domain.Entities.Books.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Tahseen.Domain.Entities.Library.LibraryBranch", "LibraryBranch")
-                        .WithMany()
-                        .HasForeignKey("LibraryBranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Tahseen.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("LibraryBranch");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Tahseen.Domain.Entities.Books.BookCompletePermission", b =>
                 {
                     b.HasOne("Tahseen.Domain.Entities.Books.Book", "Book")
                         .WithMany()

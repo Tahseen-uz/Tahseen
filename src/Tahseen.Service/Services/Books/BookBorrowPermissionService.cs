@@ -15,6 +15,7 @@ namespace Tahseen.Service.Services.Books
         private readonly IMapper _mapper;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<BorrowedBook> _borrowedBookRepository;
         private readonly IRepository<LibraryBranch> _libraryBranchRepository;
         private readonly IRepository<BookBorrowPermission> _bookBorrowPermissionRepository;
 
@@ -23,13 +24,15 @@ namespace Tahseen.Service.Services.Books
             IRepository<User> userRepository,
             IRepository<Book> bookRepository,
             IRepository<LibraryBranch> libraryBranchRepository,
-            IRepository<BookBorrowPermission> bookBorrowPermissionRepository)
+            IRepository<BookBorrowPermission> bookBorrowPermissionRepository,
+            IRepository<BorrowedBook> borrowedBookRepository)
         {
             _mapper = mapper;
             _userRepository = userRepository;
             _bookRepository = bookRepository;
             _libraryBranchRepository = libraryBranchRepository;
             _bookBorrowPermissionRepository = bookBorrowPermissionRepository;
+            _borrowedBookRepository = borrowedBookRepository;
         }
         public async Task<BookBorrowPermissionForResultDto> AddAsync(BookBorrowPermissionForCreationDto dto)
         {
@@ -48,7 +51,8 @@ namespace Tahseen.Service.Services.Books
 
             if (book is null)
                 throw new TahseenException(404, "Book is not found");
-            else if (book.AvailableCopies > 0)
+
+            else if (book.AvailableCopies < 1)
             {
                 throw new TahseenException(404, "Book is not available");
 
@@ -68,6 +72,11 @@ namespace Tahseen.Service.Services.Books
 
             if (bookBorrowPermission is not null)
                 throw new TahseenException(409, "BookRentalPermission is already exist");
+            var CheckIfBorrowed = await _borrowedBookRepository.SelectAll().Where(e => e.UserId == dto.UserId && e.BookId == dto.BookId && e.IsDeleted == false).AsNoTracking().FirstOrDefaultAsync();
+            if (CheckIfBorrowed != null)
+            {
+                throw new TahseenException(400, "You have already borrowed this book");
+            }
 
             var result = _mapper.Map<BookBorrowPermission>(dto);
             var check = await _bookBorrowPermissionRepository.CreateAsync(result);

@@ -62,9 +62,6 @@ public class CompletedBookService : ICompletedBookService
         }
 
         var mapped = this._mapper.Map<CompletedBooks>(dto);
-        mapped.BookTitle = book.Title;
-        mapped.LibraryBranchName = libraryBranch.Name;
-        mapped.BookImage = book.BookImage;
         var result = await this._repository.CreateAsync(mapped);
 
 
