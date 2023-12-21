@@ -372,7 +372,7 @@ namespace Tahseen.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("LibraryBranchId")
+                    b.Property<long?>("LibraryBranchId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1749,9 +1749,7 @@ namespace Tahseen.Data.Migrations
 
                     b.HasOne("Tahseen.Domain.Entities.Library.LibraryBranch", "LibraryBranch")
                         .WithMany("CompletedBooks")
-                        .HasForeignKey("LibraryBranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LibraryBranchId");
 
                     b.HasOne("Tahseen.Domain.Entities.User", "User")
                         .WithMany("CompletedBooks")
