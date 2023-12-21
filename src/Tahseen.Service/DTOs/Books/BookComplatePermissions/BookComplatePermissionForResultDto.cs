@@ -8,6 +8,7 @@ namespace Tahseen.Service.DTOs.Books.BookComplatePermissions;
 
 public class BookComplatePermissionForResultDto
 {
+    public long Id { get; set; }
     public UserForResultDto User { get; set; }
     public BookForResultDto Book { get; set; }
     public LibraryBranchForResultDto LibraryBranch { get; set; }
