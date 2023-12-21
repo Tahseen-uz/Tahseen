@@ -15,14 +15,14 @@ namespace Tahseen.Api.Controllers.UsersControllers
         }
 
         [HttpGet("GetUsersAllBorrowedBooksAsync")]
-        public async Task<IActionResult> GetUsersAllBorrowedBooksAsync(long id)
+        public async Task<IActionResult> GetUsersAllBorrowedBooksAsync()
         {
-            //var UserId = Convert.ToInt32(HttpContext.User.FindFirst("Id"));
+            var UserId = Convert.ToInt32(HttpContext.User.FindFirst("Id"));
             var response = new Response()
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await _borrowedBookService.RetrieveAllAsync(id)
+                Data = await _borrowedBookService.RetrieveAllAsync(UserId)
             };
             return Ok(response);
         }

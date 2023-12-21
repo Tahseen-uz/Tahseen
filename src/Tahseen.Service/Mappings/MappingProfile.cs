@@ -18,7 +18,7 @@ using Tahseen.Service.DTOs.AudioBooks.AudioBook;
 using Tahseen.Service.DTOs.AudioBooks.AudioFile;
 using Tahseen.Service.DTOs.Books.Author;
 using Tahseen.Service.DTOs.Books.Book;
-using Tahseen.Service.DTOs.Books.BookRentalPermission;
+using Tahseen.Service.DTOs.Books.BookBorrowPermission;
 using Tahseen.Service.DTOs.Books.BookReviews;
 using Tahseen.Service.DTOs.Books.CompletedBooks;
 using Tahseen.Service.DTOs.Books.Genre;
@@ -84,8 +84,8 @@ public class MappingProfile : Profile
         CreateMap<Genre, GenreForUpdateDto>().ReverseMap();
         CreateMap<Genre, GenreForResultDto>().ReverseMap();
 
-        CreateMap<BookRentalPermission, BookRentalPermissionForCreationDto>().ReverseMap();
-        CreateMap<BookRentalPermission, BookRentalPermissionForResultDto>().ReverseMap();
+        CreateMap<BookBorrowPermission, BookBorrowPermissionForCreationDto>().ReverseMap();
+        CreateMap<BookBorrowPermission, BookBorrowPermissionForResultDto>().ReverseMap();
 
         //Folder Name: Events
         CreateMap<Event, EventForCreationDto>().ReverseMap();

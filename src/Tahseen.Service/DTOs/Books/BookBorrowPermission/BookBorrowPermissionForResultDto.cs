@@ -1,12 +1,12 @@
 ﻿using Tahseen.Service.DTOs.Books.Book;
-using Tahseen.Service.DTOs.Users.User;
 using Tahseen.Service.DTOs.Libraries.LibraryBranch;
+using Tahseen.Service.DTOs.Users.User;
 
-namespace Tahseen.Service.DTOs.Books.BookRentalPermission
+namespace Tahseen.Service.DTOs.Books.BookBorrowPermission
 {
-    public class BookRentalPermissionForResultDto
+    public class BookBorrowPermissionForResultDto
     {
-        public long Id { get; set; }    
+        public long Id { get; set; }
         public long UserId { get; set; }
         public UserForResultDto User { get; set; }
         public long BookId { get; set; }

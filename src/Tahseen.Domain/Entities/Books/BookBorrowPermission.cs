@@ -3,7 +3,7 @@ using Tahseen.Domain.Entities.Library;
 
 namespace Tahseen.Domain.Entities.Books
 {
-    public class BookRentalPermission : Auditable
+    public class BookBorrowPermission : Auditable
     {
         public long UserId { get; set; }
         public User User { get; set; }
@@ -11,6 +11,5 @@ namespace Tahseen.Domain.Entities.Books
         public Book Book { get; set; }
         public long LibraryBranchId { get; set; }
         public LibraryBranch LibraryBranch { get; set; }
-
     }
 }

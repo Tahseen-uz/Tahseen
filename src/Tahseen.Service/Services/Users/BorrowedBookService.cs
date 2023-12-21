@@ -35,7 +35,11 @@ namespace Tahseen.Service.Services.Users
         }
         public async Task<BorrowedBookForResultDto> AddAsync(BorrowedBookForCreationDto dto)
         {
-            //var Check = this.BorrowedBook.SelectAll().Where(b => b.UserId == dto.UserId && b.UserId == dto.UserId && b.BookId == dto.BookId && b.IsDeleted == false);
+            var Check = this.BorrowedBook.SelectAll().Where(b => b.UserId == dto.UserId && b.BookId == dto.BookId && b.IsDeleted == false);
+            if (Check == null)
+            {
+                throw new TahseenException(400, "This book is exist");
+            }
             var user = await _userRepository.SelectAll()
                 .Where(u => u.IsDeleted == false && u.Id == dto.UserId)
                 .AsNoTracking()
@@ -145,11 +149,6 @@ namespace Tahseen.Service.Services.Users
                 .AsNoTracking()
                 .ToListAsync();
             var res = this._mapper.Map<IEnumerable<BorrowedBookForResultDto>>(result);
-       /*     foreach (var item in res)
-            {
-                item.Status = item.Status.ToString();
-                item.BookTitle = item.BookTitle.ToString();
-            }*/
             return res;
         }
 
@@ -162,8 +161,6 @@ namespace Tahseen.Service.Services.Users
             if (data != null && data.IsDeleted == false)
             {
                 var result = this._mapper.Map<BorrowedBookForResultDto>(data);
-/*                result.Status = result.Status.ToString();
-                result.BookTitle = result.BookTitle.ToString();*/
                 return result;
             }
             throw new TahseenException(404, "Borrowed book is not found");
