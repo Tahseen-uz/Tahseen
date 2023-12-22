@@ -78,6 +78,7 @@ public static class ServiceExtension
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IBookReviewService, BookReviewService>();
         services.AddScoped<ICompletedBookService, CompletedBookService>();
+        services.AddScoped<IBookComplatePermissionService, BookComplatePermissionService>();
 
         //Folder Name:IEventService
         services.AddScoped<IEventsService, EventService>();
