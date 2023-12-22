@@ -55,6 +55,8 @@ namespace Tahseen.Api.Controllers.BooksControllers
                 Data = await this.service.RetrieveAllParticularBooksAsync(LibraryBranchId, @params)
 
             };
+            response.MapPaginationHeader();
+
             return Ok(response);
         }
 
@@ -64,7 +66,8 @@ namespace Tahseen.Api.Controllers.BooksControllers
             {
                 StatusCode = 200,
                 Message = "Success",
-                Data = await this.service.RetrieveAllPublicLibraryBooksAsync(@params)
+                Data = await this.service.RetrieveAllPublicLibraryBooksAsync(@params),
+                
             });
 
 
